@@ -8,19 +8,6 @@
   <!-- 防止 Vue 渲染前的花括號閃爍 -->
   <style>
     [v-cloak] { display: none !important; }
-    /* 基礎載入畫面 */
-    #app-loading {
-      position: fixed;
-      inset: 0;
-      background: #0b0f19;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      color: #fff;
-      font-family: sans-serif;
-    }
   </style>
 
   <!-- Tailwind CSS CDN -->
@@ -32,6 +19,9 @@
   <!-- Canvas Confetti 慶祝特效 -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
+  <!-- Chart.js 現代圖表庫 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- 自訂美化樣式 -->
   <link rel="stylesheet" href="style.css">
 
@@ -76,6 +66,7 @@
             <div class="flex items-center gap-1.5 flex-wrap">
               <span class="bg-indigo-600/90 text-indigo-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-400/30">116學年最新</span>
               <span class="bg-emerald-600/90 text-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-400/30">中投區專用</span>
+              <span class="bg-amber-600/90 text-amber-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-400/30">3萬人模擬母體</span>
             </div>
             <h1 class="text-base sm:text-xl font-black tracking-tight text-white flex items-center gap-2 mt-0.5">
               國中免試入學電腦分發比序大作戰
@@ -83,32 +74,46 @@
           </div>
         </div>
 
-        <!-- 導覽頁籤切換 (手機上 2x2 格狀，電腦上單行) -->
-        <nav class="grid grid-cols-2 sm:flex sm:items-center bg-slate-800/90 p-1 sm:p-1.5 rounded-2xl border border-slate-700/60 text-xs sm:text-sm font-bold w-full sm:w-auto gap-1">
+        <!-- 導覽頁籤切換 (6大模式支援手機格狀與電腦單行) -->
+        <nav class="grid grid-cols-3 sm:flex sm:items-center bg-slate-800/90 p-1 sm:p-1.5 rounded-2xl border border-slate-700/60 text-xs sm:text-sm font-bold w-full sm:w-auto gap-1">
           <button @click="activeTab = 'quiz'"
                   :class="activeTab === 'quiz' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
-                  class="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl transition-all duration-150 active:scale-95">
+                  class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
             <i class="fa-solid fa-gamepad text-yellow-300"></i>
             <span>PK 猜猜看</span>
           </button>
 
+          <button @click="activeTab = 'simulator'"
+                  :class="activeTab === 'simulator' ? 'bg-gradient-to-r from-rose-500 to-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
+                  class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
+            <i class="fa-solid fa-users-gear text-rose-300"></i>
+            <span>3萬人篩選器</span>
+          </button>
+
+          <button @click="activeTab = 'charts'"
+                  :class="activeTab === 'charts' ? 'bg-gradient-to-r from-teal-500 to-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
+                  class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
+            <i class="fa-solid fa-chart-simple text-emerald-300"></i>
+            <span>落點兩大圖</span>
+          </button>
+
           <button @click="activeTab = 'sandbox'"
                   :class="activeTab === 'sandbox' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
-                  class="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl transition-all duration-150 active:scale-95">
+                  class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
             <i class="fa-solid fa-sliders text-cyan-300"></i>
-            <span>對決沙盒</span>
+            <span>雙人沙盒</span>
           </button>
 
           <button @click="activeTab = 'flowchart'"
                   :class="activeTab === 'flowchart' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
-                  class="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl transition-all duration-150 active:scale-95">
+                  class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
             <i class="fa-solid fa-sitemap text-emerald-300"></i>
             <span>比序流程圖</span>
           </button>
 
           <button @click="activeTab = 'tips'"
                   :class="activeTab === 'tips' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
-                  class="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl transition-all duration-150 active:scale-95">
+                  class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
             <i class="fa-solid fa-lightbulb text-amber-300"></i>
             <span>選填錦囊</span>
           </button>
@@ -124,7 +129,7 @@
       <!-- ============================================================== -->
       <section v-if="activeTab === 'quiz'" class="space-y-5">
         
-        <!-- 題目導覽按鈕列 (支援手機橫向滑動與格狀自適應) -->
+        <!-- 題目導覽按鈕列 -->
         <div class="glass-dark rounded-2xl p-3 sm:p-4 border border-slate-700/60 shadow-lg">
           <div class="flex items-center justify-between mb-2.5">
             <div class="flex items-center gap-2">
@@ -197,7 +202,6 @@
         <!-- 雙雄卡牌對抗區 (VS 戰場) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 relative">
           
-          <!-- 中央 VS 徽章 (在手機上小巧居中) -->
           <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600 items-center justify-center text-white font-black text-base shadow-xl shadow-rose-500/30 border-2 border-slate-900">
             VS
           </div>
@@ -369,7 +373,7 @@
           </div>
         </div>
 
-        <!-- 動態比序光速天梯 (Step-by-step Flowchart Execution) -->
+        <!-- 動態比序光速天梯 -->
         <div v-if="activeStepsToDisplay.length > 0" class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-2.5">
           <div class="flex items-center justify-between pb-2.5 border-b border-slate-700">
             <div class="flex items-center gap-2 text-white font-extrabold text-sm sm:text-base">
@@ -466,7 +470,6 @@
             </button>
           </div>
 
-          <!-- 詳細解答與官方規範依據 -->
           <div class="bg-slate-900/80 p-3.5 sm:p-4 rounded-2xl border border-slate-700/80 text-xs sm:text-sm leading-relaxed text-slate-200">
             <div class="font-bold text-amber-300 mb-1 flex items-center gap-1.5">
               <i class="fa-solid fa-book-open"></i>
@@ -479,11 +482,302 @@
       </section>
 
       <!-- ============================================================== -->
-      <!-- TAB 2: 對決沙盒模擬器 (自由自訂兩位考生進行比序) -->
+      <!-- TAB 2: 【3 萬人志願分發篩選器模型】(全新大數據模擬) -->
+      <!-- ============================================================== -->
+      <section v-if="activeTab === 'simulator'" class="space-y-5">
+        
+        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-4">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-slate-700">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-rose-500/20 text-rose-300 text-xs font-bold px-2.5 py-1 rounded-full mb-1 border border-rose-500/30">
+                <i class="fa-solid fa-server"></i>
+                <span>中投區 30,000 人母體模擬引擎</span>
+              </div>
+              <h2 class="text-lg sm:text-2xl font-black text-white">志願選填「電腦分發篩選器」投入模擬器</h2>
+              <p class="text-xs text-slate-400 mt-0.5">
+                將你的會考成績與志願順序投入 3 萬人分發母體，真實模擬電腦逐志願篩選與超額比序！
+              </p>
+            </div>
+
+            <!-- 智慧填法策略快捷鍵 -->
+            <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
+              <span class="text-xs text-slate-400 font-bold">🎯 推薦策略：</span>
+              <button @click="applyChoiceStrategy('DREAM_FIRST')" class="text-xs bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 px-2.5 py-1 rounded-xl border border-indigo-700/60 active:scale-95 transition">
+                夢幻衝刺
+              </button>
+              <button @click="applyChoiceStrategy('BALANCED')" class="text-xs bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 px-2.5 py-1 rounded-xl border border-emerald-700/60 active:scale-95 transition">
+                攻守兼備(推薦)
+              </button>
+              <button @click="applyChoiceStrategy('TECH_STAR')" class="text-xs bg-amber-900/60 hover:bg-amber-800 text-amber-200 px-2.5 py-1 rounded-xl border border-amber-700/60 active:scale-95 transition">
+                頂尖技職
+              </button>
+              <button @click="applyChoiceStrategy('COMMUNITY')" class="text-xs bg-purple-900/60 hover:bg-purple-800 text-purple-200 px-2.5 py-1 rounded-xl border border-purple-700/60 active:scale-95 transition">
+                優質公立
+              </button>
+            </div>
+          </div>
+
+          <!-- 區塊 1：我的分數設定卡 (投入資料) -->
+          <div class="bg-slate-900/80 p-4 rounded-3xl border border-slate-700/80 space-y-3">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div class="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-id-card text-indigo-400"></i>
+                <span>【第一步】設定投入篩選器的會考成績：</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs">
+                <span class="bg-indigo-600/80 text-white font-extrabold px-2 py-0.5 rounded-lg">會考積分：{{ filterUserStats.examScore }}分</span>
+                <span class="bg-amber-600/80 text-white font-extrabold px-2 py-0.5 rounded-lg">總積點：{{ filterUserStats.examPoints }}點</span>
+                <span class="bg-emerald-600/80 text-white font-extrabold px-2 py-0.5 rounded-lg">全區估計：約第 {{ filterRankEstimate.approx.toLocaleString() }} 名 (PR {{ filterRankEstimate.pr }})</span>
+              </div>
+            </div>
+
+            <!-- 五科與寫作微調選單 -->
+            <div class="grid grid-cols-6 gap-1.5 text-center">
+              <div v-for="sub in subjects" :key="sub.key" class="bg-slate-800/80 p-2 rounded-2xl border border-slate-700">
+                <div class="text-[10px] text-slate-400 font-bold mb-1">{{ sub.name }}</div>
+                <select v-model="filterUserStudent.grades[sub.key]" class="w-full bg-slate-900 text-amber-300 font-bold text-xs p-1 rounded border border-slate-700 outline-none">
+                  <option v-for="opt in gradeOptions" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+              </div>
+              <div class="bg-slate-800/80 p-2 rounded-2xl border border-slate-700">
+                <div class="text-[10px] text-slate-400 font-bold mb-1">寫作</div>
+                <select v-model="filterUserStudent.writing" class="w-full bg-slate-900 text-amber-300 font-bold text-xs p-1 rounded border border-slate-700 outline-none">
+                  <option v-for="w in writingOptions" :key="w" :value="w">{{ w }}級</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 區塊 2：我的志願清單 (第 1 ~ 第 6 志願) -->
+          <div class="bg-slate-900/80 p-4 rounded-3xl border border-slate-700/80 space-y-3">
+            <div class="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-emerald-400"></i>
+              <span>【第二步】自訂投入的志願卡順序（依序比序篩選）：</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              <div v-for="(choiceId, cIdx) in userChoiceList" :key="cIdx"
+                   class="bg-slate-800/80 p-2.5 rounded-2xl border border-slate-700 flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-xl bg-indigo-600/80 text-white font-extrabold text-xs flex items-center justify-center flex-shrink-0">
+                  {{ cIdx + 1 }}
+                </span>
+                <div class="flex-grow">
+                  <label class="block text-[10px] text-slate-400 mb-0.5">第 {{ cIdx + 1 }} 志願 (30分)</label>
+                  <select v-model="userChoiceList[cIdx]" class="w-full bg-slate-900 text-slate-200 text-xs font-bold p-1 rounded border border-slate-700 outline-none">
+                    <option v-for="sch in allSchoolOptions" :key="sch.id" :value="sch.id">
+                      {{ sch.name }} - {{ sch.dept }} ({{ sch.minGradeDesc }})
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 啟動 3 萬人模擬按鈕 -->
+          <div class="text-center pt-2">
+            <button @click="run30kSimulation"
+                    :disabled="isFilterSimulating"
+                    class="bg-gradient-to-r from-rose-600 via-purple-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 active:scale-95 text-white font-black text-base sm:text-lg py-3.5 px-8 rounded-3xl shadow-xl shadow-rose-600/30 transition-all card-hover inline-flex items-center gap-2.5">
+              <i class="fa-solid fa-filter text-amber-300"></i>
+              <span>{{ isFilterSimulating ? '30,000 人電腦分發比序運算中...' : '🚀 將志願與分數投入 3 萬人篩選器！' }}</span>
+            </button>
+          </div>
+
+          <!-- 模擬進度條 -->
+          <div v-if="isFilterSimulating" class="glass-dark rounded-2xl p-4 border border-rose-500/50 text-center space-y-2">
+            <div class="text-xs text-rose-300 font-bold flex items-center justify-center gap-2">
+              <i class="fa-solid fa-rotate fa-spin text-amber-400"></i>
+              <span>正在模擬中投區第 1 至第 6 志願多輪電腦分發與各校超額比序... ({{ filterProgress }}%)</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div class="bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 h-full transition-all duration-150"
+                   :style="{ width: filterProgress + '%' }"></div>
+            </div>
+          </div>
+
+          <!-- 篩選器模擬結果卡 -->
+          <div v-if="filterResult" class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 rounded-3xl p-5 border-2 border-indigo-500/80 shadow-2xl space-y-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl font-bold shadow-lg flex-shrink-0">
+                  <i class="fa-solid fa-award"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-slate-400 font-bold">電腦分發篩選器模擬結果通知</div>
+                  <h3 v-if="filterResult.admittedChoice" class="text-lg sm:text-xl font-black text-white">
+                    🎉 恭喜錄取第 {{ filterResult.admittedChoice.choiceOrder }} 志願：
+                    <span class="text-amber-300">{{ filterResult.admittedChoice.school.name }} {{ filterResult.admittedChoice.school.dept }}</span>
+                  </h3>
+                  <h3 v-else class="text-lg sm:text-xl font-black text-rose-400">
+                    ⚠️ 填報的 6 個志願皆因名額超額未錄取，建議增添安全保底志願！
+                  </h3>
+                </div>
+              </div>
+
+              <!-- 全區競爭力標籤 -->
+              <div class="bg-slate-800/90 border border-indigo-500/40 p-2.5 rounded-2xl text-xs text-right">
+                <div class="text-slate-400">中投區 3 萬人預估排名</div>
+                <div class="text-base font-black text-indigo-300">約第 {{ filterResult.rankInfo.approx.toLocaleString() }} 名 (前 {{ (100 - filterResult.rankInfo.pr).toFixed(1) }}%)</div>
+              </div>
+            </div>
+
+            <!-- 每一志願篩選器判定歷程一覽表 -->
+            <div class="space-y-2">
+              <div class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-timeline text-indigo-400"></i>
+                <span>各志願投遞與超額比序篩選歷程：</span>
+              </div>
+
+              <div class="grid grid-cols-1 gap-2">
+                <div v-for="log in filterResult.evaluationLog" :key="log.choiceOrder"
+                     :class="log.admitted ? 'border-emerald-500 bg-emerald-950/40' : 'border-slate-800 bg-slate-900/60'"
+                     class="p-3 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
+                  
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-xl flex items-center justify-center font-bold text-xs flex-shrink-0"
+                          :class="log.admitted ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400'">
+                      {{ log.choiceOrder }}
+                    </span>
+                    <div>
+                      <div class="font-extrabold text-white text-sm flex items-center gap-2">
+                        <span>{{ log.schoolName }} ({{ log.deptName }})</span>
+                        <span v-if="log.admitted" class="bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                          錄取！
+                        </span>
+                        <span v-else class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full">
+                          未錄取
+                        </span>
+                      </div>
+                      <div class="text-slate-300 text-[11px] mt-0.5">{{ log.reason }}</div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 text-right flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-1.5 sm:pt-0 border-slate-800">
+                    <div class="text-[11px] text-slate-400">
+                      招生: <span class="text-white font-bold">{{ log.schoolQuota }}</span> 名 / 
+                      模擬申請: <span class="text-amber-300 font-bold">{{ log.simulatedApplicants }}</span> 人
+                    </div>
+                    <div class="text-[11px] text-slate-400">
+                      安全線: <span class="text-emerald-400 font-extrabold">{{ log.schoolSafePoints }}點</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 3: 【錄取分數與落點比較兩大圖解】(Chart.js 視覺化) -->
+      <!-- ============================================================== -->
+      <section v-if="activeTab === 'charts'" class="space-y-6">
+        
+        <!-- 頂部即時成績定位卡 -->
+        <div class="glass-dark rounded-3xl p-4 sm:p-5 border border-slate-700/80 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <div class="inline-flex items-center gap-1.5 bg-teal-500/20 text-teal-300 text-xs font-bold px-2.5 py-1 rounded-full mb-1 border border-teal-500/30">
+              <i class="fa-solid fa-chart-column"></i>
+              <span>中投區會考大數據視覺化</span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-black text-white">錄取門檻與 3 萬人常態分佈落點比較</h2>
+            <p class="text-xs text-slate-400 mt-0.5">
+              依據中投區各校核定招生名額與歷屆錄取標準，將你的分數標繪在落點座標上！
+            </p>
+          </div>
+
+          <div class="bg-slate-900/90 border border-emerald-500/40 p-2.5 sm:p-3 rounded-2xl flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+            <div class="text-2xl text-emerald-400"><i class="fa-solid fa-location-dot animate-bounce"></i></div>
+            <div>
+              <div class="text-[10px] text-slate-400 font-bold">你的當前指標位置</div>
+              <div class="text-sm sm:text-base font-black text-white">
+                積點：<span class="text-amber-400">{{ filterUserStats.examPoints }} 點</span> | 
+                積分：<span class="text-emerald-400">{{ filterUserStats.examScore }} 分</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 圖表一：各校錄取門檻與積點落點比較圖 -->
+        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-700 pb-2.5">
+            <div>
+              <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                <i class="fa-solid fa-bars-progress text-indigo-400"></i>
+                <span>【圖一】中投區公立熱門高中職錄取門檻與落點積點比較圖</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                紅色長條為【最低錄取門檻】，綠色長條為【穩固安全落點線】。你的積點為 {{ filterUserStats.examPoints }} 點。
+              </p>
+            </div>
+            <span class="text-xs font-bold bg-slate-800 text-slate-300 px-2.5 py-1 rounded-xl hidden sm:inline">
+              滿分 111 點
+            </span>
+          </div>
+
+          <!-- Canvas 容器 -->
+          <div class="relative w-full h-[450px] sm:h-[520px]">
+            <canvas id="cutoffChart"></canvas>
+          </div>
+
+          <div class="text-[11px] text-slate-400 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-indigo-400"></i>
+            <span>說明：中投區頂尖學校（如臺中一中、臺中女中）皆要求 5A 滿積分 30 分且總積分 97 分以上；當總積分相同時，總積點在 92~97 點以上方具備競爭力。</span>
+          </div>
+        </div>
+
+        <!-- 圖表二：3 萬名考生常態分佈與錄取累積容納量落點圖 -->
+        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-700 pb-2.5">
+            <div>
+              <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                <span>【圖二】中投區 30,000 名考生會考積點常態分佈與志願梯隊容量圖</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                曲線呈現全中投區 3 萬名考生成績分佈金字塔，清楚標定各招生梯隊名額累積界線。
+              </p>
+            </div>
+            <span class="text-xs font-bold bg-slate-800 text-slate-300 px-2.5 py-1 rounded-xl hidden sm:inline">
+              母體 3 萬人
+            </span>
+          </div>
+
+          <!-- Canvas 容器 -->
+          <div class="relative w-full h-[320px] sm:h-[380px]">
+            <canvas id="bellChart"></canvas>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
+            <div class="bg-indigo-950/40 p-2.5 rounded-xl border border-indigo-800/40 text-center">
+              <div class="text-slate-400 text-[10px]">前三志願名校線</div>
+              <div class="text-indigo-300 font-extrabold mt-0.5">前 2,500 名 (95~111點)</div>
+            </div>
+            <div class="bg-teal-950/40 p-2.5 rounded-xl border border-teal-800/40 text-center">
+              <div class="text-slate-400 text-[10px]">明星公立高中線</div>
+              <div class="text-teal-300 font-extrabold mt-0.5">前 6,000 名 (82~94點)</div>
+            </div>
+            <div class="bg-amber-950/40 p-2.5 rounded-xl border border-amber-800/40 text-center">
+              <div class="text-slate-400 text-[10px]">市區公立高中/高工</div>
+              <div class="text-amber-300 font-extrabold mt-0.5">前 11,000 名 (68~81點)</div>
+            </div>
+            <div class="bg-rose-950/40 p-2.5 rounded-xl border border-rose-800/40 text-center">
+              <div class="text-slate-400 text-[10px]">公立高中職安全線</div>
+              <div class="text-rose-300 font-extrabold mt-0.5">前 18,000 名 (48~67點)</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 4: 對決沙盒模擬器 (雙人自由比序) -->
       <!-- ============================================================== -->
       <section v-if="activeTab === 'sandbox'" class="space-y-5">
         
-        <!-- 沙盒頂部控制列與經典範例快捷載入 -->
         <div class="glass-dark rounded-3xl p-4 sm:p-5 border border-slate-700/80 shadow-xl space-y-3">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
@@ -496,7 +790,6 @@
               </p>
             </div>
 
-            <!-- 目標學校選擇 -->
             <div class="flex items-center gap-2 bg-slate-800/90 p-2 rounded-2xl border border-slate-700 w-full sm:w-auto">
               <span class="text-xs text-slate-400 font-bold pl-1">錄取目標：</span>
               <select v-model="selectedSchool" class="bg-slate-900 text-amber-300 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-700 outline-none flex-grow sm:flex-grow-0">
@@ -507,7 +800,6 @@
             </div>
           </div>
 
-          <!-- 快速預設情境按鈕 -->
           <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800">
             <span class="text-xs text-slate-400 font-bold mr-1">⚡ 一鍵載入經典：</span>
             <button @click="applyPreset('5A_vs_4A1B')" class="text-xs bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 px-2.5 py-1 rounded-xl border border-slate-700 transition">
@@ -528,10 +820,10 @@
           </div>
         </div>
 
-        <!-- 雙人設定面板 (左右對照) -->
+        <!-- 雙人設定面板 -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           
-          <!-- 考生 A 設定面板 -->
+          <!-- 考生 A -->
           <div class="glass-dark rounded-3xl p-4 sm:p-5 border border-indigo-500/40 shadow-xl space-y-3.5">
             <div class="flex items-center justify-between pb-2.5 border-b border-slate-700">
               <div class="flex items-center gap-2.5">
@@ -547,7 +839,6 @@
               </div>
             </div>
 
-            <!-- 五科等級與寫作自訂 -->
             <div>
               <div class="text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
                 <span>會考各科成績標示：</span>
@@ -560,7 +851,6 @@
                     <option v-for="opt in gradeOptions" :key="opt" :value="opt">{{ opt }}</option>
                   </select>
                 </div>
-                <!-- 寫作 -->
                 <div class="bg-slate-800/80 p-1.5 rounded-xl border border-slate-700">
                   <div class="text-[10px] text-slate-400 font-bold mb-0.5">寫作</div>
                   <select v-model="sandboxA.writing" class="w-full bg-slate-900 text-amber-300 font-bold text-xs p-1 rounded border border-slate-700 outline-none">
@@ -570,7 +860,6 @@
               </div>
             </div>
 
-            <!-- 志願序設定 -->
             <div class="bg-slate-900/70 p-3 rounded-2xl border border-slate-800 space-y-1.5">
               <div class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
                 <i class="fa-solid fa-list-ol"></i>
@@ -596,7 +885,6 @@
               </div>
             </div>
 
-            <!-- 多元學習與弱勢 -->
             <div class="grid grid-cols-2 gap-2 text-xs">
               <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
                 <span class="text-slate-400">多元表現 (滿分27)：</span>
@@ -612,10 +900,9 @@
                 </select>
               </div>
             </div>
-
           </div>
 
-          <!-- 考生 B 設定面板 -->
+          <!-- 考生 B -->
           <div class="glass-dark rounded-3xl p-4 sm:p-5 border border-purple-500/40 shadow-xl space-y-3.5">
             <div class="flex items-center justify-between pb-2.5 border-b border-slate-700">
               <div class="flex items-center gap-2.5">
@@ -631,7 +918,6 @@
               </div>
             </div>
 
-            <!-- 五科等級與寫作自訂 -->
             <div>
               <div class="text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
                 <span>會考各科成績標示：</span>
@@ -644,7 +930,6 @@
                     <option v-for="opt in gradeOptions" :key="opt" :value="opt">{{ opt }}</option>
                   </select>
                 </div>
-                <!-- 寫作 -->
                 <div class="bg-slate-800/80 p-1.5 rounded-xl border border-slate-700">
                   <div class="text-[10px] text-slate-400 font-bold mb-0.5">寫作</div>
                   <select v-model="sandboxB.writing" class="w-full bg-slate-900 text-amber-300 font-bold text-xs p-1 rounded border border-slate-700 outline-none">
@@ -654,7 +939,6 @@
               </div>
             </div>
 
-            <!-- 志願序設定 -->
             <div class="bg-slate-900/70 p-3 rounded-2xl border border-slate-800 space-y-1.5">
               <div class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
                 <i class="fa-solid fa-list-ol"></i>
@@ -680,7 +964,6 @@
               </div>
             </div>
 
-            <!-- 多元學習與弱勢 -->
             <div class="grid grid-cols-2 gap-2 text-xs">
               <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
                 <span class="text-slate-400">多元表現 (滿分27)：</span>
@@ -696,12 +979,10 @@
                 </select>
               </div>
             </div>
-
           </div>
 
         </div>
 
-        <!-- 啟動比序模擬大按鈕 -->
         <div class="text-center pt-2">
           <button @click="runSandboxSimulation"
                   :disabled="isSandboxRunning"
@@ -711,7 +992,7 @@
           </button>
         </div>
 
-        <!-- 比序判定結果與步驟清單 -->
+        <!-- 比序判定結果 -->
         <div v-if="sandboxStepsToDisplay.length > 0" class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-3">
           <div class="flex items-center justify-between pb-2.5 border-b border-slate-700">
             <div class="flex items-center gap-2 text-white font-extrabold text-sm sm:text-base">
@@ -751,34 +1032,21 @@
                 </div>
               </div>
 
-              <!-- 雙方數值比對 -->
               <div class="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-1.5 sm:pt-0 border-slate-800">
                 <div class="flex items-center gap-1.5">
                   <span class="text-slate-400 text-[11px]">{{ sandboxA.name }}：</span>
                   <span class="font-black text-indigo-300 text-xs sm:text-sm">{{ step.valA }}</span>
                 </div>
-
                 <div class="text-slate-500 font-bold text-[11px]">vs</div>
-
                 <div class="flex items-center gap-1.5">
                   <span class="text-slate-400 text-[11px]">{{ sandboxB.name }}：</span>
                   <span class="font-black text-purple-300 text-xs sm:text-sm">{{ step.valB }}</span>
                 </div>
-
-                <!-- 判定結果徽章 -->
                 <div class="min-w-[65px] text-right">
-                  <span v-if="step.outcome === 'TIE'" class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">
-                    平手
-                  </span>
-                  <span v-else-if="step.outcome === 'A_WIN'" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
-                    勝出！
-                  </span>
-                  <span v-else-if="step.outcome === 'B_WIN'" class="bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
-                    勝出！
-                  </span>
-                  <span v-else-if="step.outcome === 'BOTH_WIN'" class="bg-amber-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
-                    增額錄取
-                  </span>
+                  <span v-if="step.outcome === 'TIE'" class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">平手</span>
+                  <span v-else-if="step.outcome === 'A_WIN'" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">勝出！</span>
+                  <span v-else-if="step.outcome === 'B_WIN'" class="bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">勝出！</span>
+                  <span v-else-if="step.outcome === 'BOTH_WIN'" class="bg-amber-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">增額錄取</span>
                 </div>
               </div>
 
@@ -789,7 +1057,7 @@
       </section>
 
       <!-- ============================================================== -->
-      <!-- TAB 3: 116 比序流程圖全景導覽圖 (互動學習) -->
+      <!-- TAB 5: 比序流程圖全景導覽 (互動學習) -->
       <!-- ============================================================== -->
       <section v-if="activeTab === 'flowchart'" class="space-y-5">
         
@@ -811,10 +1079,7 @@
             </div>
           </div>
 
-          <!-- 流程圖左側節點樹與右側詳解面板 -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-5">
-            
-            <!-- 左側流程梯次節點 (7 cols) -->
             <div class="lg:col-span-7 space-y-1.5">
               <div v-for="(node, nIdx) in flowchartNodes" :key="node.id"
                    @click="selectNode(node.id)"
@@ -848,7 +1113,6 @@
               </div>
             </div>
 
-            <!-- 右側選取節點深度解析卡 (5 cols) -->
             <div class="lg:col-span-5">
               <div class="sticky top-20 glass-dark rounded-3xl p-4 sm:p-5 border-2 border-indigo-500/60 shadow-2xl space-y-3">
                 <div class="flex items-center gap-1.5 text-indigo-400 text-[11px] font-bold uppercase tracking-wider">
@@ -861,7 +1125,7 @@
                     <h3 class="text-base sm:text-lg font-black text-white">
                       第 {{ selectedNode.stepNumber }} 順位：{{ selectedNode.title }}
                     </h3>
-                    <span class="bg-indigo-600/80 text-indigo-100 text-xs font-bold px-2 py-0.5 rounded-full">
+                    <span class="bg-indigo-600/80 text-indigo-100 text-xs font-bold px-2.5 py-1 rounded-full">
                       {{ selectedNode.badge }}
                     </span>
                   </div>
@@ -927,7 +1191,7 @@
       </section>
 
       <!-- ============================================================== -->
-      <!-- TAB 4: 選填錦囊與秘笈 (國三生避坑指南) -->
+      <!-- TAB 6: 選填錦囊與秘笈 (國三生避坑指南) -->
       <!-- ============================================================== -->
       <section v-if="activeTab === 'tips'" class="space-y-5">
         
@@ -942,7 +1206,6 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             
-            <!-- 錦囊 1 -->
             <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
               <div class="w-8 h-8 rounded-xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center text-base font-bold">
                 1
@@ -953,7 +1216,6 @@
               </p>
             </div>
 
-            <!-- 錦囊 2 -->
             <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
               <div class="w-8 h-8 rounded-xl bg-purple-600/30 text-purple-400 flex items-center justify-center text-base font-bold">
                 2
@@ -964,7 +1226,6 @@
               </p>
             </div>
 
-            <!-- 錦囊 3 -->
             <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
               <div class="w-8 h-8 rounded-xl bg-amber-600/30 text-amber-400 flex items-center justify-center text-base font-bold">
                 3
@@ -975,7 +1236,6 @@
               </p>
             </div>
 
-            <!-- 錦囊 4 -->
             <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
               <div class="w-8 h-8 rounded-xl bg-rose-600/30 text-rose-400 flex items-center justify-center text-base font-bold">
                 4
@@ -986,7 +1246,6 @@
               </p>
             </div>
 
-            <!-- 錦囊 5 -->
             <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
               <div class="w-8 h-8 rounded-xl bg-teal-600/30 text-teal-400 flex items-center justify-center text-base font-bold">
                 5
@@ -997,7 +1256,6 @@
               </p>
             </div>
 
-            <!-- 錦囊 6 -->
             <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
               <div class="w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center text-base font-bold">
                 6

@@ -62,6 +62,413 @@ const POPULAR_SCHOOLS = [
   { id: 'csesh', name: '清水高中', department: '普通科', quota: 1, type: '公立高中' }
 ];
 
+// =========================================================================
+// 中投區 3 萬名考生招生容量、落點標準與錄取門檻歷史大數據
+// =========================================================================
+const SCHOOL_CAPACITIES_AND_CUTOFFS = [
+  {
+    id: 'tcfsh',
+    name: '臺中一中',
+    dept: '普通科',
+    category: '明星男校',
+    quota: 920,
+    minScore: 97,
+    safePoints: 97,
+    minPoints: 94,
+    minGradeDesc: '5A (約 4A++ 1A+ 或 5A 5+ 以上)',
+    rankRange: '1 ~ 950 名',
+    tier: 'T1'
+  },
+  {
+    id: 'tcgs',
+    name: '臺中女中',
+    dept: '普通科',
+    category: '明星女校',
+    quota: 700,
+    minScore: 97,
+    safePoints: 95,
+    minPoints: 92,
+    minGradeDesc: '5A (約 3A++ 2A+ 或 5A 4+ 以上)',
+    rankRange: '1 ~ 1,650 名',
+    tier: 'T1'
+  },
+  {
+    id: 'nehs',
+    name: '中科實中',
+    dept: '普通科',
+    category: '國立高中',
+    quota: 140,
+    minScore: 97,
+    safePoints: 95,
+    minPoints: 93,
+    minGradeDesc: '5A (約 3A++ 2A+)',
+    rankRange: '600 ~ 1,800 名',
+    tier: 'T1'
+  },
+  {
+    id: 'whsh',
+    name: '文華高中',
+    dept: '普通科',
+    category: '公立高中',
+    quota: 750,
+    minScore: 97,
+    safePoints: 92,
+    minPoints: 89,
+    minGradeDesc: '5A (約 1A++ 4A+ 或 5A 2+)',
+    rankRange: '1,650 ~ 2,500 名',
+    tier: 'T2'
+  },
+  {
+    id: 'nchu',
+    name: '興大附中',
+    dept: '普通科',
+    category: '國立高中',
+    quota: 560,
+    minScore: 97,
+    safePoints: 94,
+    minPoints: 91,
+    minGradeDesc: '5A (約 2A++ 3A+)',
+    rankRange: '1,800 ~ 2,800 名',
+    tier: 'T2'
+  },
+  {
+    id: 'tc2sh',
+    name: '臺中二中',
+    dept: '普通科',
+    category: '公立高中',
+    quota: 800,
+    minScore: 97,
+    safePoints: 87,
+    minPoints: 84,
+    minGradeDesc: '5A ~ 4A1B (4A1B 需高積點)',
+    rankRange: '2,800 ~ 4,000 名',
+    tier: 'T3'
+  },
+  {
+    id: 'tcivs_cs',
+    name: '臺中高工',
+    dept: '資訊科/電機科',
+    category: '頂尖技術',
+    quota: 200,
+    minScore: 97,
+    safePoints: 88,
+    minPoints: 83,
+    minGradeDesc: '5A ~ 4A1B (高工龍頭科系)',
+    rankRange: '2,500 ~ 4,200 名',
+    tier: 'T3'
+  },
+  {
+    id: 'hwsh',
+    name: '惠文高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 400,
+    minScore: 95,
+    safePoints: 85,
+    minPoints: 82,
+    minGradeDesc: '4A1B (積分28分，積點82以上)',
+    rankRange: '3,800 ~ 4,800 名',
+    tier: 'T3'
+  },
+  {
+    id: 'zmsh',
+    name: '忠明高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 360,
+    minScore: 95,
+    safePoints: 81,
+    minPoints: 78,
+    minGradeDesc: '4A1B ~ 3A2B',
+    rankRange: '4,800 ~ 6,000 名',
+    tier: 'T4'
+  },
+  {
+    id: 'tcivs_mech',
+    name: '臺中高工',
+    dept: '機械/電子/製圖科',
+    category: '公立高職',
+    quota: 650,
+    minScore: 93,
+    safePoints: 78,
+    minPoints: 73,
+    minGradeDesc: '3A2B ~ 2A3B',
+    rankRange: '5,500 ~ 7,500 名',
+    tier: 'T4'
+  },
+  {
+    id: 'xysh',
+    name: '西苑高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 360,
+    minScore: 93,
+    safePoints: 76,
+    minPoints: 72,
+    minGradeDesc: '3A2B ~ 2A3B',
+    rankRange: '6,200 ~ 8,000 名',
+    tier: 'T4'
+  },
+  {
+    id: 'tchcvs_en',
+    name: '臺中家商',
+    dept: '應用英語科',
+    category: '公立高職',
+    quota: 180,
+    minScore: 93,
+    safePoints: 76,
+    minPoints: 71,
+    minGradeDesc: '3A2B ~ 2A3B',
+    rankRange: '6,500 ~ 8,500 名',
+    tier: 'T4'
+  },
+  {
+    id: 'fyhs',
+    name: '豐原高中',
+    dept: '普通科',
+    category: '國立高中',
+    quota: 560,
+    minScore: 91,
+    safePoints: 73,
+    minPoints: 68,
+    minGradeDesc: '2A3B (積點68以上)',
+    rankRange: '8,000 ~ 10,200 名',
+    tier: 'T5'
+  },
+  {
+    id: 'csesh',
+    name: '清水高中',
+    dept: '普通科',
+    category: '國立高中',
+    quota: 520,
+    minScore: 91,
+    safePoints: 70,
+    minPoints: 65,
+    minGradeDesc: '2A3B ~ 1A4B',
+    rankRange: '9,500 ~ 12,000 名',
+    tier: 'T5'
+  },
+  {
+    id: 'dlsh',
+    name: '大里高中',
+    dept: '普通科 (市大里)',
+    category: '市立高中',
+    quota: 320,
+    minScore: 91,
+    safePoints: 71,
+    minPoints: 66,
+    minGradeDesc: '2A3B ~ 1A4B',
+    rankRange: '9,000 ~ 11,500 名',
+    tier: 'T5'
+  },
+  {
+    id: 'cyhs',
+    name: '長億高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 360,
+    minScore: 89,
+    safePoints: 66,
+    minPoints: 60,
+    minGradeDesc: '1A4B ~ 5B (積分22~20分)',
+    rankRange: '12,000 ~ 14,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'tchcvs_bus',
+    name: '臺中家商',
+    dept: '商經/資處科',
+    category: '公立高職',
+    quota: 500,
+    minScore: 89,
+    safePoints: 65,
+    minPoints: 58,
+    minGradeDesc: '1A4B ~ 5B (高職熱門)',
+    rankRange: '12,500 ~ 15,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'slvs',
+    name: '沙鹿高工',
+    dept: '資訊/化工/紡織',
+    category: '公立高職',
+    quota: 600,
+    minScore: 87,
+    safePoints: 56,
+    minPoints: 48,
+    minGradeDesc: '5B (約 5B 3+ ~ 5B 0+)',
+    rankRange: '15,000 ~ 18,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'chsh',
+    name: '中興高中',
+    dept: '普通科 (南投名校)',
+    category: '國立高中',
+    quota: 480,
+    minScore: 89,
+    safePoints: 65,
+    minPoints: 58,
+    minGradeDesc: '1A4B ~ 5B',
+    rankRange: '13,000 ~ 16,500 名',
+    tier: 'T6'
+  }
+];
+
+// 中投區 30,000 人常態分佈分群曲線參數
+const POPULATION_CURVE = [
+  { pointsMin: 105, pointsMax: 111, count: 480, label: '5A 7+ ~ 5A 10+', cumRank: 480, pct: '1.6%', tier: '特優頂尖' },
+  { pointsMin: 95,  pointsMax: 104, count: 850, label: '5A 3+ ~ 5A 6+',  cumRank: 1330, pct: '4.4%', tier: '頂尖名校' },
+  { pointsMin: 88,  pointsMax: 94,  count: 1150, label: '5A 0+ ~ 5A 2+', cumRank: 2480, pct: '8.3%', tier: '前三志願' },
+  { pointsMin: 80,  pointsMax: 87,  count: 1600, label: '4A1B ~ 5A',     cumRank: 4080, pct: '13.6%', tier: '明星高中/高工電機' },
+  { pointsMin: 72,  pointsMax: 79,  count: 2200, label: '3A2B ~ 4A1B',   cumRank: 6280, pct: '20.9%', tier: '市區公立高中/家商' },
+  { pointsMin: 64,  pointsMax: 71,  count: 3100, label: '2A3B ~ 3A2B',   cumRank: 9380, pct: '31.3%', tier: '公立高中/高職專門' },
+  { pointsMin: 55,  pointsMax: 63,  count: 4200, label: '1A4B ~ 2A3B',   cumRank: 13580, pct: '45.3%', tier: '公立高職/社區高中' },
+  { pointsMin: 45,  pointsMax: 54,  count: 5800, label: '5B (基礎)',     cumRank: 19380, pct: '64.6%', tier: '公私立高中職/技術科' },
+  { pointsMin: 35,  pointsMax: 44,  count: 4600, label: '5B ~ 4B1C',     cumRank: 23980, pct: '79.9%', tier: '綜合高中/私立優質' },
+  { pointsMin: 15,  pointsMax: 34,  count: 6020, label: '待加強群 C',     cumRank: 30000, pct: '100%', tier: '完全免試/進修學校' }
+];
+
+/**
+ * 估算學生在全中投區 3 萬名考生中的大約全區排名與百分比
+ */
+function estimateStudentRankIn30k(stats) {
+  const points = stats.examPoints;
+  const examScore = stats.examScore;
+
+  // 1. 如果低於 5A (積分 < 30)
+  if (examScore >= 30) {
+    // 5A 生，全區約前 2,480 名
+    if (points >= 108) return { minRank: 1, maxRank: 200, approx: 120, pr: 99.6 };
+    if (points >= 105) return { minRank: 201, maxRank: 480, approx: 340, pr: 98.9 };
+    if (points >= 98) return { minRank: 481, maxRank: 1100, approx: 820, pr: 97.2 };
+    if (points >= 92) return { minRank: 1101, maxRank: 1800, approx: 1450, pr: 95.1 };
+    return { minRank: 1801, maxRank: 2480, approx: 2150, pr: 92.8 };
+  } else if (examScore >= 28) {
+    // 4A1B，約第 2,481 ~ 4,000 名
+    return { minRank: 2481, maxRank: 4200, approx: 3300 - (points - 75) * 45, pr: 89.0 };
+  } else if (examScore >= 26) {
+    // 3A2B，約第 4,201 ~ 6,200 名
+    return { minRank: 4201, maxRank: 6400, approx: 5200 - (points - 68) * 60, pr: 82.5 };
+  } else if (examScore >= 24) {
+    // 2A3B，約第 6,401 ~ 9,300 名
+    return { minRank: 6401, maxRank: 9500, approx: 8000 - (points - 60) * 80, pr: 73.0 };
+  } else if (examScore >= 22) {
+    // 1A4B，約第 9,501 ~ 13,500 名
+    return { minRank: 9501, maxRank: 13800, approx: 11500 - (points - 50) * 100, pr: 61.5 };
+  } else if (examScore >= 20) {
+    // 5B，約第 13,801 ~ 22,000 名
+    return { minRank: 13801, maxRank: 22000, approx: 17500 - (points - 35) * 150, pr: 41.0 };
+  } else {
+    // 含 C
+    return { minRank: 22001, maxRank: 30000, approx: 26000, pr: 15.0 };
+  }
+}
+
+/**
+ * 3 萬人志願分發模擬篩選器模型 (Admissions Engine Simulator)
+ * 模擬電腦分發作業，將考生的志願表與分數投入，進行多輪分發與超額比序！
+ * @param {Object} userStudent 使用者成績與屬性
+ * @param {Array<string>} userChoiceIds 志願學校ID清單 (1~10志願)
+ * @returns {Object} 模擬分發結果報告
+ */
+function simulate30kAdmissions(userStudent, userChoiceIds) {
+  const stats = computeStudentStats(userStudent);
+  const rankInfo = estimateStudentRankIn30k(stats);
+
+  // 整理使用者填寫的志願
+  const choices = userChoiceIds.map((id, index) => {
+    const sch = SCHOOL_CAPACITIES_AND_CUTOFFS.find(s => s.id === id);
+    if (!sch) return null;
+    return {
+      choiceOrder: index + 1,
+      school: sch,
+      choiceScore: index < 10 ? 30 : (index < 20 ? 29 : 28)
+    };
+  }).filter(Boolean);
+
+  let admittedChoice = null;
+  const evaluationLog = [];
+
+  // 模擬每一志願的篩選器判定
+  for (let c of choices) {
+    const sch = c.school;
+    const userTotalScore = stats.multipleTotal + stats.nearby + stats.disadvantaged + stats.examScore + c.choiceScore;
+    
+    // 比對條件：
+    // 1. 總積分是否達到學校要求？(熱門公立通常需 97 或 95)
+    // 2. 積點是否達到最低預估門檻？
+    // 3. 全區排名是否在該校容納量之前？
+    let canAdmit = false;
+    let reason = '';
+    let competitionRatio = (Math.random() * 0.4 + 1.2).toFixed(1); // 模擬投遞熱度 (1.2 ~ 1.6 倍)
+    let applicantsCount = Math.round(sch.quota * parseFloat(competitionRatio));
+
+    if (userTotalScore > sch.minScore) {
+      if (stats.examPoints >= sch.safePoints) {
+        canAdmit = true;
+        reason = `【穩固錄取】總積分 ${userTotalScore} 分達標，且會考積點 ${stats.examPoints} 點超過該校安全線 (${sch.safePoints}點)！`;
+      } else if (stats.examPoints >= sch.minPoints) {
+        // 進入比序肉搏戰（積點壓線）
+        // 依照 + 號多寡與單科標示判定
+        if (stats.aPlusCount >= 2 || stats.grades.chinese.startsWith('A')) {
+          canAdmit = true;
+          reason = `【壓線勝出】會考積點 ${stats.examPoints} 點落於競爭區間，因標示「+」號或國文單科比序佔優勢而搶下錄取名額！`;
+        } else {
+          canAdmit = false;
+          reason = `【超額比序未錄取】會考積點 ${stats.examPoints} 點雖達門檻，但該校報名人數超過 ${sch.quota} 人，在第 8 關「+ 號加總」或第 10 關「國文單科」比序中微幅落後其他考生。`;
+        }
+      } else {
+        canAdmit = false;
+        reason = `【積點不足】會考總積點 ${stats.examPoints} 點低於該校最低錄取線 (${sch.minPoints}點)。`;
+      }
+    } else if (userTotalScore === sch.minScore) {
+      if (stats.examPoints >= sch.safePoints) {
+        canAdmit = true;
+        reason = `【總積分達標錄取】總積分 ${userTotalScore} 分剛好壓線，積點足夠而錄取！`;
+      } else {
+        canAdmit = false;
+        reason = `【總積分相同但積點未達】總積分平手，但在第七關「會考總積點」比序止步。`;
+      }
+    } else {
+      canAdmit = false;
+      reason = `【總積分門檻未達】你的總積分為 ${userTotalScore} 分，低於該校錄取底線 ${sch.minScore} 分。`;
+    }
+
+    evaluationLog.push({
+      choiceOrder: c.choiceOrder,
+      schoolName: sch.name,
+      deptName: sch.dept,
+      userTotalScore,
+      userPoints: stats.examPoints,
+      schoolSafePoints: sch.safePoints,
+      schoolMinPoints: sch.minPoints,
+      schoolQuota: sch.quota,
+      simulatedApplicants: applicantsCount,
+      admitted: canAdmit,
+      reason
+    });
+
+    if (canAdmit && !admittedChoice) {
+      admittedChoice = {
+        choiceOrder: c.choiceOrder,
+        school: sch,
+        reason
+      };
+      // 一旦錄取，後續志願停止分發
+      break;
+    }
+  }
+
+  return {
+    studentStats: stats,
+    rankInfo,
+    admittedChoice,
+    evaluationLog,
+    allChoicesCount: choices.length
+  };
+}
+
 /**
  * 計算志願序積分
  */
@@ -204,7 +611,7 @@ function compareTwoStudents(studentA, studentB) {
     return outcome;
   }
 
-  // 關卡 1：總積分 (滿分 100 分)
+  // 關卡 1：總積分 (上限 100 分)
   let res = recordStep('step_total', '第一關：總積分', '上限 100 分', statsA.totalScore, statsB.totalScore, v => `${v} 分`, '志願序(30)+就近(10)+多元(27)+會考(30)+扶助弱勢(最高3分，一般生0分/總分97分，弱勢生最高100分)');
   if (res !== 'TIE') return finishComparison(steps, res, statsA, statsB);
 
@@ -496,9 +903,9 @@ const FLOWCHART_TREE = [
     id: 'total_score',
     stepNumber: '1',
     title: '總積分',
-    badge: '滿分 100 分',
+    badge: '上限 100 分',
     summary: '志願序(30) + 就近入學(10) + 扶助弱勢(3) + 多元表現(27) + 教育會考(30)',
-    detail: '第一道門檻，五大指標總和。大部分競爭熱門高中的考生此處均接近滿分 100 分。'
+    detail: '第一道門檻，五大指標總和。一般生滿分為 97 分，弱勢扶助生可加 1~3 分（上限 100 分）。'
   },
   {
     id: 'choice_score',
@@ -606,9 +1013,13 @@ if (typeof window !== 'undefined') {
     GRADE_PLUS_COUNT,
     SUBJECT_ORDER,
     POPULAR_SCHOOLS,
+    SCHOOL_CAPACITIES_AND_CUTOFFS,
+    POPULATION_CURVE,
     calculateChoiceScore,
     computeStudentStats,
     compareTwoStudents,
+    estimateStudentRankIn30k,
+    simulate30kAdmissions,
     QUIZ_CHALLENGES,
     FLOWCHART_TREE
   };
@@ -621,9 +1032,13 @@ if (typeof module !== 'undefined' && module.exports) {
     GRADE_PLUS_COUNT,
     SUBJECT_ORDER,
     POPULAR_SCHOOLS,
+    SCHOOL_CAPACITIES_AND_CUTOFFS,
+    POPULATION_CURVE,
     calculateChoiceScore,
     computeStudentStats,
     compareTwoStudents,
+    estimateStudentRankIn30k,
+    simulate30kAdmissions,
     QUIZ_CHALLENGES,
     FLOWCHART_TREE
   };

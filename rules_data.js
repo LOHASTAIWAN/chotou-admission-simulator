@@ -598,7 +598,7 @@ const FLOWCHART_TREE = [
   }
 ];
 
-// 匯出到全域命名空間，支援純 file:// 雙擊開啟
+// 匯出到全域命名空間，支援純 file:// 與瀏覽器原生普通 script 標籤
 if (typeof window !== 'undefined') {
   window.ChotouRules = {
     GRADE_POINTS,
@@ -614,16 +614,17 @@ if (typeof window !== 'undefined') {
   };
 }
 
-// 同步支援 ES 模組
-export {
-  GRADE_POINTS,
-  GRADE_SCORES,
-  GRADE_PLUS_COUNT,
-  SUBJECT_ORDER,
-  POPULAR_SCHOOLS,
-  calculateChoiceScore,
-  computeStudentStats,
-  compareTwoStudents,
-  QUIZ_CHALLENGES,
-  FLOWCHART_TREE
-};
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    GRADE_POINTS,
+    GRADE_SCORES,
+    GRADE_PLUS_COUNT,
+    SUBJECT_ORDER,
+    POPULAR_SCHOOLS,
+    calculateChoiceScore,
+    computeStudentStats,
+    compareTwoStudents,
+    QUIZ_CHALLENGES,
+    FLOWCHART_TREE
+  };
+}

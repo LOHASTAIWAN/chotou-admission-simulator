@@ -2,7 +2,19 @@
  * 116學年度中投區免試入學比序互動平台主程式 (Vue 3)
  */
 
-(function() {
+function initChotouApp() {
+  if (!window.ChotouRules) {
+    console.error('ChotouRules not found, retrying...');
+    setTimeout(initChotouApp, 50);
+    return;
+  }
+
+  if (typeof Vue === 'undefined') {
+    console.error('Vue 3 library not loaded, retrying...');
+    setTimeout(initChotouApp, 50);
+    return;
+  }
+
   const { 
     GRADE_POINTS, 
     GRADE_SCORES, 
@@ -15,12 +27,13 @@
     compareTwoStudents 
   } = window.ChotouRules;
 
-  const { createApp, ref, computed } = Vue;
+  const { createApp, ref, computed, onMounted } = Vue;
 
   createApp({
     setup() {
       // 當前主頁籤：'quiz' (PK猜猜看) | 'sandbox' (自由模擬) | 'flowchart' (全景流程圖) | 'tips' (錦囊秘笈)
       const activeTab = ref('quiz');
+      const isAppReady = ref(true);
 
       // ==================== 音效引擎 (Web Audio API) ====================
       let audioCtx = null;
@@ -281,6 +294,7 @@
 
       return {
         activeTab,
+        isAppReady,
         // 模式一
         quizList,
         currentQuizIndex,
@@ -325,4 +339,13 @@
       };
     }
   }).mount('#app');
-})();
+
+  console.log('Chotou Admission Simulator mounted successfully!');
+}
+
+// 監聽 DOM 準備完成時啟動
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChotouApp);
+} else {
+  initChotouApp();
+}

@@ -771,6 +771,242 @@
           </div>
         </div>
 
+        <!-- 圖表三：【附件原圖檢視專區】112-114 落點比較圖 & 113-114 預估錄取分數圖 -->
+        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-700 pb-3">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full mb-1 border border-amber-500/30">
+                <i class="fa-solid fa-file-image"></i>
+                <span>官方落點參考附件</span>
+              </div>
+              <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                <span>【原始圖解】中投區 112~114 年落點比較與預估分數高清圖表</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                點擊圖片或按鈕即可開啟高畫質全螢幕燈箱放大檢視，細看各校各科錄取標準！
+              </p>
+            </div>
+            <span class="text-[11px] text-amber-400 font-bold bg-amber-950/50 border border-amber-800/50 px-2.5 py-1 rounded-xl">
+              🔍 點擊圖片即可放大
+            </span>
+          </div>
+
+          <!-- 兩張圖片並排展示 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            
+            <!-- 圖片 1: 112, 113, 114 落點比較 -->
+            <div class="bg-slate-900/90 rounded-2xl border border-slate-700/80 overflow-hidden flex flex-col justify-between hover:border-indigo-500/60 transition group shadow-lg">
+              <div class="p-3.5 border-b border-slate-800">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-indigo-300 flex items-center gap-1.5">
+                    <i class="fa-solid fa-images text-indigo-400"></i>
+                    圖一：112、113、114 年落點比較
+                  </span>
+                  <span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded border border-indigo-800">
+                    21 所公立高中
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                  彙整臺中一中、臺中女中、中科實中、興大附中、文華、二中、忠明至后綜高中共 21 所高中之三年錄取標準對比。
+                </p>
+              </div>
+
+              <!-- 圖片縮圖區 (點擊燈箱) -->
+              <div class="relative cursor-pointer overflow-hidden bg-slate-950 flex items-center justify-center min-h-[220px] max-h-[300px]"
+                   @click="openImageModal('cutoff_comparison_112_114.jpg', '112、113、114 年中投區高中落點比較圖')">
+                <img src="cutoff_comparison_112_114.jpg" 
+                     alt="112、113、114 年中投區高中落點比較" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span class="bg-indigo-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 backdrop-blur-sm">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 全螢幕放大檢視
+                  </span>
+                </div>
+              </div>
+
+              <!-- 卡片底部動作列 -->
+              <div class="p-3 bg-slate-900 flex items-center justify-between border-t border-slate-800">
+                <span class="text-[11px] text-slate-400">
+                  一中 97點 / 女中 95點 / 興附 89點
+                </span>
+                <button @click="openImageModal('cutoff_comparison_112_114.jpg', '112、113、114 年中投區高中落點比較圖')"
+                        class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1">
+                  <i class="fa-solid fa-expand"></i> 放大看大圖
+                </button>
+              </div>
+            </div>
+
+            <!-- 圖片 2: 113 與 114 中投區預估錄取分數 (總積點) -->
+            <div class="bg-slate-900/90 rounded-2xl border border-slate-700/80 overflow-hidden flex flex-col justify-between hover:border-emerald-500/60 transition group shadow-lg">
+              <div class="p-3.5 border-b border-slate-800">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-emerald-300 flex items-center gap-1.5">
+                    <i class="fa-solid fa-images text-emerald-400"></i>
+                    圖二：113 與 114 年預估錄取分數 (總積點)
+                  </span>
+                  <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">
+                    總積點與作文標準
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                  詳載中投區各校預估積點與作文標準，特別標註一中、女中、二中、忠明等重點學校之國英數單科標示要求。
+                </p>
+              </div>
+
+              <!-- 圖片縮圖區 (點擊燈箱) -->
+              <div class="relative cursor-pointer overflow-hidden bg-slate-950 flex items-center justify-center min-h-[220px] max-h-[300px]"
+                   @click="openImageModal('cutoff_estimate_113_114.jpg', '113 與 114 年中投區預估錄取分數 (總積點)')">
+                <img src="cutoff_estimate_113_114.jpg" 
+                     alt="113 與 114 年中投區預估錄取分數 (總積點)" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span class="bg-emerald-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 backdrop-blur-sm">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 全螢幕放大檢視
+                  </span>
+                </div>
+              </div>
+
+              <!-- 卡片底部動作列 -->
+              <div class="p-3 bg-slate-900 flex items-center justify-between border-t border-slate-800">
+                <span class="text-[11px] text-slate-400">
+                  文華 85-87點 / 忠明 74點 / 西苑 71點
+                </span>
+                <button @click="openImageModal('cutoff_estimate_113_114.jpg', '113 與 114 年中投區預估錄取分數 (總積點)')"
+                        class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1">
+                  <i class="fa-solid fa-expand"></i> 放大看大圖
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 圖表四：【歷年落點資料庫互動檢索表】(對照你的成績) -->
+        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-4">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-700 pb-3">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-300 text-xs font-bold px-2.5 py-1 rounded-full mb-1 border border-indigo-500/30">
+                <i class="fa-solid fa-table-list"></i>
+                <span>歷年數據全覽</span>
+              </div>
+              <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                <span>112~114 年 21 所中投區公立高中錄取門檻比對表</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                對照你目前的會考成績（<span class="text-amber-400 font-bold">{{ filterUserStats.examPoints }} 點</span>），系統即時診斷各校達標機會！
+              </p>
+            </div>
+
+            <!-- 校名搜尋框 -->
+            <div class="relative w-full md:w-64">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+              <input type="text" 
+                     v-model="historySearchText" 
+                     placeholder="搜尋校名 (如：忠明、文華)..." 
+                     class="w-full bg-slate-900 text-white text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-700 outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <!-- 梯隊篩選按鈕列 -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+            <span class="text-slate-400 mr-1 text-[11px]">成績級距：</span>
+            <button @click="historyFilter = 'ALL'"
+                    :class="historyFilter === 'ALL' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              全部 ({{ historicalCutoffs.length }} 所)
+            </button>
+            <button @click="historyFilter = '5A'"
+                    :class="historyFilter === '5A' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              5A 頂尖名校 (90點以上)
+            </button>
+            <button @click="historyFilter = '4A1B'"
+                    :class="historyFilter === '4A1B' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              4A1B 明星高中 (80~89點)
+            </button>
+            <button @click="historyFilter = '3A2B'"
+                    :class="historyFilter === '3A2B' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              3A2B 市區公立 (70~79點)
+            </button>
+            <button @click="historyFilter = '5B'"
+                    :class="historyFilter === '5B' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              2A~5B 社區高中 (&lt;70點)
+            </button>
+          </div>
+
+          <!-- 響應式資料表格 -->
+          <div class="overflow-x-auto rounded-2xl border border-slate-700/80 bg-slate-900/60 shadow-inner">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-800/90 text-slate-400 font-extrabold uppercase border-b border-slate-700 text-[11px]">
+                <tr>
+                  <th class="py-3 px-3 sm:px-4">學校名稱</th>
+                  <th class="py-3 px-2 sm:px-3 text-center">114 年錄取標準</th>
+                  <th class="py-3 px-2 sm:px-3 text-center">114 預估積點</th>
+                  <th class="py-3 px-2 sm:px-3 text-center hidden md:table-cell">113 年錄取標準</th>
+                  <th class="py-3 px-2 sm:px-3 text-center hidden lg:table-cell">112 年錄取標準</th>
+                  <th class="py-3 px-3 sm:px-4 text-center">你的達標診斷</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 font-medium">
+                <tr v-for="item in filteredHistoricalList" :key="item.school" class="hover:bg-slate-800/50 transition">
+                  <!-- 學校名稱 -->
+                  <td class="py-3 px-3 sm:px-4 font-black text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full" 
+                          :class="item.pts114 >= 90 ? 'bg-indigo-400' : (item.pts114 >= 80 ? 'bg-teal-400' : (item.pts114 >= 70 ? 'bg-amber-400' : 'bg-rose-400'))"></span>
+                    <span>{{ item.school }}</span>
+                  </td>
+
+                  <!-- 114 標準 -->
+                  <td class="py-3 px-2 sm:px-3 text-center">
+                    <span class="bg-slate-800 px-2 py-0.5 rounded text-[11px] text-amber-300 font-bold border border-slate-700 inline-block">
+                      {{ item.y114 }}
+                    </span>
+                  </td>
+
+                  <!-- 114 積點 -->
+                  <td class="py-3 px-2 sm:px-3 text-center font-black text-white">
+                    <span class="text-sm text-indigo-300">{{ item.pts114 }}</span> 點
+                  </td>
+
+                  <!-- 113 標準 -->
+                  <td class="py-3 px-2 sm:px-3 text-center hidden md:table-cell text-slate-400 text-[11px]">
+                    {{ item.y113 }}
+                  </td>
+
+                  <!-- 112 標準 -->
+                  <td class="py-3 px-2 sm:px-3 text-center hidden lg:table-cell text-slate-400 text-[11px]">
+                    {{ item.y112 }}
+                  </td>
+
+                  <!-- 你的達標診斷 -->
+                  <td class="py-3 px-3 sm:px-4 text-center">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold border inline-flex items-center gap-1"
+                          :class="getCutoffMatchBadge(item.pts114).cls">
+                      <i class="fa-solid" :class="getCutoffMatchBadge(item.pts114).icon"></i>
+                      <span>{{ getCutoffMatchBadge(item.pts114).text }}</span>
+                      <span class="opacity-80">({{ getCutoffMatchBadge(item.pts114).diffText }})</span>
+                    </span>
+                  </td>
+                </tr>
+                <tr v-if="filteredHistoricalList.length === 0">
+                  <td colspan="6" class="py-8 text-center text-slate-400">
+                    沒有找到符合「{{ historySearchText }}」的學校資料
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="text-[11px] text-slate-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-1">
+            <div class="font-bold text-slate-300">💡 專家落點選填叮嚀：</div>
+            <p>1. 會考積點總分為 111 點（各科 A++ 21點、A+ 18點、A 15點、B++ 12點、B+ 9點、B 6點、C 3點，加上作文 6 點）。</p>
+            <p>2. 中投區「同分先比總積分（滿分100）、次比志願序（每校連續選填同分）、再比多元表現（30分）、接著比會考總積分（30分），同分時才進入總積點（111點）比序」。因此即使總積點相同，各科「+」的多寡與作文均可能成為關鍵勝負手！</p>
+          </div>
+        </div>
+
       </section>
 
       <!-- ============================================================== -->
@@ -1272,6 +1508,28 @@
       </section>
 
     </main>
+
+    <!-- ==================== 全螢幕圖片燈箱 Modal ==================== -->
+    <div v-if="activeModalImage" 
+         @click="closeImageModal"
+         class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-2 sm:p-4 animate-fadeIn">
+      <div class="w-full max-w-5xl flex items-center justify-between pb-3 text-white px-2" @click.stop>
+        <div class="flex items-center gap-2">
+          <span class="bg-indigo-600 text-xs px-2.5 py-1 rounded-full font-bold shadow">附件原圖</span>
+          <h4 class="text-sm sm:text-lg font-bold truncate text-slate-100">{{ activeModalImage.title }}</h4>
+        </div>
+        <button @click="closeImageModal" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-white w-9 h-9 rounded-full flex items-center justify-center border border-slate-600 transition shadow">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="max-w-5xl max-h-[82vh] overflow-auto rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl p-1" @click.stop>
+        <img :src="activeModalImage.src" :alt="activeModalImage.title" class="w-full h-auto object-contain rounded-xl select-none">
+      </div>
+      <div class="text-slate-400 text-xs mt-3 flex items-center gap-2">
+        <i class="fa-solid fa-circle-info text-indigo-400"></i>
+        <span>提示：點擊任何空白處或右上角 ✕ 即可關閉視窗</span>
+      </div>
+    </div>
 
     <!-- ==================== 頁尾版權與法規宣告 (Footer) ==================== -->
     <footer class="border-t border-slate-800/80 bg-slate-950/80 py-4 text-center text-xs text-slate-400">

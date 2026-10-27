@@ -21,6 +21,7 @@ function initChotouApp() {
     GRADE_PLUS_COUNT, 
     SUBJECT_ORDER, 
     POPULAR_SCHOOLS, 
+    HISTORICAL_CUTOFF_TABLE,
     SCHOOL_CAPACITIES_AND_CUTOFFS,
     POPULATION_CURVE,
     computeStudentStats, 
@@ -38,6 +39,15 @@ function initChotouApp() {
       // 當前主頁籤：
       // 'quiz' (PK猜猜看) | 'sandbox' (自由模擬) | 'simulator' (3萬人篩選器) | 'charts' (落點兩大圖) | 'flowchart' (流程圖) | 'tips' (錦囊)
       const activeTab = ref('quiz');
+
+      // 圖片燈箱狀態 (放大檢視原圖)
+      const activeModalImage = ref(null);
+      function openImageModal(imgSrc, title) {
+        activeModalImage.value = { src: imgSrc, title };
+      }
+      function closeImageModal() {
+        activeModalImage.value = null;
+      }
 
       // ==================== 音效引擎 (Web Audio API) ====================
       let audioCtx = null;
@@ -267,8 +277,36 @@ function initChotouApp() {
       // 模式三：【3 萬人志願分發篩選器大數據模型】
       // =========================================================================
       const allSchoolOptions = ref(SCHOOL_CAPACITIES_AND_CUTOFFS);
+      const historicalCutoffs = ref(HISTORICAL_CUTOFF_TABLE);
+      const historyFilter = ref('ALL'); // 'ALL' | '5A' | '4A1B' | '3A2B' | '5B'
+      const historySearchText = ref('');
+
+      const filteredHistoricalList = computed(() => {
+        let list = historicalCutoffs.value;
+        if (historyFilter.value === '5A') list = list.filter(s => s.pts114 >= 90);
+        else if (historyFilter.value === '4A1B') list = list.filter(s => s.pts114 >= 80 && s.pts114 < 90);
+        else if (historyFilter.value === '3A2B') list = list.filter(s => s.pts114 >= 70 && s.pts114 < 80);
+        else if (historyFilter.value === '5B') list = list.filter(s => s.pts114 < 70);
+
+        if (historySearchText.value && historySearchText.value.trim() !== '') {
+          const kw = historySearchText.value.trim().toLowerCase();
+          list = list.filter(s => s.school.toLowerCase().includes(kw) || (s.y114 && s.y114.toLowerCase().includes(kw)));
+        }
+        return list;
+      });
+
+      function getCutoffMatchBadge(targetPts) {
+        const myPts = filterUserStats.value.examPoints;
+        const diff = myPts - targetPts;
+        if (diff >= 2) {
+          return { text: '穩固安全', cls: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', icon: 'fa-circle-check', diffText: `+${diff}點` };
+        } else if (diff >= -1 && diff <= 1) {
+          return { text: '實力五五波', cls: 'bg-amber-500/20 text-amber-300 border-amber-500/40', icon: 'fa-scale-balanced', diffText: diff === 0 ? '持平' : (diff > 0 ? `+${diff}點` : `${diff}點`) };
+        } else {
+          return { text: '夢幻挑戰', cls: 'bg-rose-500/20 text-rose-300 border-rose-500/40', icon: 'fa-rocket', diffText: `${diff}點` };
+        }
+      }
       
-      // 使用者設定的分數投入篩選器
       const filterUserStudent = ref({
         name: '我',
         grades: { chinese: 'A+', math: 'A+', english: 'A+', social: 'A+', science: 'A+' },
@@ -281,7 +319,6 @@ function initChotouApp() {
         nearby: 10
       });
 
-      // 學生自訂 6 個目標志願 (志願選填表)
       const userChoiceList = ref([
         'tcfsh',     // 1. 臺中一中
         'nchu',      // 2. 興大附中
@@ -298,19 +335,14 @@ function initChotouApp() {
       const filterUserStats = computed(() => computeStudentStats(filterUserStudent.value));
       const filterRankEstimate = computed(() => estimateStudentRankIn30k(filterUserStats.value));
 
-      // 套用推薦志願表策略組合
       function applyChoiceStrategy(type) {
         if (type === 'DREAM_FIRST') {
-          // 夢幻衝刺組合
           userChoiceList.value = ['tcfsh', 'nehs', 'nchu', 'whsh', 'tc2sh', 'hwsh'];
         } else if (type === 'BALANCED') {
-          // 攻守兼備 (2夢幻 + 2務實 + 2保底)
           userChoiceList.value = ['whsh', 'nchu', 'tc2sh', 'zmsh', 'xysh', 'csesh'];
         } else if (type === 'TECH_STAR') {
-          // 技職頂尖王牌
-          userChoiceList.value = ['tcivs_cs', 'tcivs_mech', 'tchcvs_en', 'tchcvs_bus', 'slvs', 'csesh'];
+          userChoiceList.value = ['tcivs_cs', 'tc2sh', 'tchcvs_en', 'zmsh', 'csesh', 'fyhs'];
         } else if (type === 'COMMUNITY') {
-          // 在地優質公立
           userChoiceList.value = ['hwsh', 'zmsh', 'xysh', 'fyhs', 'dlsh', 'cyhs'];
         }
         filterResult.value = null;
@@ -324,14 +356,12 @@ function initChotouApp() {
 
         playPassSound();
 
-        // 模擬多輪分發推進動畫
         for (let p = 15; p <= 100; p += 18) {
           filterProgress.value = Math.min(100, p);
           playBeep(400 + p * 4, 'sine', 0.04);
           await new Promise(r => setTimeout(r, 120));
         }
 
-        // 執行 30,000 人電腦分發比序核心演算法
         const result = simulate30kAdmissions(filterUserStudent.value, userChoiceList.value);
         filterResult.value = result;
         isFilterSimulating.value = false;
@@ -355,14 +385,13 @@ function initChotouApp() {
         }
 
         const myPoints = filterUserStats.value.examPoints;
-        const myScore = filterUserStats.value.examScore;
 
         // ---------- 圖表一：各校錄取門檻與積點落點比較圖 ----------
         const ctx1 = document.getElementById('cutoffChart');
         if (ctx1) {
           if (cutoffChartInstance) cutoffChartInstance.destroy();
 
-          const schools = SCHOOL_CAPACITIES_AND_CUTOFFS.slice(0, 14);
+          const schools = SCHOOL_CAPACITIES_AND_CUTOFFS.slice(0, 16);
           const labels = schools.map(s => `${s.name} ${s.dept}`);
           const minData = schools.map(s => s.minPoints);
           const safeData = schools.map(s => s.safePoints);
@@ -432,7 +461,6 @@ function initChotouApp() {
 
           const curveLabels = POPULATION_CURVE.map(c => `${c.label}\n(${c.pointsMin}~${c.pointsMax}點)`);
           const curveCounts = POPULATION_CURVE.map(c => c.count);
-          const cumRanks = POPULATION_CURVE.map(c => c.cumRank);
 
           bellChartInstance = new Chart(ctx2, {
             type: 'line',
@@ -485,7 +513,6 @@ function initChotouApp() {
         }
       }
 
-      // 當切換到圖表頁籤或調整分數時，重繪圖表
       watch(activeTab, (newTab) => {
         if (newTab === 'charts') {
           nextTick(renderCharts);
@@ -516,6 +543,10 @@ function initChotouApp() {
 
       return {
         activeTab,
+        activeModalImage,
+        openImageModal,
+        closeImageModal,
+
         // 模式一
         quizList,
         currentQuizIndex,
@@ -545,8 +576,13 @@ function initChotouApp() {
         runSandboxSimulation,
         applyPreset,
 
-        // 模式三：3萬人篩選器
+        // 模式三：3萬人篩選器與歷年落點資料
         allSchoolOptions,
+        historicalCutoffs,
+        historyFilter,
+        historySearchText,
+        filteredHistoricalList,
+        getCutoffMatchBadge,
         filterUserStudent,
         userChoiceList,
         isFilterSimulating,
@@ -576,7 +612,7 @@ function initChotouApp() {
     }
   }).mount('#app');
 
-  console.log('Chotou Simulator 3.0 mounted successfully!');
+  console.log('Chotou Simulator 3.1 mounted successfully!');
 }
 
 if (document.readyState === 'loading') {

@@ -63,7 +63,34 @@ const POPULAR_SCHOOLS = [
 ];
 
 // =========================================================================
-// 中投區 3 萬名考生招生容量、落點標準與錄取門檻歷史大數據
+// 依據使用者所附【112, 113, 114 落點比較圖】精準建立的 21 所高中歷史落點對照表
+// =========================================================================
+const HISTORICAL_CUTOFF_TABLE = [
+  { school: '臺中一中', y112: '5A6+ 寫作5 國A++ 數A+', y113: '5A6+ 寫作4 國A++', y114: '5A5+ 寫作5 國A++ 數A+', pts114: 97, score114: 97, tier: 'T1' },
+  { school: '臺中女中', y112: '5A5+ 寫作5 國A++ 數A+', y113: '5A4+ 寫作5 國A 數英A++', y114: '5A4+ 寫作5 國A 數A+', pts114: 95, score114: 97, tier: 'T1' },
+  { school: '中科實中', y112: '5A4+ 寫作4', y113: '5A4+ 寫作4 國A+ 數A++', y114: '5A3+ 寫作5', pts114: 94, score114: 97, tier: 'T1' },
+  { school: '興大附中', y112: '5A3+ 寫作4', y113: '4A1B10+ 寫作5', y114: '4A1B7+ 寫作4 國A+ 數A', pts114: 89, score114: 95, tier: 'T2' },
+  { school: '文華高中(男)', y112: '4A1B8+ 寫作5', y113: '4A1B7+ 寫作4', y114: '4A1B6+ 寫作4', pts114: 87, score114: 95, tier: 'T2' },
+  { school: '文華高中(女)', y112: '4A1B5+ 寫作5', y113: '4A1B5+ 寫作4 國A 數A+', y114: '4A1B5+ 寫作4', pts114: 85, score114: 95, tier: 'T2' },
+  { school: '惠文高中', y112: '4A1B4+ 寫作4', y113: '4A1B4+ 寫作4', y114: '4A1B3+ 寫作4', pts114: 81, score114: 95, tier: 'T3' },
+  { school: '臺中二中(男)', y112: '3A2B6+ 寫作4', y113: '3A2B4+ 寫作4', y114: '3A2B3+ 寫作4', pts114: 76, score114: 93, tier: 'T3' },
+  { school: '臺中二中(女)', y112: '3A2B6+ 寫作4', y113: '3A2B3+ 寫作5', y114: '3A2B3+ 寫作4', pts114: 76, score114: 93, tier: 'T3' },
+  { school: '忠明高中', y112: '3A2B4+ 寫作4', y113: '3A2B3+ 寫作4', y114: '3A2B2+ 寫作4', pts114: 74, score114: 93, tier: 'T4' },
+  { school: '西苑高中', y112: '2A3B8+ 寫作4', y113: '2A3B6+ 寫作4', y114: '2A3B6+ 寫作4', pts114: 71, score114: 91, tier: 'T4' },
+  { school: '東山高中', y112: '2A3B8+ 寫作4', y113: '2A3B6+ 寫作4', y114: '2A3B6+ 寫作4', pts114: 71, score114: 91, tier: 'T4' },
+  { school: '大里高中(市大里)', y112: '2A3B6+ 寫作4', y113: '2A3B4+ 寫作4', y114: '2A3B3+ 寫作4', pts114: 65, score114: 91, tier: 'T5' },
+  { school: '清水高中', y112: '1A4B8+ 寫作4', y113: '1A4B6+ 寫作4', y114: '1A4B5+ 寫作5', pts114: 64, score114: 89, tier: 'T5' },
+  { school: '豐原高中', y112: '1A4B5+ 寫作4', y113: '1A4B5+ 寫作4', y114: '1A4B2+ 寫作4', pts114: 57, score114: 89, tier: 'T5' },
+  { school: '中興高中', y112: '1A4B7+ 寫作4', y113: '1A4B6+ 寫作4', y114: '5B8+ 寫作4', pts114: 56, score114: 87, tier: 'T6' },
+  { school: '長億高中', y112: '1A4B5+ (估)', y113: '1A4B5+ 寫作4', y114: '5B7+ 寫作4', pts114: 55, score114: 87, tier: 'T6' },
+  { school: '中港高中', y112: '5B7+ 寫作4', y113: '5B7+ 寫作4', y114: '5B6+ 寫作4', pts114: 54, score114: 87, tier: 'T6' },
+  { school: '大甲高中', y112: '5B5+ 寫作4', y113: '5B2+ 寫作4', y114: '5B2+ 寫作4', pts114: 46, score114: 87, tier: 'T6' },
+  { school: '龍津高中', y112: '5B4+ 寫作4', y113: '5B3+ 寫作3', y114: '5B2+ 寫作3', pts114: 45, score114: 87, tier: 'T7' },
+  { school: '后綜高中', y112: '5B2+ 寫作4', y113: '4B1C8+ 寫作3', y114: '4B1C6+ 寫作3', pts114: 43, score114: 85, tier: 'T7' }
+];
+
+// =========================================================================
+// 依據附件兩張圖片與核定名額對齊的「3 萬人篩選器模擬用學校容量庫」
 // =========================================================================
 const SCHOOL_CAPACITIES_AND_CUTOFFS = [
   {
@@ -75,7 +102,7 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     minScore: 97,
     safePoints: 97,
     minPoints: 94,
-    minGradeDesc: '5A (約 4A++ 1A+ 或 5A 5+ 以上)',
+    minGradeDesc: '114年: 5A5+ 寫作5 國A++ 數A+',
     rankRange: '1 ~ 950 名',
     tier: 'T1'
   },
@@ -88,7 +115,7 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     minScore: 97,
     safePoints: 95,
     minPoints: 92,
-    minGradeDesc: '5A (約 3A++ 2A+ 或 5A 4+ 以上)',
+    minGradeDesc: '114年: 5A4+ 寫作5 國A 數A+',
     rankRange: '1 ~ 1,650 名',
     tier: 'T1'
   },
@@ -99,24 +126,11 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     category: '國立高中',
     quota: 140,
     minScore: 97,
-    safePoints: 95,
-    minPoints: 93,
-    minGradeDesc: '5A (約 3A++ 2A+)',
+    safePoints: 94,
+    minPoints: 91,
+    minGradeDesc: '114年: 5A3+ 寫作5',
     rankRange: '600 ~ 1,800 名',
     tier: 'T1'
-  },
-  {
-    id: 'whsh',
-    name: '文華高中',
-    dept: '普通科',
-    category: '公立高中',
-    quota: 750,
-    minScore: 97,
-    safePoints: 92,
-    minPoints: 89,
-    minGradeDesc: '5A (約 1A++ 4A+ 或 5A 2+)',
-    rankRange: '1,650 ~ 2,500 名',
-    tier: 'T2'
   },
   {
     id: 'nchu',
@@ -124,38 +138,25 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     dept: '普通科',
     category: '國立高中',
     quota: 560,
-    minScore: 97,
-    safePoints: 94,
-    minPoints: 91,
-    minGradeDesc: '5A (約 2A++ 3A+)',
+    minScore: 95,
+    safePoints: 89,
+    minPoints: 86,
+    minGradeDesc: '114年: 4A1B7+ 寫作4 國A+ 數A',
     rankRange: '1,800 ~ 2,800 名',
     tier: 'T2'
   },
   {
-    id: 'tc2sh',
-    name: '臺中二中',
+    id: 'whsh',
+    name: '文華高中',
     dept: '普通科',
     category: '公立高中',
-    quota: 800,
-    minScore: 97,
+    quota: 750,
+    minScore: 95,
     safePoints: 87,
     minPoints: 84,
-    minGradeDesc: '5A ~ 4A1B (4A1B 需高積點)',
-    rankRange: '2,800 ~ 4,000 名',
-    tier: 'T3'
-  },
-  {
-    id: 'tcivs_cs',
-    name: '臺中高工',
-    dept: '資訊科/電機科',
-    category: '頂尖技術',
-    quota: 200,
-    minScore: 97,
-    safePoints: 88,
-    minPoints: 83,
-    minGradeDesc: '5A ~ 4A1B (高工龍頭科系)',
-    rankRange: '2,500 ~ 4,200 名',
-    tier: 'T3'
+    minGradeDesc: '114年: 4A1B5+~6+ 寫作4',
+    rankRange: '2,000 ~ 3,200 名',
+    tier: 'T2'
   },
   {
     id: 'hwsh',
@@ -164,10 +165,23 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     category: '市立高中',
     quota: 400,
     minScore: 95,
-    safePoints: 85,
-    minPoints: 82,
-    minGradeDesc: '4A1B (積分28分，積點82以上)',
-    rankRange: '3,800 ~ 4,800 名',
+    safePoints: 81,
+    minPoints: 78,
+    minGradeDesc: '114年: 4A1B3+ 寫作4',
+    rankRange: '3,200 ~ 4,500 名',
+    tier: 'T3'
+  },
+  {
+    id: 'tc2sh',
+    name: '臺中二中',
+    dept: '普通科',
+    category: '公立高中',
+    quota: 800,
+    minScore: 93,
+    safePoints: 76,
+    minPoints: 73,
+    minGradeDesc: '114年: 3A2B3+ 寫作4',
+    rankRange: '4,500 ~ 6,000 名',
     tier: 'T3'
   },
   {
@@ -176,25 +190,25 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     dept: '普通科',
     category: '市立高中',
     quota: 360,
-    minScore: 95,
-    safePoints: 81,
-    minPoints: 78,
-    minGradeDesc: '4A1B ~ 3A2B',
-    rankRange: '4,800 ~ 6,000 名',
+    minScore: 93,
+    safePoints: 74,
+    minPoints: 71,
+    minGradeDesc: '114年: 3A2B2+ 寫作4',
+    rankRange: '5,500 ~ 7,000 名',
     tier: 'T4'
   },
   {
-    id: 'tcivs_mech',
+    id: 'tcivs_cs',
     name: '臺中高工',
-    dept: '機械/電子/製圖科',
-    category: '公立高職',
-    quota: 650,
-    minScore: 93,
-    safePoints: 78,
-    minPoints: 73,
-    minGradeDesc: '3A2B ~ 2A3B',
-    rankRange: '5,500 ~ 7,500 名',
-    tier: 'T4'
+    dept: '資訊科/電機科',
+    category: '頂尖技術',
+    quota: 200,
+    minScore: 95,
+    safePoints: 82,
+    minPoints: 78,
+    minGradeDesc: '熱門龍頭科: 4A1B ~ 3A2B',
+    rankRange: '3,500 ~ 5,500 名',
+    tier: 'T3'
   },
   {
     id: 'xysh',
@@ -202,37 +216,37 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     dept: '普通科',
     category: '市立高中',
     quota: 360,
-    minScore: 93,
-    safePoints: 76,
-    minPoints: 72,
-    minGradeDesc: '3A2B ~ 2A3B',
-    rankRange: '6,200 ~ 8,000 名',
-    tier: 'T4'
-  },
-  {
-    id: 'tchcvs_en',
-    name: '臺中家商',
-    dept: '應用英語科',
-    category: '公立高職',
-    quota: 180,
-    minScore: 93,
-    safePoints: 76,
-    minPoints: 71,
-    minGradeDesc: '3A2B ~ 2A3B',
-    rankRange: '6,500 ~ 8,500 名',
-    tier: 'T4'
-  },
-  {
-    id: 'fyhs',
-    name: '豐原高中',
-    dept: '普通科',
-    category: '國立高中',
-    quota: 560,
     minScore: 91,
-    safePoints: 73,
-    minPoints: 68,
-    minGradeDesc: '2A3B (積點68以上)',
-    rankRange: '8,000 ~ 10,200 名',
+    safePoints: 71,
+    minPoints: 67,
+    minGradeDesc: '114年: 2A3B6+ 寫作4',
+    rankRange: '6,800 ~ 8,500 名',
+    tier: 'T4'
+  },
+  {
+    id: 'eshm',
+    name: '東山高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 360,
+    minScore: 91,
+    safePoints: 71,
+    minPoints: 67,
+    minGradeDesc: '114年: 2A3B6+ 寫作4',
+    rankRange: '6,800 ~ 8,500 名',
+    tier: 'T4'
+  },
+  {
+    id: 'dlsh',
+    name: '大里高中',
+    dept: '普通科(市大里)',
+    category: '市立高中',
+    quota: 320,
+    minScore: 91,
+    safePoints: 65,
+    minPoints: 61,
+    minGradeDesc: '114年: 2A3B3+ 寫作4',
+    rankRange: '8,500 ~ 10,500 名',
     tier: 'T5'
   },
   {
@@ -241,25 +255,38 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     dept: '普通科',
     category: '國立高中',
     quota: 520,
-    minScore: 91,
-    safePoints: 70,
-    minPoints: 65,
-    minGradeDesc: '2A3B ~ 1A4B',
-    rankRange: '9,500 ~ 12,000 名',
+    minScore: 89,
+    safePoints: 64,
+    minPoints: 59,
+    minGradeDesc: '114年: 1A4B5+ 寫作5',
+    rankRange: '10,000 ~ 12,500 名',
     tier: 'T5'
   },
   {
-    id: 'dlsh',
-    name: '大里高中',
-    dept: '普通科 (市大里)',
-    category: '市立高中',
-    quota: 320,
-    minScore: 91,
-    safePoints: 71,
-    minPoints: 66,
-    minGradeDesc: '2A3B ~ 1A4B',
-    rankRange: '9,000 ~ 11,500 名',
+    id: 'fyhs',
+    name: '豐原高中',
+    dept: '普通科',
+    category: '國立高中',
+    quota: 560,
+    minScore: 89,
+    safePoints: 57,
+    minPoints: 53,
+    minGradeDesc: '114年: 1A4B2+ 寫作4',
+    rankRange: '11,500 ~ 14,000 名',
     tier: 'T5'
+  },
+  {
+    id: 'chsh',
+    name: '中興高中',
+    dept: '普通科(南投)',
+    category: '國立高中',
+    quota: 480,
+    minScore: 87,
+    safePoints: 56,
+    minPoints: 51,
+    minGradeDesc: '114年: 5B8+ 寫作4',
+    rankRange: '13,000 ~ 15,500 名',
+    tier: 'T6'
   },
   {
     id: 'cyhs',
@@ -267,65 +294,78 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     dept: '普通科',
     category: '市立高中',
     quota: 360,
-    minScore: 89,
-    safePoints: 66,
-    minPoints: 60,
-    minGradeDesc: '1A4B ~ 5B (積分22~20分)',
-    rankRange: '12,000 ~ 14,500 名',
-    tier: 'T6'
-  },
-  {
-    id: 'tchcvs_bus',
-    name: '臺中家商',
-    dept: '商經/資處科',
-    category: '公立高職',
-    quota: 500,
-    minScore: 89,
-    safePoints: 65,
-    minPoints: 58,
-    minGradeDesc: '1A4B ~ 5B (高職熱門)',
-    rankRange: '12,500 ~ 15,500 名',
-    tier: 'T6'
-  },
-  {
-    id: 'slvs',
-    name: '沙鹿高工',
-    dept: '資訊/化工/紡織',
-    category: '公立高職',
-    quota: 600,
     minScore: 87,
-    safePoints: 56,
-    minPoints: 48,
-    minGradeDesc: '5B (約 5B 3+ ~ 5B 0+)',
-    rankRange: '15,000 ~ 18,500 名',
+    safePoints: 55,
+    minPoints: 50,
+    minGradeDesc: '114年: 5B7+ 寫作4',
+    rankRange: '13,500 ~ 16,000 名',
     tier: 'T6'
   },
   {
-    id: 'chsh',
-    name: '中興高中',
-    dept: '普通科 (南投名校)',
-    category: '國立高中',
-    quota: 480,
-    minScore: 89,
-    safePoints: 65,
-    minPoints: 58,
-    minGradeDesc: '1A4B ~ 5B',
-    rankRange: '13,000 ~ 16,500 名',
+    id: 'cksh',
+    name: '中港高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 280,
+    minScore: 87,
+    safePoints: 54,
+    minPoints: 49,
+    minGradeDesc: '114年: 5B6+ 寫作4',
+    rankRange: '14,000 ~ 16,800 名',
     tier: 'T6'
+  },
+  {
+    id: 'tchcvs_en',
+    name: '臺中家商',
+    dept: '應用英語科',
+    category: '公立高職',
+    quota: 180,
+    minScore: 91,
+    safePoints: 68,
+    minPoints: 63,
+    minGradeDesc: '熱門外語科: 2A3B ~ 1A4B',
+    rankRange: '8,000 ~ 11,000 名',
+    tier: 'T5'
+  },
+  {
+    id: 'djhs',
+    name: '大甲高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 400,
+    minScore: 87,
+    safePoints: 46,
+    minPoints: 42,
+    minGradeDesc: '114年: 5B2+ 寫作4',
+    rankRange: '16,500 ~ 19,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'hzsh',
+    name: '后綜高中',
+    dept: '普通科',
+    category: '市立高中',
+    quota: 320,
+    minScore: 85,
+    safePoints: 43,
+    minPoints: 38,
+    minGradeDesc: '114年: 4B1C6+ 寫作3',
+    rankRange: '19,000 ~ 22,500 名',
+    tier: 'T7'
   }
 ];
 
 // 中投區 30,000 人常態分佈分群曲線參數
 const POPULATION_CURVE = [
   { pointsMin: 105, pointsMax: 111, count: 480, label: '5A 7+ ~ 5A 10+', cumRank: 480, pct: '1.6%', tier: '特優頂尖' },
-  { pointsMin: 95,  pointsMax: 104, count: 850, label: '5A 3+ ~ 5A 6+',  cumRank: 1330, pct: '4.4%', tier: '頂尖名校' },
-  { pointsMin: 88,  pointsMax: 94,  count: 1150, label: '5A 0+ ~ 5A 2+', cumRank: 2480, pct: '8.3%', tier: '前三志願' },
-  { pointsMin: 80,  pointsMax: 87,  count: 1600, label: '4A1B ~ 5A',     cumRank: 4080, pct: '13.6%', tier: '明星高中/高工電機' },
-  { pointsMin: 72,  pointsMax: 79,  count: 2200, label: '3A2B ~ 4A1B',   cumRank: 6280, pct: '20.9%', tier: '市區公立高中/家商' },
-  { pointsMin: 64,  pointsMax: 71,  count: 3100, label: '2A3B ~ 3A2B',   cumRank: 9380, pct: '31.3%', tier: '公立高中/高職專門' },
-  { pointsMin: 55,  pointsMax: 63,  count: 4200, label: '1A4B ~ 2A3B',   cumRank: 13580, pct: '45.3%', tier: '公立高職/社區高中' },
-  { pointsMin: 45,  pointsMax: 54,  count: 5800, label: '5B (基礎)',     cumRank: 19380, pct: '64.6%', tier: '公私立高中職/技術科' },
-  { pointsMin: 35,  pointsMax: 44,  count: 4600, label: '5B ~ 4B1C',     cumRank: 23980, pct: '79.9%', tier: '綜合高中/私立優質' },
+  { pointsMin: 95,  pointsMax: 104, count: 850, label: '5A 3+ ~ 5A 6+',  cumRank: 1330, pct: '4.4%', tier: '頂尖名校 (中一中/中女中)' },
+  { pointsMin: 88,  pointsMax: 94,  count: 1150, label: '5A 0+ ~ 5A 2+', cumRank: 2480, pct: '8.3%', tier: '卓越高中 (中科實中/興大附中)' },
+  { pointsMin: 80,  pointsMax: 87,  count: 1600, label: '4A1B ~ 5A',     cumRank: 4080, pct: '13.6%', tier: '明星高中 (文華/中二中/惠文)' },
+  { pointsMin: 72,  pointsMax: 79,  count: 2200, label: '3A2B ~ 4A1B',   cumRank: 6280, pct: '20.9%', tier: '優質高中 (忠明/西苑/東山)' },
+  { pointsMin: 64,  pointsMax: 71,  count: 3100, label: '2A3B ~ 3A2B',   cumRank: 9380, pct: '31.3%', tier: '社區高中 (清水/市大里)' },
+  { pointsMin: 55,  pointsMax: 63,  count: 4200, label: '1A4B ~ 2A3B',   cumRank: 13580, pct: '45.3%', tier: '公立高中職 (豐原/中興/長億)' },
+  { pointsMin: 45,  pointsMax: 54,  count: 5800, label: '5B (基礎群)',    cumRank: 19380, pct: '64.6%', tier: '公私立高中職 (中港/大甲/龍津)' },
+  { pointsMin: 35,  pointsMax: 44,  count: 4600, label: '5B ~ 4B1C',     cumRank: 23980, pct: '79.9%', tier: '綜合高中/后綜' },
   { pointsMin: 15,  pointsMax: 34,  count: 6020, label: '待加強群 C',     cumRank: 30000, pct: '100%', tier: '完全免試/進修學校' }
 ];
 
@@ -336,7 +376,6 @@ function estimateStudentRankIn30k(stats) {
   const points = stats.examPoints;
   const examScore = stats.examScore;
 
-  // 1. 如果低於 5A (積分 < 30)
   if (examScore >= 30) {
     // 5A 生，全區約前 2,480 名
     if (points >= 108) return { minRank: 1, maxRank: 200, approx: 120, pr: 99.6 };
@@ -345,20 +384,20 @@ function estimateStudentRankIn30k(stats) {
     if (points >= 92) return { minRank: 1101, maxRank: 1800, approx: 1450, pr: 95.1 };
     return { minRank: 1801, maxRank: 2480, approx: 2150, pr: 92.8 };
   } else if (examScore >= 28) {
-    // 4A1B，約第 2,481 ~ 4,000 名
-    return { minRank: 2481, maxRank: 4200, approx: 3300 - (points - 75) * 45, pr: 89.0 };
+    // 4A1B，約第 2,481 ~ 4,080 名
+    return { minRank: 2481, maxRank: 4200, approx: Math.max(2500, Math.round(3300 - (points - 75) * 45)), pr: 89.0 };
   } else if (examScore >= 26) {
-    // 3A2B，約第 4,201 ~ 6,200 名
-    return { minRank: 4201, maxRank: 6400, approx: 5200 - (points - 68) * 60, pr: 82.5 };
+    // 3A2B，約第 4,201 ~ 6,280 名
+    return { minRank: 4201, maxRank: 6400, approx: Math.max(4300, Math.round(5200 - (points - 68) * 60)), pr: 82.5 };
   } else if (examScore >= 24) {
-    // 2A3B，約第 6,401 ~ 9,300 名
-    return { minRank: 6401, maxRank: 9500, approx: 8000 - (points - 60) * 80, pr: 73.0 };
+    // 2A3B，約第 6,401 ~ 9,380 名
+    return { minRank: 6401, maxRank: 9500, approx: Math.max(6500, Math.round(8000 - (points - 60) * 80)), pr: 73.0 };
   } else if (examScore >= 22) {
-    // 1A4B，約第 9,501 ~ 13,500 名
-    return { minRank: 9501, maxRank: 13800, approx: 11500 - (points - 50) * 100, pr: 61.5 };
+    // 1A4B，約第 9,501 ~ 13,580 名
+    return { minRank: 9501, maxRank: 13800, approx: Math.max(9600, Math.round(11500 - (points - 50) * 100)), pr: 61.5 };
   } else if (examScore >= 20) {
     // 5B，約第 13,801 ~ 22,000 名
-    return { minRank: 13801, maxRank: 22000, approx: 17500 - (points - 35) * 150, pr: 41.0 };
+    return { minRank: 13801, maxRank: 22000, approx: Math.max(14000, Math.round(17500 - (points - 35) * 150)), pr: 41.0 };
   } else {
     // 含 C
     return { minRank: 22001, maxRank: 30000, approx: 26000, pr: 15.0 };
@@ -367,16 +406,11 @@ function estimateStudentRankIn30k(stats) {
 
 /**
  * 3 萬人志願分發模擬篩選器模型 (Admissions Engine Simulator)
- * 模擬電腦分發作業，將考生的志願表與分數投入，進行多輪分發與超額比序！
- * @param {Object} userStudent 使用者成績與屬性
- * @param {Array<string>} userChoiceIds 志願學校ID清單 (1~10志願)
- * @returns {Object} 模擬分發結果報告
  */
 function simulate30kAdmissions(userStudent, userChoiceIds) {
   const stats = computeStudentStats(userStudent);
   const rankInfo = estimateStudentRankIn30k(stats);
 
-  // 整理使用者填寫的志願
   const choices = userChoiceIds.map((id, index) => {
     const sch = SCHOOL_CAPACITIES_AND_CUTOFFS.find(s => s.id === id);
     if (!sch) return null;
@@ -390,18 +424,13 @@ function simulate30kAdmissions(userStudent, userChoiceIds) {
   let admittedChoice = null;
   const evaluationLog = [];
 
-  // 模擬每一志願的篩選器判定
   for (let c of choices) {
     const sch = c.school;
     const userTotalScore = stats.multipleTotal + stats.nearby + stats.disadvantaged + stats.examScore + c.choiceScore;
     
-    // 比對條件：
-    // 1. 總積分是否達到學校要求？(熱門公立通常需 97 或 95)
-    // 2. 積點是否達到最低預估門檻？
-    // 3. 全區排名是否在該校容納量之前？
     let canAdmit = false;
     let reason = '';
-    let competitionRatio = (Math.random() * 0.4 + 1.2).toFixed(1); // 模擬投遞熱度 (1.2 ~ 1.6 倍)
+    let competitionRatio = (Math.random() * 0.3 + 1.25).toFixed(1);
     let applicantsCount = Math.round(sch.quota * parseFloat(competitionRatio));
 
     if (userTotalScore > sch.minScore) {
@@ -409,8 +438,6 @@ function simulate30kAdmissions(userStudent, userChoiceIds) {
         canAdmit = true;
         reason = `【穩固錄取】總積分 ${userTotalScore} 分達標，且會考積點 ${stats.examPoints} 點超過該校安全線 (${sch.safePoints}點)！`;
       } else if (stats.examPoints >= sch.minPoints) {
-        // 進入比序肉搏戰（積點壓線）
-        // 依照 + 號多寡與單科標示判定
         if (stats.aPlusCount >= 2 || stats.grades.chinese.startsWith('A')) {
           canAdmit = true;
           reason = `【壓線勝出】會考積點 ${stats.examPoints} 點落於競爭區間，因標示「+」號或國文單科比序佔優勢而搶下錄取名額！`;
@@ -455,7 +482,6 @@ function simulate30kAdmissions(userStudent, userChoiceIds) {
         school: sch,
         reason
       };
-      // 一旦錄取，後續志願停止分發
       break;
     }
   }
@@ -656,11 +682,9 @@ function compareTwoStudents(studentA, studentB) {
   if (res !== 'TIE') return finishComparison(steps, res, statsA, statsB);
 
   // 關卡 8：會考等級標示「+ 號總累積」加總比序
-  // 8.1 A等級標示「+」號多寡
   res = recordStep('step_a_plus', '第 8-1 關：A等級「+」號加總', '最高 10 個 +', statsA.aPlusCount, statsB.aPlusCount, v => `${v} 個 +`, '比A等級標示+號數量（A++算2個+、A+算1個+、A算0個+）');
   if (res !== 'TIE') return finishComparison(steps, res, statsA, statsB);
 
-  // 8.2 B等級標示「+」號多寡
   res = recordStep('step_b_plus', '第 8-2 關：B等級「+」號加總', '最高 10 個 +', statsA.bPlusCount, statsB.bPlusCount, v => `${v} 個 +`, 'A的+號相同時，再比B等級標示+號數量（B++算2個+、B+算1個+）');
   if (res !== 'TIE') return finishComparison(steps, res, statsA, statsB);
 
@@ -1013,6 +1037,7 @@ if (typeof window !== 'undefined') {
     GRADE_PLUS_COUNT,
     SUBJECT_ORDER,
     POPULAR_SCHOOLS,
+    HISTORICAL_CUTOFF_TABLE,
     SCHOOL_CAPACITIES_AND_CUTOFFS,
     POPULATION_CURVE,
     calculateChoiceScore,
@@ -1032,6 +1057,7 @@ if (typeof module !== 'undefined' && module.exports) {
     GRADE_PLUS_COUNT,
     SUBJECT_ORDER,
     POPULAR_SCHOOLS,
+    HISTORICAL_CUTOFF_TABLE,
     SCHOOL_CAPACITIES_AND_CUTOFFS,
     POPULATION_CURVE,
     calculateChoiceScore,

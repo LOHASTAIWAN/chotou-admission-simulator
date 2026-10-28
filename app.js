@@ -566,16 +566,76 @@ function initChotouApp() {
         }
       });
 
-      // ==================== 模式五：全景流程圖互動 ====================
+      // ==================== 模式五：全景流程圖互動與動態闖關播放器 ====================
       const flowchartNodes = ref(FLOWCHART_TREE);
       const selectedNodeId = ref('total_score');
+      const isFlowPlaying = ref(false);
+      let flowTimer = null;
+
+      const currentFlowNodeIndex = computed(() => {
+        return flowchartNodes.value.findIndex(n => n.id === selectedNodeId.value);
+      });
+
       const selectedNode = computed(() => {
         return flowchartNodes.value.find(n => n.id === selectedNodeId.value) || flowchartNodes.value[0];
       });
 
       function selectNode(nodeId) {
         selectedNodeId.value = nodeId;
-        playBeep(480, 'sine', 0.05);
+        const idx = flowchartNodes.value.findIndex(n => n.id === nodeId);
+        playBeep(440 + Math.min(idx * 30, 400), 'sine', 0.05);
+      }
+
+      function nextFlowNode() {
+        let idx = currentFlowNodeIndex.value;
+        if (idx < flowchartNodes.value.length - 1) {
+          idx++;
+          selectNode(flowchartNodes.value[idx].id);
+        } else {
+          pauseFlowAnim();
+          if (typeof confetti === 'function') {
+            confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+          }
+        }
+      }
+
+      function prevFlowNode() {
+        let idx = currentFlowNodeIndex.value;
+        if (idx > 0) {
+          idx--;
+          selectNode(flowchartNodes.value[idx].id);
+        }
+      }
+
+      function playFlowAnim() {
+        if (isFlowPlaying.value) return;
+        isFlowPlaying.value = true;
+        if (currentFlowNodeIndex.value >= flowchartNodes.value.length - 1) {
+          selectNode(flowchartNodes.value[0].id);
+        }
+        flowTimer = setInterval(() => {
+          if (currentFlowNodeIndex.value < flowchartNodes.value.length - 1) {
+            nextFlowNode();
+          } else {
+            pauseFlowAnim();
+            if (typeof confetti === 'function') {
+              confetti({ particleCount: 100, spread: 90, origin: { y: 0.5 } });
+            }
+          }
+        }, 1600);
+      }
+
+      function pauseFlowAnim() {
+        isFlowPlaying.value = false;
+        if (flowTimer) {
+          clearInterval(flowTimer);
+          flowTimer = null;
+        }
+      }
+
+      function resetFlowAnim() {
+        pauseFlowAnim();
+        selectNode(flowchartNodes.value[0].id);
       }
 
       const gradeOptions = ['A++', 'A+', 'A', 'B++', 'B+', 'B', 'C'];
@@ -646,11 +706,18 @@ function initChotouApp() {
         // 模式四：圖表
         renderCharts,
 
-        // 模式五：流程圖
+        // 模式五：流程圖與動畫播放器
         flowchartNodes,
         selectedNodeId,
         selectedNode,
         selectNode,
+        currentFlowNodeIndex,
+        isFlowPlaying,
+        playFlowAnim,
+        pauseFlowAnim,
+        nextFlowNode,
+        prevFlowNode,
+        resetFlowAnim,
 
         // 工具清單
         gradeOptions,

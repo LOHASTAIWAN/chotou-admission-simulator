@@ -1522,135 +1522,336 @@
       </section>
 
       <!-- ============================================================== -->
-      <!-- TAB 5: 比序流程圖全景導覽 (互動學習) -->
+      <!-- TAB 5: 比序流程圖全景導覽 (超美觀動態闖關動畫圖) -->
       <!-- ============================================================== -->
       <section v-if="activeTab === 'flowchart'" class="space-y-5">
         
-        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-xl">
-          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-slate-700/80">
+        <!-- 頂部標題與動畫控制器看板 -->
+        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-4">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-3 border-b border-slate-700/80">
             <div>
-              <div class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 text-xs font-bold px-2.5 py-1 rounded-full mb-1 border border-emerald-500/30">
-                <i class="fa-solid fa-project-diagram"></i>
-                <span>法定比序順序結構</span>
+              <div class="inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full mb-1.5 border border-emerald-500/30">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                <span>官方核定法定流程 ‧ 動態視覺化</span>
               </div>
-              <h2 class="text-lg sm:text-xl font-black text-white">116學年度中投區免試入學比序順序全景圖</h2>
-              <p class="text-xs text-slate-400 mt-0.5">
-                點擊下方任一關卡方塊，即可查看條文、計分公式與防踩坑攻略！
+              <h2 class="text-lg sm:text-2xl font-black text-white flex items-center gap-2">
+                <span>116 學年度中投區免試入學比序順序全景動畫流程圖</span>
+              </h2>
+              <p class="text-xs text-slate-300 mt-1">
+                嚴格依據臺中市與南投縣教育局簡章《附表1 比序順序流程圖》核定製作，電腦分發 12 道關卡一步一步動態走給你看！
               </p>
             </div>
-            <div class="text-[11px] text-amber-300 bg-amber-950/60 border border-amber-600/40 p-2 rounded-xl flex items-center gap-1.5">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-              <span>中投區同分超額時「不予抽籤」，比至第12關仍超額則增額錄取！</span>
+
+            <!-- 控制動作群：播放/暫停/原圖對照 -->
+            <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+              <!-- 自動播放/暫停按鈕 -->
+              <button @click="isFlowPlaying ? pauseFlowAnim() : playFlowAnim()"
+                      class="px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-black transition-all duration-200 active:scale-95 flex items-center gap-2 shadow-lg"
+                      :class="isFlowPlaying 
+                        ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 ring-2 ring-amber-300 animate-pulse' 
+                        : 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 text-white shadow-indigo-500/30'">
+                <i class="fa-solid" :class="isFlowPlaying ? 'fa-pause' : 'fa-play'"></i>
+                <span>{{ isFlowPlaying ? '暫停動畫' : '🎬 播放闖關動畫' }}</span>
+              </button>
+
+              <!-- 上一步 / 下一步 -->
+              <div class="flex items-center bg-slate-800 rounded-2xl p-1 border border-slate-700">
+                <button @click="prevFlowNode" 
+                        :disabled="currentFlowNodeIndex === 0"
+                        class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-transparent transition text-xs">
+                  <i class="fa-solid fa-backward-step"></i>
+                </button>
+                <span class="text-[11px] font-black text-amber-300 px-2 min-w-[55px] text-center">
+                  {{ currentFlowNodeIndex + 1 }} / {{ flowchartNodes.length }}
+                </span>
+                <button @click="nextFlowNode" 
+                        :disabled="currentFlowNodeIndex === flowchartNodes.length - 1"
+                        class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-transparent transition text-xs">
+                  <i class="fa-solid fa-forward-step"></i>
+                </button>
+              </div>
+
+              <!-- 重置按鈕 -->
+              <button @click="resetFlowAnim" 
+                      title="重置至第 1 關"
+                      class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl border border-slate-700 transition active:scale-95 text-xs">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+
+              <!-- 官方原圖 PDF 對照按鈕 -->
+              <button @click="openImageModal('official_flowchart_116.png', '115/116學年度中投區免試入學比序順序流程圖 (教育局官方核定原圖)')"
+                      class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-cyan-200 rounded-2xl border border-cyan-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-file-pdf text-red-400"></i>
+                <span>查看官方流程原圖</span>
+              </button>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-5">
-            <div class="lg:col-span-7 space-y-1.5">
-              <div v-for="(node, nIdx) in flowchartNodes" :key="node.id"
-                   @click="selectNode(node.id)"
-                   :class="selectedNodeId === node.id 
-                     ? 'border-indigo-400 bg-gradient-to-r from-indigo-900/50 to-slate-800 shadow-lg ring-2 ring-indigo-400/40' 
-                     : 'border-slate-700/80 bg-slate-800/60 hover:bg-slate-700/60'"
-                   class="cursor-pointer p-3 rounded-2xl border transition-all flex items-center justify-between group active:scale-98">
-                
-                <div class="flex items-center gap-2.5">
-                  <div :class="selectedNodeId === node.id ? 'bg-indigo-600 text-white shadow' : 'bg-slate-700 text-slate-300'"
-                       class="w-6 h-6 rounded-xl flex items-center justify-center font-black text-xs flex-shrink-0">
-                    {{ node.stepNumber }}
-                  </div>
-                  <div>
-                    <div class="font-extrabold text-xs sm:text-sm text-white group-hover:text-indigo-300 transition">
-                      {{ node.title }}
-                    </div>
-                    <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">
-                      {{ node.summary }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full"
-                        :class="selectedNodeId === node.id ? 'bg-amber-400 text-slate-900 font-extrabold' : 'bg-slate-900/80 text-slate-300'">
-                    {{ node.badge }}
-                  </span>
-                  <i class="fa-solid fa-chevron-right text-slate-500 text-xs"></i>
-                </div>
-              </div>
+          <!-- 動態比序進度長條指示器 -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                <span>當前比序推進點：</span>
+                <span class="text-indigo-300 font-black">第 {{ selectedNode.stepNumber }} 關 - {{ selectedNode.title }}</span>
+              </span>
+              <span class="text-amber-300 text-[11px] font-extrabold bg-amber-950/70 border border-amber-600/40 px-2 py-0.5 rounded-full">
+                {{ selectedNode.phase }}
+              </span>
             </div>
+            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700/60">
+              <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-400 h-full rounded-full transition-all duration-500"
+                   :style="{ width: `${((currentFlowNodeIndex + 1) / flowchartNodes.length) * 100}%` }"></div>
+            </div>
+          </div>
+        </div>
 
-            <div class="lg:col-span-5">
-              <div class="sticky top-20 glass-dark rounded-3xl p-4 sm:p-5 border-2 border-indigo-500/60 shadow-2xl space-y-3">
-                <div class="flex items-center gap-1.5 text-indigo-400 text-[11px] font-bold uppercase tracking-wider">
-                  <i class="fa-solid fa-magnifying-glass-chart"></i>
-                  <span>關卡深度解析</span>
-                </div>
+        <!-- 流程圖主舞台：左側動態管線畫布 + 右側深度戰略看板 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          
+          <!-- 左側：視覺化動態管線流程圖 (7 欄寬) -->
+          <div class="lg:col-span-7 space-y-3">
+            
+            <div v-for="(node, nIdx) in flowchartNodes" :key="node.id" class="relative group">
+              
+              <!-- 節點主卡片 -->
+              <div @click="selectNode(node.id)"
+                   class="cursor-pointer rounded-2xl p-3.5 sm:p-4 border transition-all duration-300 relative overflow-hidden"
+                   :class="selectedNodeId === node.id 
+                     ? 'bg-gradient-to-r from-indigo-950/95 via-purple-950/90 to-slate-900 border-amber-400 ring-2 ring-amber-400/70 shadow-[0_0_25px_rgba(251,191,36,0.25)] scale-[1.01]' 
+                     : 'glass-dark border-slate-700/70 hover:border-slate-500/80 hover:bg-slate-800/80'">
+                
+                <!-- 選中時頂部光芒線 -->
+                <div v-if="selectedNodeId === node.id" 
+                     class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-indigo-400 to-pink-400 animate-pulse"></div>
 
-                <div class="border-b border-slate-700 pb-2.5">
-                  <div class="flex items-center justify-between">
-                    <h3 class="text-base sm:text-lg font-black text-white">
-                      第 {{ selectedNode.stepNumber }} 順位：{{ selectedNode.title }}
-                    </h3>
-                    <span class="bg-indigo-600/80 text-indigo-100 text-xs font-bold px-2.5 py-1 rounded-full">
-                      {{ selectedNode.badge }}
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    
+                    <!-- 關卡編號圓圈 + 漸層底色 -->
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center font-black text-sm flex-shrink-0 shadow-lg text-white"
+                         :class="[
+                           `bg-gradient-to-tr ${node.color}`,
+                           selectedNodeId === node.id ? 'ring-2 ring-amber-300 scale-105' : ''
+                         ]">
+                      <i class="fa-solid" :class="node.icon"></i>
+                    </div>
+
+                    <div>
+                      <!-- 階段分類微標籤 -->
+                      <div class="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 flex items-center gap-1.5">
+                        <span>第 {{ node.stepNumber }} 順位</span>
+                        <span>•</span>
+                        <span class="text-indigo-300">{{ node.phase }}</span>
+                      </div>
+                      
+                      <!-- 關卡標題 -->
+                      <h3 class="text-sm sm:text-base font-black text-white group-hover:text-amber-200 transition mt-0.5 flex items-center gap-1.5">
+                        <span>{{ node.title }}</span>
+                        <span v-if="selectedNodeId === node.id" class="text-amber-400 text-xs animate-bounce">
+                          <i class="fa-solid fa-play"></i> 比序中
+                        </span>
+                      </h3>
+                      
+                      <!-- 簡短摘要說明 -->
+                      <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                        {{ node.summary }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- 滿分/規則徽章 -->
+                  <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                    <span class="text-[10px] sm:text-xs font-black px-2.5 py-1 rounded-xl shadow border"
+                          :class="selectedNodeId === node.id 
+                            ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold ring-1 ring-amber-300' 
+                            : 'bg-slate-900/90 text-indigo-300 border-slate-700'">
+                      {{ node.badge }}
+                    </span>
+                    <span class="text-[10px] text-slate-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                      點擊查看 <i class="fa-solid fa-angle-right"></i>
                     </span>
                   </div>
-                  <div class="text-xs text-amber-300 mt-1 font-medium">
-                    {{ selectedNode.summary }}
+                </div>
+
+                <!-- 官方特殊橫向展開子流程 (如多元學習 4 細項、單科積分 5 科、單科標示 5 科) -->
+                <div v-if="node.subFlow" class="mt-3 pt-3 border-t border-slate-700/60">
+                  <div class="text-[10px] text-slate-400 font-bold mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrows-split-up-and-left text-amber-400"></i>
+                    <span>法定同分時【依序水平展開】比序：</span>
+                  </div>
+                  
+                  <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-1.5">
+                    <div v-for="(sub, sIdx) in node.subFlow" :key="sIdx"
+                         class="bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 flex flex-col justify-between text-center relative overflow-hidden">
+                      <div class="text-[11px] font-black text-indigo-200">{{ sub.name }}</div>
+                      <div class="text-[9px] text-amber-300 font-bold mt-0.5 truncate">{{ sub.score || sub.desc }}</div>
+                      <div v-if="sIdx < node.subFlow.length - 1" 
+                           class="hidden sm:block absolute -right-1 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] z-10">
+                        ➔
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div class="space-y-2.5 text-xs leading-relaxed text-slate-200">
-                  <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
-                    <div class="font-bold text-slate-400 mb-1 flex items-center gap-1.5">
-                      <i class="fa-solid fa-circle-info text-indigo-400"></i>
-                      <span>項目實務說明：</span>
-                    </div>
-                    <p>{{ selectedNode.detail }}</p>
-                  </div>
+              </div>
 
-                  <div v-if="selectedNode.id === 'total_score'" class="bg-indigo-950/40 p-3 rounded-2xl border border-indigo-800/40">
-                    <div class="font-bold text-indigo-300 mb-1">📐 計算公式：</div>
-                    <p>總積分 = 志願序(30) + 就近入學(10) + 扶助弱勢(3) + 多元表現(27) + 教育會考(30) = 100 分上限。</p>
+              <!-- 節點間向下流動的連線與動態光束箭頭 (最後一個不顯示) -->
+              <div v-if="nIdx < flowchartNodes.length - 1" 
+                   class="flex items-center justify-center py-1">
+                <div class="flex flex-col items-center">
+                  <div class="w-0.5 h-3 bg-gradient-to-b from-indigo-500 to-purple-500"></div>
+                  <div class="w-5 h-5 rounded-full bg-slate-800 border border-indigo-500/50 flex items-center justify-center text-[10px] text-indigo-300 shadow">
+                    <i class="fa-solid fa-arrow-down animate-bounce text-[9px]"></i>
                   </div>
-
-                  <div v-if="selectedNode.id === 'exam_points'" class="bg-amber-950/40 p-3 rounded-2xl border border-amber-800/40">
-                    <div class="font-bold text-amber-300 mb-1">⭐ 中投區各科等級標示點數表 (附表2)：</div>
-                    <div class="grid grid-cols-4 gap-1 mt-1 text-[10px] text-center">
-                      <span class="bg-slate-800 p-1 rounded">A++ : 21點</span>
-                      <span class="bg-slate-800 p-1 rounded">A+ : 18點</span>
-                      <span class="bg-slate-800 p-1 rounded">A : 15點</span>
-                      <span class="bg-slate-800 p-1 rounded">B++ : 12點</span>
-                      <span class="bg-slate-800 p-1 rounded">B+ : 9點</span>
-                      <span class="bg-slate-800 p-1 rounded">B : 6點</span>
-                      <span class="bg-slate-800 p-1 rounded">C : 3點</span>
-                      <span class="bg-slate-800 p-1 rounded">寫作: 1~6點</span>
-                    </div>
-                  </div>
-
-                  <div v-if="selectedNode.id === 'plus_accumulation'" class="bg-purple-950/40 p-3 rounded-2xl border border-purple-800/40">
-                    <div class="font-bold text-purple-300 mb-1">💡 官方範例重點：</div>
-                    <p>總積點相同時，先比 A 級「+」號多寡（A++得2個+，A+得1個+）。若 A 之 + 號仍相同，再比 B 之 + 號多寡！</p>
-                  </div>
-
-                  <div v-if="selectedNode.id === 'subject_grades' || selectedNode.id === 'subject_scores'" class="bg-blue-950/40 p-3 rounded-2xl border border-blue-800/40">
-                    <div class="font-bold text-blue-300 mb-1">⚠️ 法定單科科目順序：</div>
-                    <p class="font-extrabold text-white text-xs sm:text-sm">國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然</p>
-                  </div>
-
-                  <div v-if="selectedNode.id === 'choice_score'" class="bg-emerald-950/40 p-3 rounded-2xl border border-emerald-800/40">
-                    <div class="font-bold text-emerald-300 mb-1">🎁 高職選填秘笈：</div>
-                    <p>連續選填同校不同類科者皆為同一志願序！台中高工各科連著填，全算第 1 志願序 (30分)！</p>
-                  </div>
-
-                  <div v-if="selectedNode.id === 'quota_overflow'" class="bg-rose-950/40 p-3 rounded-2xl border border-rose-800/40">
-                    <div class="font-bold text-rose-300 mb-1">🛡️ 學生權益保障：</div>
-                    <p>中投區電腦分發絕不以抽籤決定命運！若比到最後校序、順次全部相同而超額，依法全數【增額錄取】！</p>
-                  </div>
+                  <div class="w-0.5 h-3 bg-gradient-to-b from-purple-500 to-indigo-500"></div>
                 </div>
               </div>
+
             </div>
 
           </div>
+
+          <!-- 右側：關卡深度解析看板 (5 欄寬，隨動畫或點擊即時連動) -->
+          <div class="lg:col-span-5">
+            <div class="sticky top-20 glass-dark rounded-3xl p-5 sm:p-6 border-2 border-indigo-500/60 shadow-2xl space-y-4">
+              
+              <!-- 頂部卡片標題 -->
+              <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
+                <div class="flex items-center gap-2 text-indigo-400 text-xs font-extrabold uppercase tracking-wider">
+                  <i class="fa-solid fa-magnifying-glass-chart text-amber-400"></i>
+                  <span>關卡深度解析 ‧ 攻略錦囊</span>
+                </div>
+                <span class="text-xs bg-indigo-950 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-700 font-bold">
+                  第 {{ selectedNode.stepNumber }} / {{ flowchartNodes.length }} 關
+                </span>
+              </div>
+
+              <!-- 當前選定關卡資訊卡 -->
+              <div class="space-y-1">
+                <div class="text-[11px] text-amber-300 font-bold">{{ selectedNode.phase }}</div>
+                <h3 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                  <span>{{ selectedNode.title }}</span>
+                  <span class="text-xs bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-2 py-0.5 rounded-lg shadow">
+                    {{ selectedNode.badge }}
+                  </span>
+                </h3>
+              </div>
+
+              <!-- 官方條文引述區 -->
+              <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-1">
+                <div class="text-[10px] text-slate-400 font-extrabold flex items-center gap-1.5 uppercase tracking-wider">
+                  <i class="fa-solid fa-gavel text-amber-400"></i>
+                  <span>簡章附表 1 官方條文規定：</span>
+                </div>
+                <p class="text-xs text-slate-200 font-medium leading-relaxed pl-1">
+                  {{ selectedNode.officialQuote }}
+                </p>
+              </div>
+
+              <!-- 實務戰略與防踩坑解讀 -->
+              <div class="bg-indigo-950/40 p-4 rounded-2xl border border-indigo-800/40 space-y-2">
+                <div class="text-xs font-black text-indigo-300 flex items-center gap-1.5">
+                  <i class="fa-solid fa-lightbulb text-yellow-300"></i>
+                  <span>為什麼這關是勝負分水嶺？</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  {{ selectedNode.detail }}
+                </p>
+              </div>
+
+              <!-- 特殊關卡公式/表格小卡 -->
+              <!-- 關卡 1: 總積分 100 分計算表 -->
+              <div v-if="selectedNode.id === 'total_score'" class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs">
+                <div class="font-bold text-amber-300 flex items-center gap-1.5">
+                  <i class="fa-solid fa-calculator"></i>
+                  <span>總積分 100 分滿分結構表：</span>
+                </div>
+                <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                  <div class="bg-slate-800 p-1.5 rounded-lg text-slate-300">1. 志願序積分：<b class="text-white">30分</b></div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg text-slate-300">2. 就近入學積分：<b class="text-white">10分</b></div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg text-slate-300">3. 扶助弱勢積分：<b class="text-white">2/3分</b></div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg text-slate-300">4. 多元學習表現：<b class="text-white">27/30分</b></div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg text-slate-300 col-span-2">5. 教育會考表現：<b class="text-emerald-400">30分 (各科6分)</b></div>
+                </div>
+              </div>
+
+              <!-- 關卡 7: 國中教育會考總積點 (111點) -->
+              <div v-if="selectedNode.id === 'exam_points'" class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs">
+                <div class="font-bold text-amber-300 flex items-center gap-1.5">
+                  <i class="fa-solid fa-bolt"></i>
+                  <span>會考等級標示點數換算表 (附表2)：</span>
+                </div>
+                <div class="grid grid-cols-4 gap-1 text-[11px] text-center">
+                  <div class="bg-slate-800 p-1.5 rounded-lg"><span class="text-indigo-300 font-bold">A++</span>: 21點</div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg"><span class="text-indigo-300 font-bold">A+</span>: 18點</div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg"><span class="text-indigo-300 font-bold">A</span>: 15點</div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg"><span class="text-teal-300 font-bold">B++</span>: 12點</div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg"><span class="text-teal-300 font-bold">B+</span>: 9點</div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg"><span class="text-teal-300 font-bold">B</span>: 6點</div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg"><span class="text-rose-300 font-bold">C</span>: 3點</div>
+                  <div class="bg-slate-800 p-1.5 rounded-lg text-amber-300 font-bold">寫作: 1~6點</div>
+                </div>
+                <div class="text-[10px] text-slate-400">最高滿分：21 × 5 科 + 6 點 = 111 點！</div>
+              </div>
+
+              <!-- 關卡 8: + 號累積加總比序 -->
+              <div v-if="selectedNode.id === 'plus_accumulation'" class="bg-purple-950/40 p-3.5 rounded-2xl border border-purple-800/40 space-y-1 text-xs">
+                <div class="font-bold text-purple-300 flex items-center gap-1.5">
+                  <i class="fa-solid fa-plus-circle"></i>
+                  <span>「+」號加總大解密：</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-relaxed">
+                  中投區「總積點（滿分111點）」相同時，進入第 8 關比全部各科「+」號加總（A++ 算 2 個+、A+ 算 1 個+、B++ 算 2 個+、B+ 算 1 個+）。總 + 號多者勝出！
+                </p>
+              </div>
+
+              <!-- 關卡 9 & 10: 單科國數英社自 -->
+              <div v-if="selectedNode.id === 'subject_scores' || selectedNode.id === 'subject_grades'" 
+                   class="bg-blue-950/40 p-3.5 rounded-2xl border border-blue-800/40 space-y-1.5 text-xs">
+                <div class="font-bold text-cyan-300 flex items-center gap-1.5">
+                  <i class="fa-solid fa-arrow-down-a-z"></i>
+                  <span>法定嚴格單科比序優先順序：</span>
+                </div>
+                <div class="flex items-center justify-between text-xs font-black text-center pt-1">
+                  <span class="bg-indigo-600 text-white px-2 py-1 rounded-lg">1. 國文</span>
+                  <span class="text-slate-500">➔</span>
+                  <span class="bg-slate-800 text-slate-200 px-2 py-1 rounded-lg">2. 數學</span>
+                  <span class="text-slate-500">➔</span>
+                  <span class="bg-slate-800 text-slate-200 px-2 py-1 rounded-lg">3. 英語</span>
+                  <span class="text-slate-500">➔</span>
+                  <span class="bg-slate-800 text-slate-200 px-2 py-1 rounded-lg">4. 社會</span>
+                  <span class="text-slate-500">➔</span>
+                  <span class="bg-slate-800 text-slate-200 px-2 py-1 rounded-lg">5. 自然</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">
+                  國文科位居第一順位！若前面各項皆平手，單科國文高者直接優先錄取！
+                </p>
+              </div>
+
+              <!-- 關卡 2: 連續選填同校同科特權 -->
+              <div v-if="selectedNode.id === 'choice_score'" class="bg-emerald-950/40 p-3.5 rounded-2xl border border-emerald-800/40 space-y-1.5 text-xs">
+                <div class="font-bold text-emerald-300 flex items-center gap-1.5">
+                  <i class="fa-solid fa-gift"></i>
+                  <span>高職考生超級特權（連填同校不扣分）：</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-relaxed">
+                  若連續選填同一所學校之不同科別（例如：第1志願台中高工電機、第2志願台中高工電子、第3志願台中高工資訊），全數享有「第 1 志願序 30 分」完全不扣分待遇！
+                </p>
+              </div>
+
+              <!-- 關卡 13: 增額錄取皇冠 -->
+              <div v-if="selectedNode.id === 'quota_overflow'" class="bg-pink-950/40 p-3.5 rounded-2xl border border-pink-800/40 space-y-1.5 text-xs text-center">
+                <div class="text-3xl animate-bounce">👑</div>
+                <div class="font-black text-rose-300 text-sm">中投區絕不抽籤！同分全數增額錄取！</div>
+                <p class="text-[11px] text-slate-300 leading-relaxed">
+                  經過 12 道比序若仍完全平手超額，依規定全數增額錄取，絕不靠抽籤決定命運，最高保障每一位學生的努力！
+                </p>
+              </div>
+
+            </div>
+          </div>
+
         </div>
 
       </section>

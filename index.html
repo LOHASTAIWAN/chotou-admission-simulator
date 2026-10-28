@@ -141,7 +141,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5">
             <button v-for="(quiz, idx) in quizList" :key="quiz.id"
                     @click="selectQuiz(idx)"
                     :disabled="isScanning"
@@ -151,12 +151,13 @@
                         : 'bg-slate-800/90 text-slate-300 border-slate-700 hover:bg-slate-700/70',
                       isScanning ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                     ]"
-                    class="p-2 sm:p-2.5 rounded-xl border text-left text-xs transition-all flex flex-col justify-between h-18 sm:h-20 active:scale-95">
+                    class="p-2 sm:p-2.5 rounded-xl border text-left text-xs transition-all flex flex-col justify-between h-20 sm:h-22 active:scale-95">
               <div class="flex items-center justify-between w-full">
                 <span class="font-black text-white">第 {{ idx + 1 }} 戰</span>
-                <span class="text-[9px] px-1 py-0.5 rounded bg-slate-900/80 text-indigo-300">{{ quiz.badge }}</span>
+                <span class="text-[9px] px-1 py-0.5 rounded bg-slate-900/80 text-indigo-300 font-bold truncate max-w-[50px]">{{ quiz.badge }}</span>
               </div>
-              <div class="font-bold truncate text-[11px] text-slate-200 mt-1">{{ quiz.targetSchool.name }}</div>
+              <div class="font-black truncate text-[11px] text-amber-200 mt-1">{{ quiz.targetSchool.name }}</div>
+              <div class="text-[9px] text-slate-400 truncate">{{ quiz.targetSchool.department }}</div>
             </button>
           </div>
         </div>
@@ -1448,12 +1449,20 @@
 
         </div>
 
-        <div class="text-center pt-2">
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <!-- 一般執行按鈕 -->
           <button @click="runSandboxSimulation"
                   :disabled="isSandboxRunning"
-                  class="bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 active:scale-95 text-white font-black text-base sm:text-lg py-3.5 px-8 rounded-3xl shadow-xl shadow-teal-500/30 transition-all card-hover inline-flex items-center gap-2.5">
+                  class="bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 active:scale-95 text-white font-black text-sm sm:text-base py-3 px-6 rounded-3xl shadow-xl shadow-teal-500/20 transition-all card-hover inline-flex items-center gap-2">
             <i class="fa-solid fa-play"></i>
-            <span>{{ isSandboxRunning ? '電腦分發比序中...' : '🚀 啟動 116 電腦分發比序對決！' }}</span>
+            <span>{{ isSandboxRunning ? '電腦分發比序中...' : '🚀 本地分發比序' }}</span>
+          </button>
+
+          <!-- 全螢幕沉浸執行按鈕 -->
+          <button @click="openSandboxFullscreen"
+                  class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 hover:from-amber-600 hover:to-rose-700 active:scale-95 text-slate-950 font-black text-sm sm:text-base py-3 px-7 rounded-3xl shadow-xl shadow-orange-500/30 transition-all card-hover inline-flex items-center gap-2 ring-2 ring-amber-300">
+            <i class="fa-solid fa-expand animate-pulse"></i>
+            <span>🖥️ 全螢幕動態擂台比序 (速度可調)</span>
           </button>
         </div>
 
@@ -1542,7 +1551,7 @@
               </p>
             </div>
 
-            <!-- 控制動作群：播放/暫停/原圖對照 -->
+            <!-- 控制動作群：播放/暫停/速度/全螢幕/原圖對照 -->
             <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
               <!-- 自動播放/暫停按鈕 -->
               <button @click="isFlowPlaying ? pauseFlowAnim() : playFlowAnim()"
@@ -1554,6 +1563,23 @@
                 <span>{{ isFlowPlaying ? '暫停動畫' : '🎬 播放闖關動畫' }}</span>
               </button>
 
+              <!-- 動畫速度調整器 -->
+              <div class="flex items-center bg-slate-800 rounded-2xl p-1 border border-slate-700 text-xs font-bold">
+                <span class="text-[10px] text-slate-400 px-1 hidden sm:inline">速度:</span>
+                <button @click="setFlowchartSpeed(0.5)" 
+                        :class="flowchartSpeed === 0.5 ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'"
+                        class="px-1.5 py-1 rounded-xl transition text-[10px] sm:text-[11px]">0.5x</button>
+                <button @click="setFlowchartSpeed(1.0)" 
+                        :class="flowchartSpeed === 1.0 ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'"
+                        class="px-1.5 py-1 rounded-xl transition text-[10px] sm:text-[11px]">1.0x</button>
+                <button @click="setFlowchartSpeed(2.0)" 
+                        :class="flowchartSpeed === 2.0 ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'"
+                        class="px-1.5 py-1 rounded-xl transition text-[10px] sm:text-[11px]">2.0x</button>
+                <button @click="setFlowchartSpeed(3.0)" 
+                        :class="flowchartSpeed === 3.0 ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'"
+                        class="px-1.5 py-1 rounded-xl transition text-[10px] sm:text-[11px]">3.0x</button>
+              </div>
+
               <!-- 上一步 / 下一步 -->
               <div class="flex items-center bg-slate-800 rounded-2xl p-1 border border-slate-700">
                 <button @click="prevFlowNode" 
@@ -1561,7 +1587,7 @@
                         class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-transparent transition text-xs">
                   <i class="fa-solid fa-backward-step"></i>
                 </button>
-                <span class="text-[11px] font-black text-amber-300 px-2 min-w-[55px] text-center">
+                <span class="text-[11px] font-black text-amber-300 px-1.5 min-w-[50px] text-center">
                   {{ currentFlowNodeIndex + 1 }} / {{ flowchartNodes.length }}
                 </span>
                 <button @click="nextFlowNode" 
@@ -1576,6 +1602,13 @@
                       title="重置至第 1 關"
                       class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl border border-slate-700 transition active:scale-95 text-xs">
                 <i class="fa-solid fa-rotate-left"></i>
+              </button>
+
+              <!-- 全螢幕動態劇院模式按鈕 -->
+              <button @click="openFlowchartFullscreen"
+                      class="px-3 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl text-xs font-black transition active:scale-95 flex items-center gap-1.5 shadow-lg">
+                <i class="fa-solid fa-expand"></i>
+                <span>🖥️ 全螢幕展示</span>
               </button>
 
               <!-- 官方原圖 PDF 對照按鈕 -->
@@ -1959,6 +1992,354 @@
         <i class="fa-solid fa-circle-info text-indigo-400"></i>
         <span>提示：點擊任何空白處或右上角 ✕ 即可關閉視窗</span>
       </div>
+    </div>
+
+    <!-- ==================== 比序流程圖 全螢幕沉浸式劇院視窗 ==================== -->
+    <div v-if="isFlowchartFullscreen"
+         class="fixed inset-0 z-[110] bg-slate-950/98 backdrop-blur-2xl flex flex-col p-3 sm:p-6 overflow-hidden animate-fadeIn">
+      
+      <!-- 頂部導覽控制吧 -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-white flex-shrink-0">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <span class="w-9 h-9 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-base font-bold shadow-lg shadow-indigo-500/30">
+            <i class="fa-solid fa-sitemap"></i>
+          </span>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="bg-indigo-600/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">全螢幕劇院模式</span>
+              <span class="text-xs text-amber-300 font-bold hidden sm:inline">中投區 12 階超額比序順序</span>
+            </div>
+            <h3 class="text-sm sm:text-lg font-black text-white truncate">
+              第 {{ selectedNode.stepNumber }} 關：{{ selectedNode.title }}
+            </h3>
+          </div>
+        </div>
+
+        <!-- 中間控制器 -->
+        <div class="flex items-center gap-2">
+          <!-- 播放/暫停 -->
+          <button @click="isFlowPlaying ? pauseFlowAnim() : playFlowAnim()"
+                  class="px-3 py-1.5 rounded-xl text-xs font-black transition active:scale-95 flex items-center gap-1.5 shadow"
+                  :class="isFlowPlaying ? 'bg-amber-500 text-slate-950 ring-2 ring-amber-300' : 'bg-indigo-600 hover:bg-indigo-500 text-white'">
+            <i class="fa-solid" :class="isFlowPlaying ? 'fa-pause' : 'fa-play'"></i>
+            <span>{{ isFlowPlaying ? '暫停' : '播放' }}</span>
+          </button>
+
+          <!-- 速度切換 -->
+          <div class="flex items-center bg-slate-900 rounded-xl p-0.5 border border-slate-700 text-xs">
+            <button @click="setFlowchartSpeed(0.5)" :class="flowchartSpeed === 0.5 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">0.5x</button>
+            <button @click="setFlowchartSpeed(1.0)" :class="flowchartSpeed === 1.0 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">1.0x</button>
+            <button @click="setFlowchartSpeed(2.0)" :class="flowchartSpeed === 2.0 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">2.0x</button>
+            <button @click="setFlowchartSpeed(3.0)" :class="flowchartSpeed === 3.0 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">3.0x</button>
+          </div>
+
+          <!-- 上一步 / 下一步 -->
+          <div class="hidden md:flex items-center bg-slate-900 rounded-xl p-0.5 border border-slate-700">
+            <button @click="prevFlowNode" :disabled="currentFlowNodeIndex === 0" class="p-1.5 text-slate-300 hover:text-white disabled:opacity-40"><i class="fa-solid fa-backward-step text-xs"></i></button>
+            <span class="text-[10px] font-black text-amber-300 px-2">{{ currentFlowNodeIndex + 1 }}/{{ flowchartNodes.length }}</span>
+            <button @click="nextFlowNode" :disabled="currentFlowNodeIndex === flowchartNodes.length - 1" class="p-1.5 text-slate-300 hover:text-white disabled:opacity-40"><i class="fa-solid fa-forward-step text-xs"></i></button>
+          </div>
+
+          <!-- 關閉全螢幕 -->
+          <button @click="closeFlowchartFullscreen" 
+                  class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 border border-slate-600 text-xs transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+            <span class="hidden sm:inline">退出 (ESC)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 主體超大雙欄滾動畫布 -->
+      <div class="flex-grow overflow-y-auto grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 pr-1">
+        <!-- 左側流程樹狀大畫布 (7欄) -->
+        <div class="lg:col-span-7 space-y-3">
+          <div v-for="(node, nIdx) in flowchartNodes" :key="'fs-'+node.id"
+               @click="selectNode(node.id)"
+               class="cursor-pointer rounded-2xl p-4 border transition-all duration-300 relative overflow-hidden"
+               :class="selectedNodeId === node.id 
+                 ? 'bg-gradient-to-r from-indigo-950/95 via-purple-950/90 to-slate-900 border-amber-400 ring-2 ring-amber-400/70 shadow-[0_0_30px_rgba(251,191,36,0.3)] scale-[1.01]' 
+                 : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/80'">
+            
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-base flex-shrink-0 shadow-lg text-white"
+                     :class="[`bg-gradient-to-tr ${node.color}`, selectedNodeId === node.id ? 'ring-2 ring-amber-300 scale-105' : '']">
+                  <i class="fa-solid" :class="node.icon"></i>
+                </div>
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">
+                    第 {{ node.stepNumber }} 順位 • <span class="text-indigo-300">{{ node.phase }}</span>
+                  </div>
+                  <h4 class="text-base sm:text-lg font-black text-white mt-0.5 flex items-center gap-2">
+                    <span>{{ node.title }}</span>
+                    <span v-if="selectedNodeId === node.id" class="text-amber-400 text-xs animate-bounce">
+                      <i class="fa-solid fa-play"></i> 當前比序中
+                    </span>
+                  </h4>
+                  <p class="text-xs text-slate-300 mt-1 leading-relaxed">{{ node.summary }}</p>
+                </div>
+              </div>
+              <span class="text-xs font-black px-3 py-1 rounded-xl shadow border"
+                    :class="selectedNodeId === node.id ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold' : 'bg-slate-900 text-indigo-300 border-slate-700'">
+                {{ node.badge }}
+              </span>
+            </div>
+
+            <!-- 橫向展開子項目 -->
+            <div v-if="node.subFlow" class="mt-3 pt-3 border-t border-slate-700/60">
+              <div class="text-[10px] text-slate-400 font-bold mb-2 flex items-center gap-1.5">
+                <i class="fa-solid fa-arrows-split-up-and-left text-amber-400"></i>
+                <span>法定同分時【依序水平展開】比序：</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-1.5">
+                <div v-for="(sub, sIdx) in node.subFlow" :key="'fs-sub-'+sIdx"
+                     class="bg-slate-950/80 p-2 rounded-xl border border-slate-800 text-center">
+                  <div class="text-[11px] font-black text-indigo-200">{{ sub.name }}</div>
+                  <div class="text-[10px] text-amber-300 font-bold mt-0.5 truncate">{{ sub.score || sub.desc }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右側深度解析大看板 (5欄) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900/90 rounded-3xl p-5 sm:p-6 border-2 border-indigo-500/60 shadow-2xl space-y-4 sticky top-0">
+            <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
+              <div class="text-indigo-400 text-xs font-black uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-magnifying-glass-chart text-amber-400"></i>
+                <span>關卡深度解析 ‧ 攻略錦囊</span>
+              </div>
+              <span class="text-xs bg-indigo-950 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-700 font-bold">
+                第 {{ selectedNode.stepNumber }} / {{ flowchartNodes.length }} 關
+              </span>
+            </div>
+
+            <div class="space-y-1">
+              <div class="text-xs text-amber-300 font-bold">{{ selectedNode.phase }}</div>
+              <h3 class="text-xl font-black text-white flex items-center gap-2">
+                <span>{{ selectedNode.title }}</span>
+                <span class="text-xs bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-lg shadow">
+                  {{ selectedNode.badge }}
+                </span>
+              </h3>
+            </div>
+
+            <div class="bg-slate-950/90 p-4 rounded-2xl border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-slate-400 font-bold flex items-center gap-1.5 uppercase">
+                <i class="fa-solid fa-gavel text-amber-400"></i>
+                <span>官方簡章條文：</span>
+              </div>
+              <p class="text-xs text-slate-200 leading-relaxed">{{ selectedNode.officialQuote }}</p>
+            </div>
+
+            <div class="bg-indigo-950/40 p-4 rounded-2xl border border-indigo-800/40 space-y-2">
+              <div class="text-xs font-black text-indigo-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-lightbulb text-yellow-300"></i>
+                <span>為什麼這關是勝負分水嶺？</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">{{ selectedNode.detail }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 沙盒比序全流程執行 全螢幕沉浸式對決擂台 ==================== -->
+    <div v-if="isSandboxFullscreen"
+         class="fixed inset-0 z-[115] bg-slate-950/98 backdrop-blur-2xl flex flex-col p-3 sm:p-6 overflow-hidden animate-fadeIn">
+      
+      <!-- 擂台頂部導覽控制列 -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-white flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-rose-600 flex items-center justify-center text-slate-950 text-lg font-black shadow-lg shadow-rose-500/30">
+            ⚔️
+          </span>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">沙盒比序全流程執行擂台</span>
+              <span class="text-xs text-amber-300 font-bold hidden sm:inline">{{ selectedSchool.name }} - {{ selectedSchool.department }} (缺額 1 名)</span>
+            </div>
+            <h3 class="text-sm sm:text-base font-black text-white">
+              {{ sandboxA.name }} VS {{ sandboxB.name }} 全流程比序對決
+            </h3>
+          </div>
+        </div>
+
+        <!-- 播放控制動作列 -->
+        <div class="flex items-center gap-2">
+          <!-- 播放/暫停 -->
+          <button @click="isSandboxFullscreenPlaying ? pauseSandboxFullscreen() : playSandboxFullscreen()"
+                  class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-black transition active:scale-95 flex items-center gap-1.5 shadow"
+                  :class="isSandboxFullscreenPlaying ? 'bg-amber-500 text-slate-950 ring-2 ring-amber-300 animate-pulse' : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'">
+            <i class="fa-solid" :class="isSandboxFullscreenPlaying ? 'fa-pause' : 'fa-play'"></i>
+            <span>{{ isSandboxFullscreenPlaying ? '暫停比序' : '▶️ 播放比序' }}</span>
+          </button>
+
+          <!-- 速度切換 (0.5x, 1x, 2x, 3x) -->
+          <div class="flex items-center bg-slate-900 rounded-xl p-0.5 border border-slate-700 text-xs">
+            <span class="text-[10px] text-slate-400 px-1.5 hidden sm:inline">速度:</span>
+            <button @click="setSandboxSpeed(0.5)" :class="sandboxSpeed === 0.5 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">0.5x</button>
+            <button @click="setSandboxSpeed(1.0)" :class="sandboxSpeed === 1.0 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">1.0x</button>
+            <button @click="setSandboxSpeed(2.0)" :class="sandboxSpeed === 2.0 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">2.0x</button>
+            <button @click="setSandboxSpeed(3.0)" :class="sandboxSpeed === 3.0 ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="px-2 py-1 rounded-lg text-[10px]">3.0x</button>
+          </div>
+
+          <!-- 上一步 / 下一步 -->
+          <div class="hidden sm:flex items-center bg-slate-900 rounded-xl p-0.5 border border-slate-700">
+            <button @click="prevSandboxFullscreenStep" :disabled="sandboxFullscreenIndex === 0" class="p-1.5 text-slate-300 hover:text-white disabled:opacity-40"><i class="fa-solid fa-backward-step text-xs"></i></button>
+            <span class="text-[10px] font-black text-amber-300 px-2">{{ sandboxFullscreenIndex + 1 }} / {{ sandboxComparison.allSteps.length }}</span>
+            <button @click="nextSandboxFullscreenStep" :disabled="sandboxFullscreenIndex === sandboxComparison.allSteps.length - 1" class="p-1.5 text-slate-300 hover:text-white disabled:opacity-40"><i class="fa-solid fa-forward-step text-xs"></i></button>
+          </div>
+
+          <!-- 重置 -->
+          <button @click="resetSandboxFullscreen" title="重置比序" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 text-xs">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+
+          <!-- 關閉全螢幕 -->
+          <button @click="closeSandboxFullscreen" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 border border-slate-600 text-xs transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+            <span class="hidden sm:inline">關閉 (ESC)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 擂台雙雄抬頭 (A vs B 數據對比卡) -->
+      <div class="grid grid-cols-2 gap-3 sm:gap-6 py-4 flex-shrink-0">
+        <!-- 考生 A -->
+        <div class="bg-gradient-to-r from-indigo-950/80 to-slate-900 p-3.5 sm:p-4 rounded-2xl border-2 border-indigo-500/50 shadow-xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl sm:text-4xl">{{ sandboxA.avatar }}</span>
+            <div>
+              <div class="text-xs text-indigo-300 font-bold">考生 A</div>
+              <div class="text-base sm:text-xl font-black text-white">{{ sandboxA.name }}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-slate-400">總積分 / 積點</div>
+            <div class="text-sm sm:text-base font-black text-emerald-400">
+              {{ sandboxStatsA.totalScore }} 分 / <span class="text-amber-400">{{ sandboxStatsA.examPoints }} 點</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 考生 B -->
+        <div class="bg-gradient-to-r from-purple-950/80 to-slate-900 p-3.5 sm:p-4 rounded-2xl border-2 border-purple-500/50 shadow-xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl sm:text-4xl">{{ sandboxB.avatar }}</span>
+            <div>
+              <div class="text-xs text-purple-300 font-bold">考生 B</div>
+              <div class="text-base sm:text-xl font-black text-white">{{ sandboxB.name }}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-slate-400">總積分 / 積點</div>
+            <div class="text-sm sm:text-base font-black text-emerald-400">
+              {{ sandboxStatsB.totalScore }} 分 / <span class="text-amber-400">{{ sandboxStatsB.examPoints }} 點</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 擂台核心舞台：當前正在比序關卡大特寫 + 全流程關卡列表 -->
+      <div class="flex-grow overflow-y-auto grid grid-cols-1 lg:grid-cols-12 gap-5 pr-1">
+        
+        <!-- 當前進行中的關卡聚焦大看板 (7 欄) -->
+        <div class="lg:col-span-7 flex flex-col justify-between bg-slate-900/90 rounded-3xl p-5 sm:p-7 border-2 border-amber-400/80 shadow-[0_0_35px_rgba(251,191,36,0.2)]">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="bg-amber-400 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow">
+                第 {{ sandboxFullscreenIndex + 1 }} 關比序中
+              </span>
+              <span class="text-xs text-slate-400">
+                評分標準：{{ sandboxComparison.allSteps[sandboxFullscreenIndex].maxDesc }}
+              </span>
+            </div>
+
+            <!-- 關卡名稱 -->
+            <h2 class="text-xl sm:text-3xl font-black text-white">
+              {{ sandboxComparison.allSteps[sandboxFullscreenIndex].title }}
+            </h2>
+
+            <!-- A 與 B 當前數值對決大卡片 -->
+            <div class="grid grid-cols-2 gap-4 py-3">
+              <div class="bg-indigo-950/60 p-4 rounded-2xl border border-indigo-500/40 text-center space-y-1">
+                <div class="text-xs text-indigo-300 font-bold">{{ sandboxA.name }} 本關數值</div>
+                <div class="text-2xl sm:text-4xl font-black text-white">{{ sandboxComparison.allSteps[sandboxFullscreenIndex].valA }}</div>
+              </div>
+              <div class="bg-purple-950/60 p-4 rounded-2xl border border-purple-500/40 text-center space-y-1">
+                <div class="text-xs text-purple-300 font-bold">{{ sandboxB.name }} 本關數值</div>
+                <div class="text-2xl sm:text-4xl font-black text-white">{{ sandboxComparison.allSteps[sandboxFullscreenIndex].valB }}</div>
+              </div>
+            </div>
+
+            <!-- 本關判定狀態 -->
+            <div class="p-4 rounded-2xl text-center font-black text-base sm:text-lg border"
+                 :class="sandboxComparison.allSteps[sandboxFullscreenIndex].outcome === 'TIE' 
+                   ? 'bg-amber-950/50 text-amber-300 border-amber-600/50' 
+                   : (sandboxComparison.allSteps[sandboxFullscreenIndex].outcome === 'A_WIN' 
+                     ? 'bg-indigo-950/70 text-indigo-200 border-indigo-500 ring-2 ring-indigo-400' 
+                     : 'bg-purple-950/70 text-purple-200 border-purple-500 ring-2 ring-purple-400')">
+              <span v-if="sandboxComparison.allSteps[sandboxFullscreenIndex].outcome === 'TIE'">
+                ⚖️ 雙方在此關平手！尚未超額分出勝負，自動進入下一道比序！
+              </span>
+              <span v-else-if="sandboxComparison.allSteps[sandboxFullscreenIndex].outcome === 'A_WIN'">
+                🎉 恭喜！【{{ sandboxA.name }}】在此關勝出，確定錄取 {{ selectedSchool.name }}！
+              </span>
+              <span v-else>
+                🎉 恭喜！【{{ sandboxB.name }}】在此關勝出，確定錄取 {{ selectedSchool.name }}！
+              </span>
+            </div>
+
+            <!-- 詳細比序解說 -->
+            <div class="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 text-xs text-slate-300 leading-relaxed">
+              💡 {{ sandboxComparison.allSteps[sandboxFullscreenIndex].detailDesc }}
+            </div>
+          </div>
+
+          <!-- 底部快速切換 -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-400">
+            <button @click="prevSandboxFullscreenStep" :disabled="sandboxFullscreenIndex === 0" class="hover:text-white disabled:opacity-30">
+              <i class="fa-solid fa-arrow-left"></i> 上一道比序
+            </button>
+            <span class="font-bold text-slate-300">進度：第 {{ sandboxFullscreenIndex + 1 }} / {{ sandboxComparison.allSteps.length }} 步</span>
+            <button @click="nextSandboxFullscreenStep" :disabled="sandboxFullscreenIndex === sandboxComparison.allSteps.length - 1" class="hover:text-white disabled:opacity-30">
+              下一道比序 <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 右側：全流程滾動清單 (5 欄) -->
+        <div class="lg:col-span-5 space-y-2">
+          <div class="text-xs font-bold text-slate-400 flex items-center justify-between px-1">
+            <span>比序關卡完整鏈</span>
+            <span class="text-amber-400">點選直接跳轉檢視</span>
+          </div>
+          <div class="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
+            <div v-for="(step, sIdx) in sandboxComparison.allSteps" :key="'fs-sand-'+sIdx"
+                 @click="sandboxFullscreenIndex = sIdx"
+                 class="p-2.5 rounded-xl border text-xs cursor-pointer transition flex items-center justify-between"
+                 :class="sandboxFullscreenIndex === sIdx 
+                   ? 'bg-amber-950/60 border-amber-400 text-white ring-1 ring-amber-400 shadow' 
+                   : (sIdx < sandboxFullscreenIndex ? 'bg-slate-900/60 border-slate-800 text-slate-400' : 'bg-slate-900/40 border-slate-800/60 text-slate-500')">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]"
+                      :class="sandboxFullscreenIndex === sIdx ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-slate-400'">
+                  {{ sIdx + 1 }}
+                </span>
+                <span class="font-bold truncate max-w-[150px] sm:max-w-[200px]">{{ step.title }}</span>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                    :class="step.outcome === 'TIE' ? 'bg-slate-800 text-slate-400' : (step.outcome === 'A_WIN' ? 'bg-indigo-600 text-white' : 'bg-purple-600 text-white')">
+                {{ step.outcome === 'TIE' ? '平手' : (step.outcome === 'A_WIN' ? 'A勝' : 'B勝') }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
     <!-- ==================== 頁尾版權與法規宣告 (Footer) ==================== -->

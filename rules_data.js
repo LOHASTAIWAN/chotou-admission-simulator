@@ -1020,14 +1020,18 @@ function finishComparison(steps, outcome, statsA, statsB) {
   };
 }
 
-// 6 個國三生最易踩坑的「經典對決題目庫」
+// 8 個貼近一般中投區學生日常分數的「經典對決題目庫」
+// 結構配置：名校 2 所、長億高中 1 所、普通高中及高職 5 所（一般學生成績中段常態）
 const QUIZ_CHALLENGES = [
+  // -------------------------------------------------------------
+  // 【名校 1】臺中一中：5A 壓線 vs 4A1B 滿積點
+  // -------------------------------------------------------------
   {
     id: 'quiz_1',
-    badge: '經典迷思',
-    title: '【第 1 戰】5A 迷思 vs 4A1B 神積點，誰能稱霸中投？',
+    badge: '名校對決 1',
+    title: '【第 1 戰】5A 壓線 vs 4A1B 破百積點，誰能稱霸中投？',
     targetSchool: { name: '臺中一中', department: '普通科', quota: 1 },
-    question: '志遠考出「5A 0+」但作文4級；明軒考出「4A++ 1B++」作文滿分6級（總積點破百！）。當名額只剩最後 1 個，誰會錄取？',
+    question: '志遠考出「5A 0+」作文4級分；明軒考出「4A++ 1B++」作文6級分滿分（總積點破百點！）。當一中只剩最後 1 個缺額，誰會被電腦錄取？',
     studentA: {
       name: '陳志遠',
       avatar: '👨‍🎓',
@@ -1044,44 +1048,23 @@ const QUIZ_CHALLENGES = [
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    hint: '💡 提示：很多人以為明軒總積點高達 102 點無敵，但請注意中投區第一關看的是「總積分(一般生滿分97/上限100)」！',
-    explanation: '【答案是陳志遠錄取！】志遠雖然每一科都是剛好壓線的 A，但 5 科全精熟(5A)使得「會考表現積分」拿下滿分 30 分，總積分達到一般生滿分 97 分！反觀明軒雖然 4 科 A++、寫作滿分總積點破百，但因為自然科是 B++(得4分)，會考積分只有 28 分，總積分為 95 分。在第一關「總積分」就被淘汰了！在中投區，保住 5A 永遠是第一優先！'
+    hint: '💡 提示：很多人以為明軒總積點高達 102 點無敵，但請注意中投區第 1 關看的是「總積分（一般生滿分97分）」！',
+    explanation: '【答案是陳志遠錄取！】志遠雖然每科都是剛好壓線的 A，但 5 科全精熟(5A)使「會考表現總積分」拿下滿分 30 分，總積分達一般生滿分 97 分！反觀明軒雖然 4 科 A++、寫作滿分總積點破百，但因自然科是 B++(得4分)，會考總積分只有 28 分，總積分為 95 分。在第一關「總積分」就被淘汰了！中投區保住 5A 永遠是第一優先！'
   },
+
+  // -------------------------------------------------------------
+  // 【名校 2】臺中女中：同為 5A 名校線，+ 號加總 vs 總積點
+  // -------------------------------------------------------------
   {
     id: 'quiz_2',
-    badge: '關鍵細節',
-    title: '【第 2 戰】同積點同積分，+ 號逆轉勝！',
-    targetSchool: { name: '臺中二中', department: '普通科', quota: 1 },
-    question: '小晴與小雨總積分都是 96 分，會考總積點也恰好都是 77 點！小晴是 3A+ 2B+，小雨是 2A+ 1A 1B++ 1B+。誰能搶下錄取席次？',
-    studentA: {
-      name: '許小晴',
-      avatar: '👩‍🎓',
-      grades: { chinese: 'A+', math: 'A+', english: 'A+', social: 'B+', science: 'B+' },
-      writing: '5',
-      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
-      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
-    },
-    studentB: {
-      name: '周小雨',
-      avatar: '👧‍🎓',
-      grades: { chinese: 'A+', math: 'A+', english: 'A', social: 'B++', science: 'B+' },
-      writing: '5',
-      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
-      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
-    },
-    hint: '💡 提示：總積點相同時，中投區既不抽籤、也不先比國文，而是比一項特殊的「標示統計」！',
-    explanation: '【答案是許小晴錄取！】本題取材自官方作業要點範例！當總積點相同(77點)時，進入第 8 關「國中教育會考等級標示加總比序」，先比 A 等級的「+」號多寡！小晴有 3 個 A+ (共3個+號)；小雨只有 2 個 A+ 與 1 個 A (共2個+號)。因此小晴在第 8-1 關直接獲勝錄取！'
-  },
-  {
-    id: 'quiz_3',
-    badge: '作文重要性',
-    title: '【第 3 戰】寫作測驗到底有沒有用？一分之差的關鍵絕殺！',
+    badge: '名校對決 2',
+    title: '【第 2 戰】同為 5A 頂尖名校線，先比 + 號還是先比積點？',
     targetSchool: { name: '臺中女中', department: '普通科', quota: 1 },
-    question: '羽彤考出 3A++ 2A+ (寫作4級分)；若瑄考出 3A++ 1A+ 1A (寫作6級分滿分)。兩人爭奪最後一個名額，誰會勝出？',
+    question: '羽彤考出 5A 4+（作文4級分，學科+號較多）；若瑄考出 5A 3+（作文5級分，多拿1點作文點數）。爭奪女中最後一個名額，誰會勝出？',
     studentA: {
       name: '張羽彤',
       avatar: '🎀',
-      grades: { chinese: 'A++', math: 'A++', english: 'A++', social: 'A+', science: 'A+' },
+      grades: { chinese: 'A+', math: 'A+', english: 'A+', social: 'A+', science: 'A' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
@@ -1089,88 +1072,188 @@ const QUIZ_CHALLENGES = [
     studentB: {
       name: '李若瑄',
       avatar: '🌟',
-      grades: { chinese: 'A++', math: 'A++', english: 'A++', social: 'A+', science: 'A' },
-      writing: '6',
+      grades: { chinese: 'A++', math: 'A', english: 'A', social: 'A', science: 'A' },
+      writing: '5',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    hint: '💡 提示：算算兩人的「會考總積點(滿分111)」！羽彤是 21*3+18*2+4 = 103點；若瑄是 21*3+18+15+6 = 102點！',
-    explanation: '【答案是張羽彤錄取！】羽彤總積點 103 點，若瑄 102 點。雖然若瑄作文拿到滿分6點，但因為學科羽彤多了一個 A+ (多3點)，所以羽彤在第七關「會考總積點」以 1 點之差勝出！這題告訴大家：作文非常重要（能補足2~3點差距），但每一科大科的等級標示更是一分都不能放鬆！'
+    hint: '💡 提示：算算兩人的「教育會考總積點(第七關)」！羽彤是 18*4+15+4 = 91點；若瑄是 21+15*4+5 = 92點！',
+    explanation: '【答案是李若瑄錄取！】這題是最常見的陷阱題！羽彤雖然有 4 個 + 號，若瑄只有 2 個 + 號（A++算2個+），但中投區是先比「第七關教育會考總積點（滿分111點）」，總積點相同時才進入第 8 關比「+ 號加總」！若瑄總積點 92 點高於羽彤的 91 點，因此在第七關直接勝出錄取！'
   },
+
+  // -------------------------------------------------------------
+  // 【長億高中 1 所】社區公立高中代表：5B 密集區之多元學習慘痛教訓
+  // -------------------------------------------------------------
+  {
+    id: 'quiz_3',
+    badge: '長億高中',
+    title: '【第 3 戰】長億高中 5B 壓線戰：少記嘉獎差 0.5 分的慘痛代價！',
+    targetSchool: { name: '長億高中', department: '普通科', quota: 1 },
+    question: '家豪會考考出 5B 7+（總積點 55 點），但國中三年只有 2 支嘉獎（獎勵紀錄只得1分）；雅婷考出 5B 4+（總積點 48 點），但三年累積滿大功小功獎勵拿滿 4 分。爭奪長億高中最後名額，誰會勝出？',
+    studentA: {
+      name: '王家豪',
+      avatar: '🧢',
+      grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B' },
+      writing: '4',
+      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
+      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 1, disadvantaged: 0, nearby: 10
+    },
+    studentB: {
+      name: '陳雅婷',
+      avatar: '🎒',
+      grades: { chinese: 'B+', math: 'B+', english: 'B+', social: 'B+', science: 'B' },
+      writing: '4',
+      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
+      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+    },
+    hint: '💡 提示：算算兩人的「免試入學總積分（第一關）」！家豪總積分為 94 分，雅婷總積分為 97 分！',
+    explanation: '【答案是陳雅婷錄取！】這是一般國中生最真實的血淚教訓！長億高中 114 年最低門檻約 5B7+。家豪會考雖然考得很好拿了 5B7+ (55點)，但因為國中平時不重視獎勵紀錄，多元學習只拿 24 分，導致總積分僅 94 分；反觀雅婷雖然會考只有 5B4+，但多元學習滿分(27分)，總積分達 97 分！在第一關總積分，雅婷就以 97 分直接勝出淘汰 94 分的家豪！'
+  },
+
+  // -------------------------------------------------------------
+  // 【普通高中 1】臺中二中：一般中上學生 3A2B 級距，+ 號逆轉勝
+  // -------------------------------------------------------------
   {
     id: 'quiz_4',
-    badge: '科目權重大魔王',
-    title: '【第 4 戰】國文科真的是中投區大魔王嗎？單科 PK 戰！',
-    targetSchool: { name: '興大附中', department: '普通科', quota: 1 },
-    question: '子豪與冠宇總積分100、總積點95點、+號總數也剛好相同。子豪國文 A++ 數學 A；冠宇國文 A 數學 A++。誰會笑到最後？',
+    badge: '普通高中',
+    title: '【第 4 戰】二中 3A2B 膠著戰：總積點完全相同，+ 號決勝負！',
+    targetSchool: { name: '臺中二中', department: '普通科', quota: 1 },
+    question: '小晴是 3A 2B (2個+) 總積點 73 點；小雨也是 3A 2B 但只有 1 個 + 總積點恰好也是 73 點。總積分皆 97 分完全平手，誰能錄取二中？',
     studentA: {
-      name: '黃子豪',
-      avatar: '📘',
-      grades: { chinese: 'A++', math: 'A', english: 'A+', social: 'A+', science: 'A+' },
-      writing: '5',
+      name: '許小晴',
+      avatar: '👧',
+      grades: { chinese: 'A+', math: 'A+', english: 'A', social: 'B', science: 'B' },
+      writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '吳冠宇',
-      avatar: '📐',
-      grades: { chinese: 'A', math: 'A++', english: 'A+', social: 'A+', science: 'A+' },
+      name: '周小雨',
+      avatar: '👱‍♀️',
+      grades: { chinese: 'A+', math: 'A', english: 'A', social: 'B+', science: 'B' },
       writing: '5',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    hint: '💡 提示：比到第十關單科標示時，法定順序是：國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然！',
-    explanation: '【答案是黃子豪錄取！】子豪國文 A++，冠宇國文 A。在中投區，單科比序的第一順位就是「國文科」！在國文科等級標示比序時，子豪就直接獲勝錄取，完全不需要輪到第二順位的數學科！這就是中投區考生口耳相傳「國文定生死」的由來！'
+    hint: '💡 提示：第七關總積點兩人都為 73 點平手，接著進入第八關比什麼？',
+    explanation: '【答案是許小晴錄取！】兩人總積分皆 97 分、會考表現總積分皆 26 分、會考總積點皆 73 點！此時正式啟動第八關「教育會考各科等級標示加總（+號總數比序）」：小晴國A+、數A+共 2 個 + 號；小雨國A+、社B+雖也有2個+，但細比 A 等級標示時小晴有 2 個 A+ 勝過小雨的 1 個 A+，小晴順利搶下二中席次！'
   },
+
+  // -------------------------------------------------------------
+  // 【普通高中 2】清水高中：1A4B 社區指標公立高中，1A vs 5B++
+  // -------------------------------------------------------------
   {
     id: 'quiz_5',
-    badge: '志願序規則秘笈',
-    title: '【第 5 戰】連續填寫同校不同科，真的不會被扣分嗎？',
-    targetSchool: { name: '臺中高工', department: '電機科', quota: 1 },
-    question: '阿凱第1志願填臺中高工資訊科、第2志願填臺中高工電機科；阿偉第1志願直接填臺中高工電機科。阿凱第2志願比電機科時志願序分數會吃虧嗎？',
+    badge: '普通高中',
+    title: '【第 5 戰】清水高中 1A4B 保衛戰：1A 勝過 5B++ 嗎？',
+    targetSchool: { name: '清水高中', department: '普通科', quota: 1 },
+    question: '冠宇成績平平，只考出 1A 4B (國A 其他皆B，作文4)；柏廷五科全都是 B++ (作文5)，總積點高達 65 點！清水高中只剩最後 1 個缺額，誰會錄取？',
     studentA: {
-      name: '劉阿凱',
-      avatar: '⚡',
-      grades: { chinese: 'A', math: 'A+', english: 'A', social: 'B++', science: 'B++' },
+      name: '張冠宇',
+      avatar: '👦',
+      grades: { chinese: 'A', math: 'B', english: 'B', social: 'B', science: 'B' },
+      writing: '4',
+      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
+      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+    },
+    studentB: {
+      name: '洪柏廷',
+      avatar: '🧑',
+      grades: { chinese: 'B++', math: 'B++', english: 'B++', social: 'B++', science: 'B++' },
       writing: '5',
+      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
+      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+    },
+    hint: '💡 提示：算算兩人的「教育會考表現積分」！A 得 6 分、B 得 4 分！',
+    explanation: '【答案是張冠宇錄取！】這題是中投區家長最常掉入的陷阱！柏廷雖然 5 科全是 B++ 總積點高達 65 點，但因為沒有任何一科拿到 A（精熟），每科只能拿基礎 4 分，會考表現總積分只有 20 分（總積分 91 分）；而冠宇雖然只有 1 個最普通的 A（積點才 43 點），但這科 A 拿了 6 分，會考表現總積分為 22 分（總積分 93 分）！冠宇在第一關總積分直接錄取！'
+  },
+
+  // -------------------------------------------------------------
+  // 【普通高中 3】大甲高中：5B 平手生死鬥，單科國文定天下
+  // -------------------------------------------------------------
+  {
+    id: 'quiz_6',
+    badge: '普通高中',
+    title: '【第 6 戰】大甲高中 5B 平手局：關鍵時刻誰是單科大魔王？',
+    targetSchool: { name: '大甲高中', department: '普通科', quota: 1 },
+    question: '俊銘與志豪成績都是 5B 2+，作文都是 3 級分，總積分 91 分、總積點 45 點完全相同。俊銘是國文 B++ 數學 B；志豪是國文 B 數學 B++。誰會錄取大甲高中？',
+    studentA: {
+      name: '李俊銘',
+      avatar: '🏃',
+      grades: { chinese: 'B++', math: 'B', english: 'B', social: 'B', science: 'B' },
+      writing: '3',
+      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
+      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+    },
+    studentB: {
+      name: '蔡志豪',
+      avatar: '🧗',
+      grades: { chinese: 'B', math: 'B++', english: 'B', social: 'B', science: 'B' },
+      writing: '3',
+      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
+      balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+    },
+    hint: '💡 提示：一路平手比到第十關單科標示時，法定第一順位的科目是哪一科？',
+    explanation: '【答案是李俊銘錄取！】兩人從總積分、志願序、多元表現、會考總分、總積點(45點)、+號總數(2個+)一路平手到第九關單科積分！進入第十關「單科成績標示比序」，法定嚴格順序是：國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然。俊銘國文是 B++，直接勝過志豪的國文 B，完全不需要比到數學科！這就是中投區「國文定生死」的由來！'
+  },
+
+  // -------------------------------------------------------------
+  // 【公立高職 1】臺中高工：連續選填同校同科特權 vs 跨校扣分
+  // -------------------------------------------------------------
+  {
+    id: 'quiz_7',
+    badge: '公立高職 1',
+    title: '【第 7 戰】臺中高工志願序密技：連填同校不扣分，逆轉高分跨校生！',
+    targetSchool: { name: '臺中高工', department: '汽車科', quota: 1 },
+    question: '阿哲成績普通 5B 6+（作文4），第1志願填臺中高工板金科、第2志願緊接著填臺中高工汽車科；建宏成績較高考出 2A3B 0+，第1志願填其他學校、第2志願才跨校選填臺中高工汽車科。誰會錄取？',
+    studentA: {
+      name: '劉阿哲',
+      avatar: '🔧',
+      grades: { chinese: 'B++', math: 'B+', english: 'B+', social: 'B+', science: 'B+' },
+      writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 2 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '張阿偉',
-      avatar: '🔧',
-      grades: { chinese: 'A', math: 'A+', english: 'A', social: 'B++', science: 'B++' },
-      writing: '5',
-      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
+      name: '陳建宏',
+      avatar: '💻',
+      grades: { chinese: 'A', math: 'A', english: 'B', social: 'B', science: 'B' },
+      writing: '4',
+      choiceInfo: { score: 29, rank: 2, schoolRank: 2, choiceIndex: 2 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    hint: '💡 提示：阿凱的志願序積分依然是 30 分！但在所有會考成績完全相同時，比到第 12 關會發生什麼事？',
-    explanation: '【答案是張阿偉錄取！】注意！阿凱的志願序積分確實是「30分滿分」（因為連續填同校不同科計為同一個志願序），所以前 11 關兩人都平手！但因為兩人會考成績完全一模一樣，一路比到了第 12 關「志願序之順次」：阿偉是「第1志願」，阿凱是「第2志願」，阿偉排在更前順次而錄取！這題讓學生學到：同校跨科不會扣志願積分，但若成績完全同分，排第一志願者仍佔順次優勢！'
+    studentB_note: '建宏第1志願填興大附農，第2志願跨校填臺中高工，跨入第2志願序群組扣1分',
+    hint: '💡 提示：算算兩人的「志願序積分」！阿哲連填同校算第 1 志願序(30分)；建宏跨校第 2 志願被扣 1 分(29分)！',
+    explanation: '【答案是劉阿哲錄取！】中投區免試入學最實用的高職技巧！阿哲雖然只有 5B6+ 成績普通，但他善用「連續選填同校不同科皆為同一志願序」的特權，志願序積分拿到滿分 30 分，總積分達 95 分；建宏成績雖然高達 2A3B，但他第1志願填別校、第2志願跨校填台中高工，志願序積分被扣1分剩 29 分，總積分僅 94 分！阿哲在第一關就靠聰明志願序成功逆轉錄取！'
   },
+
+  // -------------------------------------------------------------
+  // 【公立高職 2】臺中家商：一般中段成績，比到最後平手會抽籤嗎？
+  // -------------------------------------------------------------
   {
-    id: 'quiz_6',
-    badge: '終極傳奇',
-    title: '【第 6 戰】雙生子奇蹟：比到最後一關還平手，會抽籤嗎？',
-    targetSchool: { name: '文華高中', department: '普通科', quota: 1 },
-    question: '一對雙胞胎兄弟成傑與成浩，五科成績、作文、多元學習、志願順序全部一模一樣，但文華高中只剩最後 1 個缺額！誰會錄取？',
+    id: 'quiz_8',
+    badge: '公立高職 2',
+    title: '【第 8 戰】臺中家商雙胞胎平手戰：電腦分發最後會抽籤嗎？',
+    targetSchool: { name: '臺中家商', department: '應用英語科', quota: 1 },
+    question: '一對同校雙胞胎姊妹佩珊與佩庭，成績皆為中段 2A 3B 2+，作文皆為 4 級分，兩人同時將臺中家商應用英語科列為第 1 志願。但名額只剩最後 1 個，所有項目完全相同，誰會錄取？',
     studentA: {
-      name: '林成傑',
-      avatar: '👦',
-      grades: { chinese: 'A+', math: 'A+', english: 'A+', social: 'A+', science: 'A+' },
-      writing: '5',
+      name: '林佩珊',
+      avatar: '👩',
+      grades: { chinese: 'A', math: 'A', english: 'B+', social: 'B+', science: 'B' },
+      writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '林成浩',
-      avatar: '🧒',
-      grades: { chinese: 'A+', math: 'A+', english: 'A+', social: 'A+', science: 'A+' },
-      writing: '5',
+      name: '林佩庭',
+      avatar: '👧',
+      grades: { chinese: 'A', math: 'A', english: 'B+', social: 'B+', science: 'B' },
+      writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    hint: '💡 提示：教育部與中投區免試入學明訂：「不予抽籤」！',
-    explanation: '【答案是兩人全部錄取（增額錄取）！】中投區電腦分發絕不採取抽籤這種運氣方式！當 12 道比序關卡全部走完依然同分超額時，學校會報請主管機關啟動「增額錄取」，讓兩位優秀同學一同進入文華高中就讀！'
+    hint: '💡 提示：法規明文規定超額同分時「不予抽籤」！',
+    explanation: '【答案是兩人全部錄取（增額錄取）！】中投區免試入學作業要點明文規定：電腦比序一路比到第 12 關若仍完全相同而超額，「不予抽籤，以增額錄取處理」！這是教育制度對一般認真努力學生的最高保障，絕不會因為運氣抽籤落榜！'
   }
 ];
 

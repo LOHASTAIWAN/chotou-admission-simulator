@@ -230,6 +230,88 @@ function initChotouApp() {
         }
       }
 
+      // ==================== 沙盒全螢幕比序擂台劇場 ====================
+      const isSandboxFullscreen = ref(false);
+      const sandboxSpeed = ref(1.0); // 0.5 | 1.0 | 2.0 | 3.0
+      const sandboxFullscreenIndex = ref(0);
+      const isSandboxFullscreenPlaying = ref(false);
+      let sandboxTimer = null;
+
+      function openSandboxFullscreen() {
+        isSandboxFullscreen.value = true;
+        sandboxFullscreenIndex.value = 0;
+        isSandboxFullscreenPlaying.value = false;
+        playSandboxFullscreen();
+      }
+
+      function closeSandboxFullscreen() {
+        pauseSandboxFullscreen();
+        isSandboxFullscreen.value = false;
+      }
+
+      function setSandboxSpeed(spd) {
+        sandboxSpeed.value = spd;
+        if (isSandboxFullscreenPlaying.value) {
+          pauseSandboxFullscreen();
+          playSandboxFullscreen();
+        }
+      }
+
+      function nextSandboxFullscreenStep() {
+        const total = sandboxComparison.value.allSteps.length;
+        if (sandboxFullscreenIndex.value < total - 1) {
+          sandboxFullscreenIndex.value++;
+          playPassSound();
+        } else {
+          pauseSandboxFullscreen();
+          playWinSound();
+          if (window.confetti) {
+            window.confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+          }
+        }
+      }
+
+      function prevSandboxFullscreenStep() {
+        if (sandboxFullscreenIndex.value > 0) {
+          sandboxFullscreenIndex.value--;
+          playBeep(480, 'sine', 0.05);
+        }
+      }
+
+      function playSandboxFullscreen() {
+        if (isSandboxFullscreenPlaying.value) return;
+        const total = sandboxComparison.value.allSteps.length;
+        if (sandboxFullscreenIndex.value >= total - 1) {
+          sandboxFullscreenIndex.value = 0;
+        }
+        isSandboxFullscreenPlaying.value = true;
+        const intervalMs = Math.round(1400 / sandboxSpeed.value);
+        sandboxTimer = setInterval(() => {
+          if (sandboxFullscreenIndex.value < total - 1) {
+            nextSandboxFullscreenStep();
+          } else {
+            pauseSandboxFullscreen();
+            playWinSound();
+            if (window.confetti) {
+              window.confetti({ particleCount: 100, spread: 90, origin: { y: 0.5 } });
+            }
+          }
+        }, intervalMs);
+      }
+
+      function pauseSandboxFullscreen() {
+        isSandboxFullscreenPlaying.value = false;
+        if (sandboxTimer) {
+          clearInterval(sandboxTimer);
+          sandboxTimer = null;
+        }
+      }
+
+      function resetSandboxFullscreen() {
+        pauseSandboxFullscreen();
+        sandboxFullscreenIndex.value = 0;
+      }
+
       function applyPreset(presetType) {
         if (presetType === '5A_vs_4A1B') {
           sandboxA.value.name = '壓線 5A 生';
@@ -607,12 +689,33 @@ function initChotouApp() {
         }
       }
 
+      // 流程圖速度與全螢幕模式
+      const isFlowchartFullscreen = ref(false);
+      const flowchartSpeed = ref(1.0); // 0.5 | 1.0 | 2.0 | 3.0
+
+      function openFlowchartFullscreen() {
+        isFlowchartFullscreen.value = true;
+      }
+
+      function closeFlowchartFullscreen() {
+        isFlowchartFullscreen.value = false;
+      }
+
+      function setFlowchartSpeed(spd) {
+        flowchartSpeed.value = spd;
+        if (isFlowPlaying.value) {
+          pauseFlowAnim();
+          playFlowAnim();
+        }
+      }
+
       function playFlowAnim() {
         if (isFlowPlaying.value) return;
         isFlowPlaying.value = true;
         if (currentFlowNodeIndex.value >= flowchartNodes.value.length - 1) {
           selectNode(flowchartNodes.value[0].id);
         }
+        const intervalMs = Math.round(1500 / flowchartSpeed.value);
         flowTimer = setInterval(() => {
           if (currentFlowNodeIndex.value < flowchartNodes.value.length - 1) {
             nextFlowNode();
@@ -622,7 +725,7 @@ function initChotouApp() {
               confetti({ particleCount: 100, spread: 90, origin: { y: 0.5 } });
             }
           }
-        }, 1600);
+        }, intervalMs);
       }
 
       function pauseFlowAnim() {
@@ -637,6 +740,16 @@ function initChotouApp() {
         pauseFlowAnim();
         selectNode(flowchartNodes.value[0].id);
       }
+
+      onMounted(() => {
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            if (activeModalImage.value) closeImageModal();
+            if (isSandboxFullscreen.value) closeSandboxFullscreen();
+            if (isFlowchartFullscreen.value) closeFlowchartFullscreen();
+          }
+        });
+      });
 
       const gradeOptions = ['A++', 'A+', 'A', 'B++', 'B+', 'B', 'C'];
       const writingOptions = ['6', '5', '4', '3', '2', '1'];
@@ -676,6 +789,18 @@ function initChotouApp() {
         sandboxRevealed,
         runSandboxSimulation,
         applyPreset,
+        isSandboxFullscreen,
+        sandboxSpeed,
+        sandboxFullscreenIndex,
+        isSandboxFullscreenPlaying,
+        openSandboxFullscreen,
+        closeSandboxFullscreen,
+        setSandboxSpeed,
+        playSandboxFullscreen,
+        pauseSandboxFullscreen,
+        nextSandboxFullscreenStep,
+        prevSandboxFullscreenStep,
+        resetSandboxFullscreen,
 
         // 模式三：3萬人篩選器與歷年落點資料
         allSchoolOptions,
@@ -718,6 +843,11 @@ function initChotouApp() {
         nextFlowNode,
         prevFlowNode,
         resetFlowAnim,
+        isFlowchartFullscreen,
+        flowchartSpeed,
+        openFlowchartFullscreen,
+        closeFlowchartFullscreen,
+        setFlowchartSpeed,
 
         // 工具清單
         gradeOptions,

@@ -56,8 +56,15 @@ const POPULAR_SCHOOLS = [
   { id: 'whsh',  name: '文華高中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'hwsh',  name: '惠文高中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'zmsh',  name: '忠明高中', department: '普通科', quota: 1, type: '公立高中' },
-  { id: 'tcivs', name: '臺中高工', department: '資訊科', quota: 1, type: '公立高職' },
   { id: 'tcivs_ee', name: '臺中高工', department: '電機科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_el', name: '臺中高工', department: '電子科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_cs', name: '臺中高工', department: '資訊科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_ct', name: '臺中高工', department: '控制科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_arch', name: '臺中高工', department: '建築科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_chem', name: '臺中高工', department: '化工科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_mech', name: '臺中高工', department: '機械科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_draw', name: '臺中高工', department: '圖文傳播科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_auto', name: '臺中高工', department: '汽車科', quota: 1, type: '公立高職' },
   { id: 'tchcvs', name: '臺中家商', department: '應用英語科', quota: 1, type: '公立高職' },
   { id: 'csesh', name: '清水高中', department: '普通科', quota: 1, type: '公立高中' }
 ];
@@ -86,7 +93,184 @@ const HISTORICAL_CUTOFF_TABLE = [
   { school: '中港高中', y112: '5B7+ 寫作4', y113: '5B7+ 寫作4', y114: '5B6+ 寫作4', pts114: 54, score114: 87, tier: 'T6' },
   { school: '大甲高中', y112: '5B5+ 寫作4', y113: '5B2+ 寫作4', y114: '5B2+ 寫作4', pts114: 46, score114: 87, tier: 'T6' },
   { school: '龍津高中', y112: '5B4+ 寫作4', y113: '5B3+ 寫作3', y114: '5B2+ 寫作3', pts114: 45, score114: 87, tier: 'T7' },
-  { school: '后綜高中', y112: '5B2+ 寫作4', y113: '4B1C8+ 寫作3', y114: '4B1C6+ 寫作3', pts114: 43, score114: 85, tier: 'T7' }
+  { school: '后綜高中', y112: '5B2+ 寫作4', y113: '4B1C8+ 寫作3', y114: '4B1C6+ 寫作3', pts114: 43, score114: 85, tier: 'T7' },
+  // 臺中高工 114 年官方核定一般生錄取標準 (新增自 114 年一般生最低錄取成績單)
+  { school: '臺中高工(電機科)', y112: '3A2B 寫作4 (估)', y113: '3A2B 寫作4 (估)', y114: '3A2B5+ 寫作4 (最低) / 5A5+ (最高)', pts114: 76, score114: 93, tier: 'T3' },
+  { school: '臺中高工(電子科)', y112: '2A3B 寫作4 (估)', y113: '2A3B 寫作4 (估)', y114: '2A3B6+ 寫作4 (最低) / 4A1B8+ (最高)', pts114: 70, score114: 91, tier: 'T4' },
+  { school: '臺中高工(資訊科)', y112: '2A3B 寫作4 (估)', y113: '2A3B 寫作4 (估)', y114: '2A3B5+ 寫作4 (最低) / 5A5+ (最高)', pts114: 67, score114: 91, tier: 'T4' },
+  { school: '臺中高工(控制科)', y112: '1A4B 寫作4 (估)', y113: '1A4B 寫作4 (估)', y114: '1A4B8+ 寫作4 (最低) / 3A2B5+ (最高)', pts114: 67, score114: 89, tier: 'T5' },
+  { school: '臺中高工(建築科)', y112: '2A3B 寫作4 (估)', y113: '2A3B 寫作4 (估)', y114: '2A3B4+ 寫作4 (最低) / 4A1B7+ (最高)', pts114: 64, score114: 91, tier: 'T5' },
+  { school: '臺中高工(化工科)', y112: '1A4B 寫作4 (估)', y113: '1A4B 寫作4 (估)', y114: '1A4B7+ 寫作4 (最低) / 5A8+ 104點 (最高)', pts114: 64, score114: 89, tier: 'T5' },
+  { school: '臺中高工(機械科)', y112: '1A4B 寫作4 (估)', y113: '1A4B 寫作4 (估)', y114: '2A2B1C 4+ 寫作4 (最低) / 4A1B4+ (最高)', pts114: 61, score114: 89, tier: 'T5' },
+  { school: '臺中高工(圖文傳播)', y112: '1A4B 寫作4 (估)', y113: '1A4B 寫作4 (估)', y114: '1A4B7+ 寫作4 (最低) / 5A3+ (最高)', pts114: 61, score114: 89, tier: 'T5' }
+];
+
+// =========================================================================
+// 依據官方 PDF【臺中高工 114 年一般生最低錄取成績】完整科別資料庫
+// =========================================================================
+const TCIVS_114_CUTOFF_DATA = [
+  {
+    group: '機械群',
+    dept: '機械科',
+    maxScore: 95,
+    minScore: 89,
+    maxPoints: 82,
+    minPoints: 61,
+    maxGrade: '4A1B，4 個+，作文 4 級分',
+    minGrade: '2A2B1C，4 個+，作文 4 級分',
+    notes: '群核心科別，最高分達 4A1B 82 點'
+  },
+  {
+    group: '機械群',
+    dept: '電腦機械製圖科',
+    maxScore: 91,
+    minScore: 89,
+    maxPoints: 73,
+    minPoints: 49,
+    maxGrade: '3A2B，3 個+，作文 4 級分',
+    minGrade: '1A4B，2 個+，作文 4 級分',
+    notes: '重視精密製圖與 CAD 設計能力'
+  },
+  {
+    group: '機械群',
+    dept: '板金科',
+    maxScore: 89,
+    minScore: 87,
+    maxPoints: 61,
+    minPoints: 51,
+    maxGrade: '1A4B，6 個+，作文 4 級分',
+    minGrade: '5B，6 個+，作文 3 級分',
+    notes: '實作與工藝導向，門檻約 5B6+'
+  },
+  {
+    group: '機械群',
+    dept: '機械科精密機械暨建教合作班',
+    maxScore: 85.8,
+    minScore: 15.9,
+    maxPoints: 49,
+    minPoints: 28,
+    maxGrade: '1A4B，2 個+，作文 4 級分',
+    minGrade: '3B2C，1 個+，作文 1 級分',
+    notes: '特別注意：本班為獨招需另外單獨報名'
+  },
+  {
+    group: '動力機械群',
+    dept: '汽車科',
+    maxScore: 93,
+    minScore: 87,
+    maxPoints: 82,
+    minPoints: 32,
+    maxGrade: '3A2B，7 個+，作文 4 級分',
+    minGrade: '5B，作文 5 級分',
+    notes: '跨度較大，最低門檻 5B 作文 5 級分'
+  },
+  {
+    group: '電機電子群(電機類)',
+    dept: '電機科',
+    maxScore: 97,
+    minScore: 93,
+    maxPoints: 94,
+    minPoints: 76,
+    maxGrade: '5A，5 個+，作文 4 級分',
+    minGrade: '3A2B，5 個+，作文 4 級分',
+    notes: '🔥 臺中高工錄取門檻第一名！5A達7人，最低需 3A2B5+ (76點)'
+  },
+  {
+    group: '電機電子群(電機類)',
+    dept: '控制科',
+    maxScore: 93,
+    minScore: 89,
+    maxPoints: 76,
+    minPoints: 67,
+    maxGrade: '3A2B，5 個+，作文 4 級分',
+    minGrade: '1A4B，8 個+，作文 4 級分',
+    notes: '智慧控制與機電整合，最低需 1A4B8+ (67點)'
+  },
+  {
+    group: '電機電子群(電機類)',
+    dept: '冷凍空調科',
+    maxScore: 95,
+    minScore: 89,
+    maxPoints: 79,
+    minPoints: 55,
+    maxGrade: '4A1B，3 個+，作文 4 級分',
+    minGrade: '1A4B，4 個+，作文 4 級分',
+    notes: '高就業率特色科別，最高分達 4A1B 79點'
+  },
+  {
+    group: '電機電子群(資電類)',
+    dept: '資訊科',
+    maxScore: 97,
+    minScore: 91,
+    maxPoints: 94,
+    minPoints: 67,
+    maxGrade: '5A，5 個+，作文 4 級分',
+    minGrade: '2A3B，5 個+，作文 4 級分',
+    notes: '🔥 超人氣資電科！5A達6人，最高 94 點，最低 2A3B5+ (67點)'
+  },
+  {
+    group: '電機電子群(資電類)',
+    dept: '電子科',
+    maxScore: 95,
+    minScore: 91,
+    maxPoints: 94,
+    minPoints: 70,
+    maxGrade: '4A1B，8 個+，作文 4 級分',
+    minGrade: '2A3B，6 個+，作文 4 級分',
+    notes: '資電熱門科，最高 94 點，最低需 2A3B6+ (70點)'
+  },
+  {
+    group: '化工群',
+    dept: '化工科',
+    maxScore: 97,
+    minScore: 89,
+    maxPoints: 104,
+    minPoints: 64,
+    maxGrade: '5A，8 個+，作文 5 級分',
+    minGrade: '1A4B，7 個+，作文 4 級分',
+    notes: '🌟 全校最高分榜首所在！最高高達 5A8+ 104點(作文5)'
+  },
+  {
+    group: '土木建築群',
+    dept: '建築科',
+    maxScore: 95,
+    minScore: 91,
+    maxPoints: 91,
+    minPoints: 64,
+    maxGrade: '4A1B，7 個+，作文 4 級分',
+    minGrade: '2A3B，4 個+，作文 4 級分',
+    notes: '建築設計熱門科，最高 4A1B 91點，最低 2A3B4+ (64點)'
+  },
+  {
+    group: '土木建築群',
+    dept: '土木科',
+    maxScore: 91,
+    minScore: 89,
+    maxPoints: 70,
+    minPoints: 60,
+    maxGrade: '2A3B，6 個+，作文 4 級分',
+    minGrade: '1A4B，6 個+，作文 3 級分',
+    notes: '國家工程與測量核心，最低 1A4B6+ 作文3 (60點)'
+  },
+  {
+    group: '設計群',
+    dept: '圖文傳播科',
+    maxScore: 97,
+    minScore: 89,
+    maxPoints: 88,
+    minPoints: 61,
+    maxGrade: '5A，3 個+，作文 4 級分',
+    minGrade: '1A4B，7 個+，作文 4 級分',
+    notes: '藝術設計跨域，含 5A 考生 1 位，最高 88 點'
+  }
+];
+
+// 臺中高工 114 官方備註重點整理
+const TCIVS_114_NOTES = [
+  '此為 114 年中投區免試入學一般生最低錄取分數。',
+  '同一類群於科技大學四技二專統一入學測驗 (統測) 報考相同專業科目。',
+  '臺中高工全校錄取成績達 5A 者共 15 位：電機科 7 位、資訊科 6 位、化工科 1 位、圖文傳播科 1 位。',
+  '電機科為全校錄取積點門檻之冠（最低 76 點 / 3A2B5+ 寫作4）；化工科則出現全校最高積點榜首（104 點 / 5A8+ 寫作5）。'
 ];
 
 // =========================================================================
@@ -198,17 +382,82 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     tier: 'T4'
   },
   {
+    id: 'tcivs_ee',
+    name: '臺中高工',
+    dept: '電機科',
+    category: '頂尖技術',
+    quota: 80,
+    minScore: 93,
+    safePoints: 80,
+    minPoints: 76,
+    minGradeDesc: '114年: 3A2B5+ 寫作4 (76點)',
+    rankRange: '4,500 ~ 6,000 名',
+    tier: 'T3'
+  },
+  {
+    id: 'tcivs_el',
+    name: '臺中高工',
+    dept: '電子科',
+    category: '頂尖技術',
+    quota: 80,
+    minScore: 91,
+    safePoints: 74,
+    minPoints: 70,
+    minGradeDesc: '114年: 2A3B6+ 寫作4 (70點)',
+    rankRange: '6,000 ~ 7,500 名',
+    tier: 'T4'
+  },
+  {
     id: 'tcivs_cs',
     name: '臺中高工',
-    dept: '資訊科/電機科',
+    dept: '資訊科',
     category: '頂尖技術',
-    quota: 200,
-    minScore: 95,
-    safePoints: 82,
-    minPoints: 78,
-    minGradeDesc: '熱門龍頭科: 4A1B ~ 3A2B',
-    rankRange: '3,500 ~ 5,500 名',
-    tier: 'T3'
+    quota: 80,
+    minScore: 91,
+    safePoints: 72,
+    minPoints: 67,
+    minGradeDesc: '114年: 2A3B5+ 寫作4 (67點)',
+    rankRange: '6,500 ~ 8,000 名',
+    tier: 'T4'
+  },
+  {
+    id: 'tcivs_arch',
+    name: '臺中高工',
+    dept: '建築科',
+    category: '頂尖技術',
+    quota: 80,
+    minScore: 91,
+    safePoints: 68,
+    minPoints: 64,
+    minGradeDesc: '114年: 2A3B4+ 寫作4 (64點)',
+    rankRange: '7,500 ~ 9,000 名',
+    tier: 'T5'
+  },
+  {
+    id: 'tcivs_chem',
+    name: '臺中高工',
+    dept: '化工科',
+    category: '頂尖技術',
+    quota: 80,
+    minScore: 89,
+    safePoints: 68,
+    minPoints: 64,
+    minGradeDesc: '114年: 1A4B7+ 寫作4 (64點)',
+    rankRange: '7,500 ~ 9,000 名',
+    tier: 'T5'
+  },
+  {
+    id: 'tcivs_mech',
+    name: '臺中高工',
+    dept: '機械科',
+    category: '頂尖技術',
+    quota: 80,
+    minScore: 89,
+    safePoints: 65,
+    minPoints: 61,
+    minGradeDesc: '114年: 2A2B1C 4+ 寫作4 (61點)',
+    rankRange: '8,500 ~ 10,000 名',
+    tier: 'T5'
   },
   {
     id: 'xysh',
@@ -1038,6 +1287,8 @@ if (typeof window !== 'undefined') {
     SUBJECT_ORDER,
     POPULAR_SCHOOLS,
     HISTORICAL_CUTOFF_TABLE,
+    TCIVS_114_CUTOFF_DATA,
+    TCIVS_114_NOTES,
     SCHOOL_CAPACITIES_AND_CUTOFFS,
     POPULATION_CURVE,
     calculateChoiceScore,
@@ -1058,6 +1309,8 @@ if (typeof module !== 'undefined' && module.exports) {
     SUBJECT_ORDER,
     POPULAR_SCHOOLS,
     HISTORICAL_CUTOFF_TABLE,
+    TCIVS_114_CUTOFF_DATA,
+    TCIVS_114_NOTES,
     SCHOOL_CAPACITIES_AND_CUTOFFS,
     POPULATION_CURVE,
     calculateChoiceScore,

@@ -791,8 +791,8 @@
             </span>
           </div>
 
-          <!-- 兩張圖片並排展示 -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <!-- 三張圖片並排展示 (新增臺中高工官方成績單) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             
             <!-- 圖片 1: 112, 113, 114 落點比較 -->
             <div class="bg-slate-900/90 rounded-2xl border border-slate-700/80 overflow-hidden flex flex-col justify-between hover:border-indigo-500/60 transition group shadow-lg">
@@ -800,38 +800,38 @@
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-black text-indigo-300 flex items-center gap-1.5">
                     <i class="fa-solid fa-images text-indigo-400"></i>
-                    圖一：112、113、114 年落點比較
+                    圖一：112-114 落點比較
                   </span>
                   <span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded border border-indigo-800">
                     21 所公立高中
                   </span>
                 </div>
                 <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">
-                  彙整臺中一中、臺中女中、中科實中、興大附中、文華、二中、忠明至后綜高中共 21 所高中之三年錄取標準對比。
+                  彙整臺中一中、女中、中科實中、興附、文華、二中、忠明至后綜之三年錄取標準。
                 </p>
               </div>
 
               <!-- 圖片縮圖區 (點擊燈箱) -->
-              <div class="relative cursor-pointer overflow-hidden bg-slate-950 flex items-center justify-center min-h-[220px] max-h-[300px]"
+              <div class="relative cursor-pointer overflow-hidden bg-slate-950 flex items-center justify-center min-h-[200px] max-h-[260px]"
                    @click="openImageModal('cutoff_comparison_112_114.jpg', '112、113、114 年中投區高中落點比較圖')">
                 <img src="cutoff_comparison_112_114.jpg" 
                      alt="112、113、114 年中投區高中落點比較" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span class="bg-indigo-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 backdrop-blur-sm">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> 全螢幕放大檢視
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 全螢幕放大
                   </span>
                 </div>
               </div>
 
               <!-- 卡片底部動作列 -->
               <div class="p-3 bg-slate-900 flex items-center justify-between border-t border-slate-800">
-                <span class="text-[11px] text-slate-400">
-                  一中 97點 / 女中 95點 / 興附 89點
+                <span class="text-[11px] text-slate-400 truncate">
+                  一中 97點 / 女中 95點
                 </span>
                 <button @click="openImageModal('cutoff_comparison_112_114.jpg', '112、113、114 年中投區高中落點比較圖')"
-                        class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1">
-                  <i class="fa-solid fa-expand"></i> 放大看大圖
+                        class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-2.5 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1 flex-shrink-0">
+                  <i class="fa-solid fa-expand"></i> 放大
                 </button>
               </div>
             </div>
@@ -842,38 +842,80 @@
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-black text-emerald-300 flex items-center gap-1.5">
                     <i class="fa-solid fa-images text-emerald-400"></i>
-                    圖二：113 與 114 年預估錄取分數 (總積點)
+                    圖二：113-114 預估錄取分數
                   </span>
                   <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">
                     總積點與作文標準
                   </span>
                 </div>
                 <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">
-                  詳載中投區各校預估積點與作文標準，特別標註一中、女中、二中、忠明等重點學校之國英數單科標示要求。
+                  詳載中投區各校預估積點與作文標準，標註一中、女中、二中、忠明等重點學校單科標示。
                 </p>
               </div>
 
               <!-- 圖片縮圖區 (點擊燈箱) -->
-              <div class="relative cursor-pointer overflow-hidden bg-slate-950 flex items-center justify-center min-h-[220px] max-h-[300px]"
+              <div class="relative cursor-pointer overflow-hidden bg-slate-950 flex items-center justify-center min-h-[200px] max-h-[260px]"
                    @click="openImageModal('cutoff_estimate_113_114.jpg', '113 與 114 年中投區預估錄取分數 (總積點)')">
                 <img src="cutoff_estimate_113_114.jpg" 
                      alt="113 與 114 年中投區預估錄取分數 (總積點)" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span class="bg-emerald-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 backdrop-blur-sm">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> 全螢幕放大檢視
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 全螢幕放大
                   </span>
                 </div>
               </div>
 
               <!-- 卡片底部動作列 -->
               <div class="p-3 bg-slate-900 flex items-center justify-between border-t border-slate-800">
-                <span class="text-[11px] text-slate-400">
-                  文華 85-87點 / 忠明 74點 / 西苑 71點
+                <span class="text-[11px] text-slate-400 truncate">
+                  文華 85-87點 / 忠明 74點
                 </span>
                 <button @click="openImageModal('cutoff_estimate_113_114.jpg', '113 與 114 年中投區預估錄取分數 (總積點)')"
-                        class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1">
-                  <i class="fa-solid fa-expand"></i> 放大看大圖
+                        class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1 flex-shrink-0">
+                  <i class="fa-solid fa-expand"></i> 放大
+                </button>
+              </div>
+            </div>
+
+            <!-- 圖片 3: 【新增】臺中高工 114 年一般生最低錄取成績單 -->
+            <div class="bg-slate-900/90 rounded-2xl border border-cyan-500/50 overflow-hidden flex flex-col justify-between hover:border-cyan-400 transition group shadow-lg ring-1 ring-cyan-500/30">
+              <div class="p-3.5 border-b border-slate-800 bg-cyan-950/20">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
+                    <i class="fa-solid fa-award text-cyan-400"></i>
+                    圖三：臺中高工 114 錄取成績
+                  </span>
+                  <span class="text-[10px] bg-cyan-900/80 text-cyan-200 px-2 py-0.5 rounded border border-cyan-700 font-bold">
+                    官方 14 群科單
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-300 mt-1 line-clamp-2">
+                  官方核定公告！機械、電機、資訊、建築、化工等 14 群科完整總分、總積點與最低標示。
+                </p>
+              </div>
+
+              <!-- 圖片縮圖區 (點擊燈箱) -->
+              <div class="relative cursor-pointer overflow-hidden bg-slate-950 flex items-center justify-center min-h-[200px] max-h-[260px]"
+                   @click="openImageModal('tcivs_114_cutoff.png', '臺中高工 114 年一般生最低錄取成績單 (官方核定PDF)')">
+                <img src="tcivs_114_cutoff.png" 
+                     alt="臺中高工 114 年一般生最低錄取成績單" 
+                     class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span class="bg-cyan-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 backdrop-blur-sm">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 全螢幕放大看原單
+                  </span>
+                </div>
+              </div>
+
+              <!-- 卡片底部動作列 -->
+              <div class="p-3 bg-slate-900 flex items-center justify-between border-t border-slate-800">
+                <span class="text-[11px] text-cyan-300 font-bold truncate">
+                  電機 76點 / 電子 70點 / 資訊 67點
+                </span>
+                <button @click="openImageModal('tcivs_114_cutoff.png', '臺中高工 114 年一般生最低錄取成績單 (官方核定PDF)')"
+                        class="text-xs bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-2.5 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1 flex-shrink-0 shadow-md">
+                  <i class="fa-solid fa-expand"></i> 放大
                 </button>
               </div>
             </div>
@@ -881,7 +923,194 @@
           </div>
         </div>
 
-        <!-- 圖表四：【歷年落點資料庫互動檢索表】(對照你的成績) -->
+        <!-- 圖表四：【全新專題】臺中高工 114 年一般生各群科最低錄取標準即時看板 -->
+        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-cyan-500/40 shadow-2xl space-y-4">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-700 pb-3">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-cyan-500/20 text-cyan-300 text-xs font-bold px-2.5 py-1 rounded-full mb-1 border border-cyan-500/30">
+                <i class="fa-solid fa-microchip"></i>
+                <span>中投區技職龍頭</span>
+              </div>
+              <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                <span>臺中高工 114 年各群科最低錄取成績與落點標準</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                依據臺中高工官方公告之《114 年一般生最低錄取成績》，即時比對你的會考成績（<span class="text-amber-400 font-bold">{{ filterUserStats.examPoints }} 點</span>）！
+              </p>
+            </div>
+
+            <!-- 群科搜尋框 -->
+            <div class="relative w-full md:w-64">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+              <input type="text" 
+                     v-model="tcivsSearchText" 
+                     placeholder="搜尋高工科別 (如：資訊、建築)..." 
+                     class="w-full bg-slate-900 text-white text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-700 outline-none focus:border-cyan-500">
+            </div>
+          </div>
+
+          <!-- 重點情報快訊列 (4大亮點徽章) -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+            <div class="bg-indigo-950/40 border border-indigo-700/40 p-2.5 rounded-2xl flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center font-bold text-base flex-shrink-0">
+                ⚡
+              </span>
+              <div>
+                <div class="text-[10px] text-slate-400 font-bold">錄取門檻之冠</div>
+                <div class="text-xs sm:text-sm font-black text-indigo-200">電機科 (最低 76 點)</div>
+              </div>
+            </div>
+
+            <div class="bg-cyan-950/40 border border-cyan-700/40 p-2.5 rounded-2xl flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-cyan-600/30 text-cyan-400 flex items-center justify-center font-bold text-base flex-shrink-0">
+                💻
+              </span>
+              <div>
+                <div class="text-[10px] text-slate-400 font-bold">資電熱門搶手</div>
+                <div class="text-xs sm:text-sm font-black text-cyan-200">電子 70 點 / 資訊 67 點</div>
+              </div>
+            </div>
+
+            <div class="bg-amber-950/40 border border-amber-700/40 p-2.5 rounded-2xl flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-amber-600/30 text-amber-400 flex items-center justify-center font-bold text-base flex-shrink-0">
+                👑
+              </span>
+              <div>
+                <div class="text-[10px] text-slate-400 font-bold">全校最高分榜首</div>
+                <div class="text-xs sm:text-sm font-black text-amber-200">化工科 (高達 104 點)</div>
+              </div>
+            </div>
+
+            <div class="bg-emerald-950/40 border border-emerald-700/40 p-2.5 rounded-2xl flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center font-bold text-base flex-shrink-0">
+                🎓
+              </span>
+              <div>
+                <div class="text-[10px] text-slate-400 font-bold">5A 頂尖考生入學</div>
+                <div class="text-xs sm:text-sm font-black text-emerald-200">全校共 15 位 5A 考生</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 群別篩選標籤按鈕 -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs font-bold pt-1">
+            <span class="text-slate-400 mr-1 text-[11px]">類別群別：</span>
+            <button @click="tcivsGroupFilter = 'ALL'"
+                    :class="tcivsGroupFilter === 'ALL' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              全部群科 ({{ tcivsCutoffs.length }} 科)
+            </button>
+            <button @click="tcivsGroupFilter = '電機電子'"
+                    :class="tcivsGroupFilter === '電機電子' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              電機電子群 (電機/資訊/電子/控制/冷凍)
+            </button>
+            <button @click="tcivsGroupFilter = '機械動力'"
+                    :class="tcivsGroupFilter === '機械動力' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              機械動力群 (機械/製圖/板金/建教/汽車)
+            </button>
+            <button @click="tcivsGroupFilter = '土木建築'"
+                    :class="tcivsGroupFilter === '土木建築' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              土木建築群 (建築科/土木科)
+            </button>
+            <button @click="tcivsGroupFilter = '化工設計'"
+                    :class="tcivsGroupFilter === '化工設計' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-2.5 py-1 rounded-xl transition active:scale-95">
+              化工與設計 (化工科/圖文傳播科)
+            </button>
+          </div>
+
+          <!-- 臺中高工 14 科詳細成績資料表格 -->
+          <div class="overflow-x-auto rounded-2xl border border-slate-700/80 bg-slate-900/60 shadow-inner">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-800/90 text-cyan-300 font-extrabold uppercase border-b border-slate-700 text-[11px]">
+                <tr>
+                  <th class="py-3 px-3 sm:px-4">群(類)別</th>
+                  <th class="py-3 px-3 sm:px-4">科別名稱</th>
+                  <th class="py-3 px-2 sm:px-3 text-center">最低總分</th>
+                  <th class="py-3 px-2 sm:px-3 text-center">最低總積點</th>
+                  <th class="py-3 px-2 sm:px-3 text-center">114 最低錄取門檻</th>
+                  <th class="py-3 px-2 sm:px-3 text-center hidden md:table-cell">最高錄取分數 (積點/等級)</th>
+                  <th class="py-3 px-3 sm:px-4 text-center">你的達標診斷</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 font-medium">
+                <tr v-for="item in filteredTcivsList" :key="item.dept" class="hover:bg-slate-800/50 transition">
+                  <!-- 群別 -->
+                  <td class="py-3 px-3 sm:px-4 text-slate-400 font-bold text-[11px]">
+                    <span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+                      {{ item.group }}
+                    </span>
+                  </td>
+
+                  <!-- 科別 -->
+                  <td class="py-3 px-3 sm:px-4 font-black text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full" 
+                          :class="item.minPoints >= 70 ? 'bg-indigo-400' : (item.minPoints >= 64 ? 'bg-cyan-400' : (item.minPoints >= 55 ? 'bg-teal-400' : 'bg-amber-400'))"></span>
+                    <span class="text-sm text-cyan-200">{{ item.dept }}</span>
+                  </td>
+
+                  <!-- 最低總分 -->
+                  <td class="py-3 px-2 sm:px-3 text-center font-bold text-emerald-400">
+                    {{ item.minScore }} 分
+                  </td>
+
+                  <!-- 最低總積點 -->
+                  <td class="py-3 px-2 sm:px-3 text-center font-black text-white">
+                    <span class="text-sm text-amber-300">{{ item.minPoints }}</span> 點
+                  </td>
+
+                  <!-- 最低標示 -->
+                  <td class="py-3 px-2 sm:px-3 text-center">
+                    <span class="bg-slate-800 px-2 py-0.5 rounded text-[11px] text-slate-200 font-bold border border-slate-700 inline-block">
+                      {{ item.minGrade }}
+                    </span>
+                  </td>
+
+                  <!-- 最高分成績 -->
+                  <td class="py-3 px-2 sm:px-3 text-center hidden md:table-cell text-slate-300 text-[11px]">
+                    <span class="font-bold text-purple-300">{{ item.maxPoints }} 點</span>
+                    <span class="text-slate-500"> / </span>
+                    <span class="text-slate-400">{{ item.maxGrade }}</span>
+                  </td>
+
+                  <!-- 你的達標診斷 -->
+                  <td class="py-3 px-3 sm:px-4 text-center">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold border inline-flex items-center gap-1"
+                          :class="getTcivsDeptBadge(item.minPoints, item.maxPoints).cls">
+                      <i class="fa-solid" :class="getTcivsDeptBadge(item.minPoints, item.maxPoints).icon"></i>
+                      <span>{{ getTcivsDeptBadge(item.minPoints, item.maxPoints).text }}</span>
+                      <span class="opacity-80">({{ getTcivsDeptBadge(item.minPoints, item.maxPoints).diffText }})</span>
+                    </span>
+                  </td>
+                </tr>
+                <tr v-if="filteredTcivsList.length === 0">
+                  <td colspan="7" class="py-8 text-center text-slate-400">
+                    沒有找到符合「{{ tcivsSearchText }}」的科別資料
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 官方註記說明卡片 -->
+          <div class="text-[11px] text-slate-400 bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
+            <div class="font-bold text-cyan-300 flex items-center gap-1.5 text-xs">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>臺中高工官方註記與選填重點：</span>
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1">
+              <li v-for="(note, idx) in tcivsNotes" :key="idx">{{ note }}</li>
+            </ul>
+            <div class="pt-1 text-[10px] text-slate-400 border-t border-slate-800/80">
+              💡 貼心提醒：中投區免試入學「連續填寫同一學校不同科別，志願序積分皆視為同一志願完全不扣分」！若您以臺中高工為目標，可將電機、電子、資訊、控制、建築等科連續排在相鄰志願序，享受志願同分保障！
+            </div>
+          </div>
+        </div>
+
+        <!-- 圖表五：【歷年落點資料庫互動檢索表】(對照你的成績) -->
         <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-4">
           <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-700 pb-3">
             <div>

@@ -22,6 +22,8 @@ function initChotouApp() {
     SUBJECT_ORDER, 
     POPULAR_SCHOOLS, 
     HISTORICAL_CUTOFF_TABLE,
+    TCIVS_114_CUTOFF_DATA,
+    TCIVS_114_NOTES,
     SCHOOL_CAPACITIES_AND_CUTOFFS,
     POPULATION_CURVE,
     computeStudentStats, 
@@ -306,6 +308,45 @@ function initChotouApp() {
           return { text: '夢幻挑戰', cls: 'bg-rose-500/20 text-rose-300 border-rose-500/40', icon: 'fa-rocket', diffText: `${diff}點` };
         }
       }
+
+      // 臺中高工 114 年各科錄取標準專區
+      const tcivsCutoffs = ref(TCIVS_114_CUTOFF_DATA);
+      const tcivsNotes = ref(TCIVS_114_NOTES);
+      const tcivsGroupFilter = ref('ALL'); // 'ALL' | '電機電子' | '機械動力' | '土木建築' | '化工設計'
+      const tcivsSearchText = ref('');
+
+      const filteredTcivsList = computed(() => {
+        let list = tcivsCutoffs.value;
+        if (tcivsGroupFilter.value === '電機電子') {
+          list = list.filter(item => item.group.includes('電機') || item.group.includes('資電'));
+        } else if (tcivsGroupFilter.value === '機械動力') {
+          list = list.filter(item => item.group.includes('機械') || item.group.includes('動力'));
+        } else if (tcivsGroupFilter.value === '土木建築') {
+          list = list.filter(item => item.group.includes('土木') || item.group.includes('建築'));
+        } else if (tcivsGroupFilter.value === '化工設計') {
+          list = list.filter(item => item.group.includes('化工') || item.group.includes('設計'));
+        }
+
+        if (tcivsSearchText.value && tcivsSearchText.value.trim() !== '') {
+          const kw = tcivsSearchText.value.trim().toLowerCase();
+          list = list.filter(item => item.dept.toLowerCase().includes(kw) || item.group.toLowerCase().includes(kw));
+        }
+        return list;
+      });
+
+      function getTcivsDeptBadge(minPts, maxPts) {
+        const myPts = filterUserStats.value.examPoints;
+        const diff = myPts - minPts;
+        if (myPts >= maxPts) {
+          return { text: '群科榜首級', cls: 'bg-purple-500/20 text-purple-300 border-purple-500/40', icon: 'fa-crown', diffText: `超標+${myPts - maxPts}點` };
+        } else if (diff >= 2) {
+          return { text: '穩定達標', cls: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', icon: 'fa-circle-check', diffText: `+${diff}點` };
+        } else if (diff >= -1 && diff <= 1) {
+          return { text: '實力五五波', cls: 'bg-amber-500/20 text-amber-300 border-amber-500/40', icon: 'fa-scale-balanced', diffText: diff === 0 ? '持平' : (diff > 0 ? `+${diff}點` : `${diff}點`) };
+        } else {
+          return { text: '夢幻衝刺', cls: 'bg-rose-500/20 text-rose-300 border-rose-500/40', icon: 'fa-rocket', diffText: `${diff}點` };
+        }
+      }
       
       const filterUserStudent = ref({
         name: '我',
@@ -583,6 +624,15 @@ function initChotouApp() {
         historySearchText,
         filteredHistoricalList,
         getCutoffMatchBadge,
+        
+        // 臺中高工 114 官方各科落點專區
+        tcivsCutoffs,
+        tcivsNotes,
+        tcivsGroupFilter,
+        tcivsSearchText,
+        filteredTcivsList,
+        getTcivsDeptBadge,
+
         filterUserStudent,
         userChoiceList,
         isFilterSimulating,

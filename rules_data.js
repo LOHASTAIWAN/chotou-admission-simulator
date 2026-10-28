@@ -1257,23 +1257,25 @@ const QUIZ_CHALLENGES = [
   }
 ];
 
-// 中投區比序流程圖的 13 階結構（嚴格遵循官方 115/116 流程圖標準規範）
+// 中投區比序流程圖的 13 階結構（嚴格遵循官方 115/116 流程圖標準規範，含精簡醒目標題）
 const FLOWCHART_TREE = [
   {
     id: 'total_score',
     stepNumber: '1',
+    shortTitle: '總積分',
     title: '免試入學總積分',
-    badge: '上限 100 分',
+    badge: '滿分 100 分',
     phase: '階段一：總積分門檻',
     icon: 'fa-scale-unbalanced-flip',
     color: 'from-blue-600 to-indigo-600',
-    summary: '志願序(30) + 就近入學(10) + 扶助弱勢(2) + 多元表現(27/30) + 教育會考(30)',
+    summary: '志願序(30) + 就近(10) + 弱勢(2) + 多元(27/30) + 會考(30)',
     detail: '第一道門檻，五大指標總和。若報名人數未超額則全額錄取；若超過核定名額且同分時，正式啟動後續超額比序！',
     officialQuote: '志願序積分 + 就近入學積分 + 扶助弱勢積分 + 多元學習表現積分 + 教育會考表現積分'
   },
   {
     id: 'choice_score',
     stepNumber: '2',
+    shortTitle: '志願序',
     title: '志願序積分',
     badge: '滿分 30 分',
     phase: '階段二：各分項積分比序',
@@ -1286,6 +1288,7 @@ const FLOWCHART_TREE = [
   {
     id: 'nearby',
     stepNumber: '3',
+    shortTitle: '就近入學',
     title: '就近入學積分',
     badge: '滿分 10 分',
     phase: '階段二：各分項積分比序',
@@ -1298,6 +1301,7 @@ const FLOWCHART_TREE = [
   {
     id: 'disadvantaged',
     stepNumber: '4',
+    shortTitle: '扶助弱勢',
     title: '扶助弱勢積分',
     badge: '上限 2 分',
     phase: '階段二：各分項積分比序',
@@ -1310,48 +1314,52 @@ const FLOWCHART_TREE = [
   {
     id: 'multiple_learning',
     stepNumber: '5',
+    shortTitle: '多元表現',
     title: '多元學習表現總積分',
     badge: '滿分 27/30 分',
     phase: '階段二：各分項積分比序',
     icon: 'fa-trophy',
     color: 'from-amber-500 to-orange-600',
-    summary: '若總分相同，依序展開 4 大橫向子項目比序！',
+    summary: '同分依序水平比：均衡(12) ➔ 德行(5) ➔ 無過(6) ➔ 獎勵(4)',
     detail: '絕大多數學生在國中三年引導下均拿滿多元分數。若總分平手，依法令水平展開比序：均衡學習 ➔ 德行表現 ➔ 無記過紀錄 ➔ 獎勵紀錄。',
     officialQuote: '均衡學習 ➔ 德行表現 ➔ 無記過紀錄 ➔ 獎勵紀錄',
     subFlow: [
-      { name: '5-1. 均衡學習', score: '滿分 12 分', desc: '健體、藝術、綜合、科技四領域' },
-      { name: '5-2. 德行表現', score: '滿分 5 分', desc: '社團活動(2分) + 服務學習(3分)' },
-      { name: '5-3. 無記過紀錄', score: '滿分 6 分', desc: '無懲處紀錄或經銷過完成者' },
-      { name: '5-4. 獎勵紀錄', score: '滿分 4 分', desc: '大功(3分)、小功(1分)、嘉獎(0.5分)' }
+      { name: '均衡學習', score: '滿分12分', desc: '四領域及格' },
+      { name: '德行表現', score: '滿分5分', desc: '社團+服務' },
+      { name: '無記過', score: '滿分6分', desc: '無懲處/已銷過' },
+      { name: '獎勵紀錄', score: '滿分4分', desc: '大功/小功/嘉獎' }
     ]
   },
   {
     id: 'exam_score',
     stepNumber: '6',
+    shortTitle: '會考總積分',
     title: '教育會考表現總積分',
     badge: '滿分 30 分',
     phase: '階段三：會考三大核心關卡',
     icon: 'fa-star',
     color: 'from-emerald-500 to-teal-600',
-    summary: '國文 + 數學 + 英語 + 社會 + 自然 5 科總積分（滿分 30 分）',
+    summary: '5 科總積分（精熟6/基礎4/待加強2，滿分 30 分）',
     detail: '精熟(A)每科得 6 分、基礎(B)每科得 4 分、待加強(C)每科得 2 分（俗稱 5A=30分、4A1B=28分）。此處不採計寫作測驗！',
     officialQuote: '國文科積分 + 數學科積分 + 英語科積分 + 社會科積分 + 自然科積分'
   },
   {
     id: 'exam_points',
     stepNumber: '7',
+    shortTitle: '會考總積點',
     title: '國中教育會考總積點',
     badge: '滿分 111 點',
     phase: '階段三：會考三大核心關卡',
     icon: 'fa-bolt',
     color: 'from-amber-500 to-yellow-600',
-    summary: '5 科等級標示積點(105點) + 寫作測驗積點(6點)',
+    summary: '5 科積點(105點) + 寫作測驗積點(6點)',
     detail: '公立高中最關鍵分水嶺！A++=21點、A+=18點、A=15點、B++=12點、B+=9點、B=6點、C=3點，寫作測驗1~6級分得1~6點。滿分 111 點！',
     officialQuote: '國中教育會考各科按等級標示分1~7級，點數為級數的3倍，寫作測驗分1~6點，最高為111點。'
   },
   {
     id: 'plus_accumulation',
     stepNumber: '8',
+    shortTitle: '+ 號加總',
     title: '教育會考各科等級標示加總',
     badge: '全科 + 號總數',
     phase: '階段三：會考三大核心關卡',
@@ -1364,8 +1372,9 @@ const FLOWCHART_TREE = [
   {
     id: 'subject_scores',
     stepNumber: '9',
+    shortTitle: '單科積分比序',
     title: '會考各科單科積分比序',
-    badge: '單科 6/4/2分',
+    badge: '國➔數➔英➔社➔自',
     phase: '階段四：單科積分 (國數英社自)',
     icon: 'fa-cubes',
     color: 'from-cyan-500 to-blue-600',
@@ -1373,18 +1382,19 @@ const FLOWCHART_TREE = [
     detail: '「精熟」者每科得 6 分、「基礎」者每科得 4 分、「待加強」者每科得 2 分。國文科排在第一位！',
     officialQuote: '會考國文科積分 ➔ 數學科積分 ➔ 英語科積分 ➔ 社會科積分 ➔ 自然科積分',
     subFlow: [
-      { name: '國文科積分', desc: '第 1 順位 (精熟6/基礎4/待加強2)' },
-      { name: '數學科積分', desc: '第 2 順位 (精熟6/基礎4/待加強2)' },
-      { name: '英語科積分', desc: '第 3 順位 (精熟6/基礎4/待加強2)' },
-      { name: '社會科積分', desc: '第 4 順位 (精熟6/基礎4/待加強2)' },
-      { name: '自然科積分', desc: '第 5 順位 (精熟6/基礎4/待加強2)' }
+      { name: '1. 國文', desc: '精熟6/基礎4/待加強2' },
+      { name: '2. 數學', desc: '精熟6/基礎4/待加強2' },
+      { name: '3. 英語', desc: '精熟6/基礎4/待加強2' },
+      { name: '4. 社會', desc: '精熟6/基礎4/待加強2' },
+      { name: '5. 自然', desc: '精熟6/基礎4/待加強2' }
     ]
   },
   {
     id: 'subject_grades',
     stepNumber: '10',
+    shortTitle: '單科標示比序',
     title: '會考各科單科成績標示比序',
-    badge: '單科 A++ 到 C',
+    badge: 'A++ 到 C 單科PK',
     phase: '階段五：單科標示 (國數英社自)',
     icon: 'fa-feather-pointed',
     color: 'from-indigo-500 to-violet-600',
@@ -1392,18 +1402,19 @@ const FLOWCHART_TREE = [
     detail: '依照：國文科標示 ➔ 數學科標示 ➔ 英語科標示 ➔ 社會科標示 ➔ 自然科標示。前項平手時才進入下一科！',
     officialQuote: '會考國文科成績標示 ➔ 數學科標示 ➔ 英語科標示 ➔ 社會科標示 ➔ 自然科標示',
     subFlow: [
-      { name: '國文成績標示', desc: 'A++ > A+ > A > B++ > B+ > B > C' },
-      { name: '數學成績標示', desc: 'A++ > A+ > A > B++ > B+ > B > C' },
-      { name: '英語成績標示', desc: 'A++ > A+ > A > B++ > B+ > B > C' },
-      { name: '社會成績標示', desc: 'A++ > A+ > A > B++ > B+ > B > C' },
-      { name: '自然成績標示', desc: 'A++ > A+ > A > B++ > B+ > B > C' }
+      { name: '1. 國文標示', desc: 'A++ > A+ > ... > C' },
+      { name: '2. 數學標示', desc: 'A++ > A+ > ... > C' },
+      { name: '3. 英語標示', desc: 'A++ > A+ > ... > C' },
+      { name: '4. 社會標示', desc: 'A++ > A+ > ... > C' },
+      { name: '5. 自然標示', desc: 'A++ > A+ > ... > C' }
     ]
   },
   {
     id: 'school_rank',
     stepNumber: '11',
+    shortTitle: '校序順次',
     title: '志願序之校序順次',
-    badge: '目標學校順序',
+    badge: '排更前學校優先',
     phase: '階段六：志願排序與同分保障',
     icon: 'fa-school',
     color: 'from-violet-500 to-purple-600',
@@ -1414,6 +1425,7 @@ const FLOWCHART_TREE = [
   {
     id: 'choice_index',
     stepNumber: '12',
+    shortTitle: '志願順次',
     title: '志願序之順次',
     badge: '科別項目序位',
     phase: '階段六：志願排序與同分保障',
@@ -1426,7 +1438,8 @@ const FLOWCHART_TREE = [
   {
     id: 'quota_overflow',
     stepNumber: '13',
-    title: '增額錄取保障',
+    shortTitle: '同分增額錄取',
+    title: '同分增額錄取保障',
     badge: '中投區絕不抽籤',
     phase: '階段六：志願排序與同分保障',
     icon: 'fa-crown',

@@ -125,6 +125,46 @@
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 flex-grow w-full">
 
       <!-- ============================================================== -->
+      <!-- 📢 開啟網頁強制提醒警語彈窗 (免責與教學說明 Modal)              -->
+      <!-- ============================================================== -->
+      <div v-if="showDisclaimerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="glass-dark border-2 border-amber-500/80 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative text-slate-100 disclaimer-modal-enter space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-400 text-2xl flex-shrink-0 animate-bounce">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+              <span class="text-[11px] font-black uppercase tracking-wider text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/30">重要聲明・必讀提醒</span>
+              <h3 class="text-lg sm:text-xl font-black text-white">116 學年度中投區免試入學比序模擬</h3>
+            </div>
+          </div>
+          
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-700/80 space-y-2.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p class="font-bold text-amber-200 flex items-start gap-2">
+              <i class="fa-solid fa-circle-exclamation text-amber-400 mt-1 flex-shrink-0"></i>
+              <span>本教學網站設計目的，<strong>純粹提供中投區國三學生與家長理解免試入學「志願選填」與「電腦超額比序」之流程與規則練習模擬使用</strong>。</span>
+            </p>
+            <p class="flex items-start gap-2">
+              <i class="fa-solid fa-school-flag text-rose-400 mt-1 flex-shrink-0"></i>
+              <span>各高中職學校、各群科之<strong>實際錄取分數、歷年切點與名額，必須向該校教務處親自查詢與確認</strong>，切勿以此模擬結果作為唯一選填決策依據。</span>
+            </p>
+            <p class="flex items-start gap-2 text-slate-400 text-xs">
+              <i class="fa-solid fa-gavel text-indigo-400 mt-0.5 flex-shrink-0"></i>
+              <span>正式簡章規範與計分標準，均以臺中市政府教育局及「中投區高級中等學校免試入學委員會」發布之當學年度官方最新簡章為準。</span>
+            </p>
+          </div>
+
+          <div class="pt-2">
+            <button @click="confirmDisclaimer" 
+                    class="w-full py-3.5 px-6 rounded-2xl font-black text-base text-white bg-gradient-to-r from-amber-500 via-rose-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 active:scale-98 shadow-xl shadow-amber-600/30 border border-amber-300/50 flex items-center justify-center gap-2 cursor-pointer transition-all">
+              <i class="fa-solid fa-circle-check text-emerald-300 text-lg"></i>
+              <span>我已充分了解，開始模擬練習！</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================== -->
       <!-- TAB 1: 比序猜猜看 (動漫手遊風・熱血拳擊擂台爭霸賽) -->
       <!-- ============================================================== -->
       <section v-if="activeTab === 'quiz'" class="space-y-5">
@@ -148,13 +188,13 @@
               </div>
             </div>
 
-            <!-- 右側：運動賽事現場加油音控台 -->
-            <div class="flex items-center gap-2 flex-wrap w-full md:w-auto justify-end">
+            <!-- 右側：運動賽事現場加油音控台 (臨場真人呼喊、掌聲與暴動歡呼) -->
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap w-full md:w-auto justify-end">
               
-              <!-- 現場加油聲切換按鈕 -->
+              <!-- 現場環境聲浪切換按鈕 -->
               <button @click="toggleStadiumCrowd"
                       :class="isStadiumCrowdPlaying ? 'bg-emerald-600/90 text-white border-emerald-400 shadow-emerald-500/30' : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white'"
-                      class="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-2 transition active:scale-95 shadow-md">
+                      class="px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition active:scale-95 shadow-md">
                 <div v-if="isStadiumCrowdPlaying" class="flex items-end gap-0.5 h-3">
                   <span class="equalizer-bar"></span>
                   <span class="equalizer-bar"></span>
@@ -162,13 +202,37 @@
                   <span class="equalizer-bar"></span>
                 </div>
                 <i v-else class="fa-solid fa-volume-xmark text-slate-400"></i>
-                <span>{{ isStadiumCrowdPlaying ? '🏟️ 現場吶喊中' : '🔈 開啟加油聲' }}</span>
+                <span>{{ isStadiumCrowdPlaying ? '🏟️ 現場聲浪中' : '🔈 開啟現場聲浪' }}</span>
+              </button>
+
+              <!-- 真人「加～油！」齊聲呼喊按鈕 -->
+              <button @click="playHumanCrowdChantSound"
+                      title="臨場真人集體呼喊「加～油！加～油！」"
+                      class="bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1.5 rounded-xl border border-rose-400/60 text-xs font-black transition active:scale-95 shadow-md flex items-center gap-1">
+                <span>📢</span>
+                <span>喊「加油！」</span>
+              </button>
+
+              <!-- 萬人熱烈鼓掌掌聲按鈕 -->
+              <button @click="playApplauseSound"
+                      title="全場萬人如雷掌聲"
+                      class="bg-teal-600 hover:bg-teal-500 text-white px-2.5 py-1.5 rounded-xl border border-teal-400/50 text-xs font-bold transition active:scale-95 shadow-md flex items-center gap-1">
+                <span>👏</span>
+                <span class="hidden sm:inline">拍手掌聲</span>
+              </button>
+
+              <!-- 全場暴動狂歡按鈕 -->
+              <button @click="playCrowdExplosionSound"
+                      title="全場暴動歡呼狂潮"
+                      class="bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1.5 rounded-xl border border-amber-400/60 text-xs font-black transition active:scale-95 shadow-md flex items-center gap-1">
+                <span>🔥</span>
+                <span class="hidden sm:inline">全場暴動</span>
               </button>
 
               <!-- 敲鐘按鈕 -->
               <button @click="playBoxingBellSound"
                       title="敲響擂台銅鐘"
-                      class="bg-amber-600/80 hover:bg-amber-500 text-white px-2.5 py-1.5 rounded-xl border border-amber-400/50 text-xs font-bold transition active:scale-95 shadow flex items-center gap-1">
+                      class="bg-amber-700/80 hover:bg-amber-600 text-white px-2 py-1.5 rounded-xl border border-amber-400/40 text-xs font-bold transition active:scale-95 shadow flex items-center gap-1">
                 <i class="fa-solid fa-bell"></i>
                 <span class="hidden sm:inline">敲鐘</span>
               </button>
@@ -176,15 +240,15 @@
               <!-- 裁判哨音按鈕 -->
               <button @click="playRefereeWhistleSound"
                       title="裁判哨音"
-                      class="bg-indigo-600/80 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-xl border border-indigo-400/50 text-xs font-bold transition active:scale-95 shadow flex items-center gap-1">
+                      class="bg-indigo-600/80 hover:bg-indigo-500 text-white px-2 py-1.5 rounded-xl border border-indigo-400/40 text-xs font-bold transition active:scale-95 shadow flex items-center gap-1">
                 <i class="fa-solid fa-bullhorn"></i>
                 <span class="hidden sm:inline">哨音</span>
               </button>
 
               <!-- 舞台切換：拳擊場 ⇋ 賽跑道 -->
               <button @click="toggleArenaTheme"
-                      class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-3 py-1.5 rounded-xl border border-pink-400/50 text-xs font-black transition active:scale-95 shadow-md flex items-center gap-1.5">
-                <span>{{ arenaTheme === 'boxing' ? '🥊 拳擊擂台' : '🏃 疾速賽跑' }}</span>
+                      class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-2.5 py-1.5 rounded-xl border border-pink-400/50 text-xs font-black transition active:scale-95 shadow-md flex items-center gap-1.5">
+                <span>{{ arenaTheme === 'boxing' ? '🥊 拳擊' : '🏃 賽跑' }}</span>
                 <i class="fa-solid fa-repeat text-[10px]"></i>
               </button>
 
@@ -319,16 +383,24 @@
                 <span>{{ currentQuiz.studentA.quote || '「這場分發比序，我全力以赴！」' }}</span>
               </div>
 
-              <!-- 可愛動漫造型角色展示 (Chibi SVG) -->
+              <!-- 可愛動漫造型角色展示 (Chibi SVG，支援點擊互動跳躍與出拳打擊) -->
               <div class="flex items-center gap-4 mb-3">
-                <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 relative">
-                  <div class="w-full h-full"
+                <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 relative cursor-pointer group select-none"
+                     @click="triggerActionA()"
+                     title="點擊讓選手 A 出拳彈跳！">
+                  <div class="w-full h-full transition-all"
                        :class="[
+                         isAJumping ? 'jumping-anim' : '',
+                         isAPunching ? 'punch-stretch-a' : '',
                          isScanning ? 'punch-a-anim' : '',
                          quizRevealed && quizComparison.winner === 'A_WIN' ? 'winner-jump' : '',
-                         quizRevealed && quizComparison.winner === 'B_WIN' ? 'loser-dizzy' : 'chibi-idle'
+                         quizRevealed && quizComparison.winner === 'B_WIN' ? 'loser-dizzy' : (!isAJumping && !isAPunching ? 'chibi-idle' : '')
                        ]"
                        v-html="getAnimeAvatarSvg(currentQuiz.studentA, 'RED', getStudentState('A'))">
+                  </div>
+                  <!-- 互動提示膠囊標籤 -->
+                  <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-red-950/90 text-red-300 text-[9px] font-black px-2 py-0.5 rounded-full border border-red-500/50 opacity-80 group-hover:opacity-100 whitespace-nowrap shadow-md transition-all group-hover:scale-105">
+                    🥊 點我出拳跳躍
                   </div>
                 </div>
 
@@ -415,16 +487,24 @@
                 <span>{{ currentQuiz.studentB.quote || '「我的戰力絕不會輸給任何人！」' }}</span>
               </div>
 
-              <!-- 可愛動漫造型角色展示 (Chibi SVG) -->
+              <!-- 可愛動漫造型角色展示 (Chibi SVG，支援點擊互動跳躍與出拳打擊) -->
               <div class="flex items-center gap-4 mb-3">
-                <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 relative">
-                  <div class="w-full h-full"
+                <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 relative cursor-pointer group select-none"
+                     @click="triggerActionB()"
+                     title="點擊讓選手 B 出拳彈跳！">
+                  <div class="w-full h-full transition-all"
                        :class="[
+                         isBJumping ? 'jumping-anim' : '',
+                         isBPunching ? 'punch-stretch-b' : '',
                          isScanning ? 'punch-b-anim' : '',
                          quizRevealed && quizComparison.winner === 'B_WIN' ? 'winner-jump' : '',
-                         quizRevealed && quizComparison.winner === 'A_WIN' ? 'loser-dizzy' : 'chibi-idle'
+                         quizRevealed && quizComparison.winner === 'A_WIN' ? 'loser-dizzy' : (!isBJumping && !isBPunching ? 'chibi-idle' : '')
                        ]"
                        v-html="getAnimeAvatarSvg(currentQuiz.studentB, 'BLUE', getStudentState('B'))">
+                  </div>
+                  <!-- 互動提示膠囊標籤 -->
+                  <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-blue-950/90 text-blue-300 text-[9px] font-black px-2 py-0.5 rounded-full border border-blue-500/50 opacity-80 group-hover:opacity-100 whitespace-nowrap shadow-md transition-all group-hover:scale-105">
+                    ⚡ 點我出拳跳躍
                   </div>
                 </div>
 
@@ -654,7 +734,7 @@
               </p>
             </div>
 
-            <!-- 智慧填法策略快捷鍵 -->
+            <!-- 智慧填法策略快捷鍵 (大幅擴充高職群科志願組合) -->
             <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
               <span class="text-xs text-slate-400 font-bold">🎯 推薦策略：</span>
               <button @click="applyChoiceStrategy('DREAM_FIRST')" class="text-xs bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 px-2.5 py-1 rounded-xl border border-indigo-700/60 active:scale-95 transition">
@@ -663,11 +743,17 @@
               <button @click="applyChoiceStrategy('BALANCED')" class="text-xs bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 px-2.5 py-1 rounded-xl border border-emerald-700/60 active:scale-95 transition">
                 攻守兼備(推薦)
               </button>
-              <button @click="applyChoiceStrategy('TECH_STAR')" class="text-xs bg-amber-900/60 hover:bg-amber-800 text-amber-200 px-2.5 py-1 rounded-xl border border-amber-700/60 active:scale-95 transition">
-                頂尖技職
+              <button @click="applyChoiceStrategy('TECH_STAR')" class="text-xs bg-amber-900/70 hover:bg-amber-800 text-amber-200 px-2.5 py-1 rounded-xl border border-amber-600/70 active:scale-95 transition font-bold">
+                🛠️ 頂尖名校高職
+              </button>
+              <button @click="applyChoiceStrategy('TECH_DIVERSE')" class="text-xs bg-cyan-900/70 hover:bg-cyan-800 text-cyan-200 px-2.5 py-1 rounded-xl border border-cyan-600/70 active:scale-95 transition font-bold">
+                ⚡ 工商農多元專業
+              </button>
+              <button @click="applyChoiceStrategy('TECH_REGIONAL')" class="text-xs bg-teal-900/70 hover:bg-teal-800 text-teal-200 px-2.5 py-1 rounded-xl border border-teal-600/70 active:scale-95 transition font-bold">
+                🏫 在地公立高職
               </button>
               <button @click="applyChoiceStrategy('COMMUNITY')" class="text-xs bg-purple-900/60 hover:bg-purple-800 text-purple-200 px-2.5 py-1 rounded-xl border border-purple-700/60 active:scale-95 transition">
-                優質公立
+                優質社區高中
               </button>
             </div>
           </div>

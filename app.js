@@ -338,6 +338,160 @@ function initChotouApp() {
           } catch (e) {}
         }
 
+        // ============================================================================
+        // 臺灣運動賽事「加～油！加～油！」真人集體吶喊聲 (Human Crowd Chant Synthesis)
+        // ============================================================================
+        playHumanCrowdChant() {
+          this.ensureContext();
+          if (!this.ctx) return;
+
+          const now = this.ctx.currentTime;
+          this.swellCrowdRoar(0.2, 3.5);
+
+          // 雙拍集體共鳴吶喊：「加～！」(約 0.45s) + 短停 (0.15s) + 「油～！」(約 0.55s)，呼喊 2 次
+          const chantRounds = [
+            { start: 0.0, syllable: 'jia', dur: 0.45 },
+            { start: 0.6, syllable: 'you', dur: 0.55 },
+            { start: 1.4, syllable: 'jia', dur: 0.45 },
+            { start: 2.0, syllable: 'you', dur: 0.65 }
+          ];
+
+          chantRounds.forEach(round => {
+            const t0 = now + round.start;
+            const dur = round.dur;
+
+            // 多重微音高位移振盪器群 (模擬上百位不同性別年齡觀眾同時發聲)
+            const voicePitches = round.syllable === 'jia' 
+              ? [196, 220, 246.9, 293.6, 330, 392, 440] // G3, A3, B3, D4, E4, G4, A4
+              : [174.6, 196, 220, 261.6, 311, 370];     // F3, G3, A3, C4, Eb4, F#4
+
+            voicePitches.forEach((pitch, idx) => {
+              const detune = (Math.random() - 0.5) * 35;
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+
+              osc.type = idx % 2 === 0 ? 'sawtooth' : 'triangle';
+              osc.frequency.setValueAtTime(pitch, t0);
+              if (round.syllable === 'jia') {
+                osc.frequency.linearRampToValueAtTime(pitch * 1.05, t0 + dur * 0.4);
+              } else {
+                osc.frequency.linearRampToValueAtTime(pitch * 0.94, t0 + dur);
+              }
+              osc.detune.setValueAtTime(detune, t0);
+
+              // 人聲母音共振峰 (Vocal Formants) 帶通濾波器
+              // "加" (/a/): F1 ~ 820Hz, F2 ~ 1350Hz
+              // "油" (/o/): F1 ~ 480Hz, F2 ~ 900Hz
+              const f1 = this.ctx.createBiquadFilter();
+              f1.type = 'bandpass';
+              f1.Q.setValueAtTime(4.2, t0);
+              f1.frequency.setValueAtTime(round.syllable === 'jia' ? 820 : 480, t0);
+
+              const f2 = this.ctx.createBiquadFilter();
+              f2.type = 'bandpass';
+              f2.Q.setValueAtTime(5.0, t0);
+              f2.frequency.setValueAtTime(round.syllable === 'jia' ? 1350 : 900, t0);
+
+              const baseAmp = (0.05 / (voicePitches.length * 0.5)) * this.volume;
+              gain.gain.setValueAtTime(0.0001, t0);
+              gain.gain.linearRampToValueAtTime(baseAmp, t0 + 0.08);
+              gain.gain.setValueAtTime(baseAmp * 0.9, t0 + dur * 0.7);
+              gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+              osc.connect(f1);
+              osc.connect(f2);
+              f1.connect(gain);
+              f2.connect(gain);
+              gain.connect(this.masterGain || this.ctx.destination);
+
+              osc.start(t0);
+              osc.stop(t0 + dur);
+            });
+
+            // 伴隨人聲氣流噪聲 (模擬人群呼吸吹氣共鳴)
+            const noiseGain = this.ctx.createGain();
+            const noiseFilter = this.ctx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.setValueAtTime(round.syllable === 'jia' ? 1200 : 750, t0);
+            noiseFilter.Q.setValueAtTime(2.5, t0);
+
+            const bLen = Math.floor(this.ctx.sampleRate * dur);
+            const nBuff = this.ctx.createBuffer(1, bLen, this.ctx.sampleRate);
+            const nData = nBuff.getChannelData(0);
+            for (let i = 0; i < bLen; i++) nData[i] = (Math.random() * 2 - 1) * 0.15;
+            const nSrc = this.ctx.createBufferSource();
+            nSrc.buffer = nBuff;
+
+            noiseGain.gain.setValueAtTime(0.0001, t0);
+            noiseGain.gain.linearRampToValueAtTime(0.035 * this.volume, t0 + 0.08);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+            nSrc.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(this.masterGain || this.ctx.destination);
+            nSrc.start(t0);
+            nSrc.stop(t0 + dur);
+          });
+
+          // 吶喊結束後響起鼓掌聲
+          setTimeout(() => {
+            this.playClappingApplause(1.8);
+          }, 2700);
+        }
+
+        // ============================================================================
+        // 萬人如雷掌聲合成器 (Clapping Applause Synthesis)
+        // ============================================================================
+        playClappingApplause(duration = 2.0) {
+          this.ensureContext();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const clapCount = Math.floor(40 * duration);
+
+          for (let i = 0; i < clapCount; i++) {
+            const clapDelay = Math.random() * duration;
+            const clapTime = now + clapDelay;
+
+            const clapLen = Math.floor(this.ctx.sampleRate * 0.035);
+            const clapBuf = this.ctx.createBuffer(1, clapLen, this.ctx.sampleRate);
+            const clapData = clapBuf.getChannelData(0);
+            for (let s = 0; s < clapLen; s++) {
+              clapData[s] = (Math.random() * 2 - 1) * Math.exp(-s / (clapLen * 0.25));
+            }
+
+            const src = this.ctx.createBufferSource();
+            src.buffer = clapBuf;
+
+            const bpf = this.ctx.createBiquadFilter();
+            bpf.type = 'bandpass';
+            bpf.frequency.setValueAtTime(900 + Math.random() * 1200, clapTime);
+            bpf.Q.setValueAtTime(2.2, clapTime);
+
+            const gain = this.ctx.createGain();
+            const vol = (0.05 + Math.random() * 0.08) * this.volume;
+            gain.gain.setValueAtTime(vol, clapTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, clapTime + 0.035);
+
+            src.connect(bpf);
+            bpf.connect(gain);
+            gain.connect(this.masterGain || this.ctx.destination);
+
+            src.start(clapTime);
+            src.stop(clapTime + 0.035);
+          }
+        }
+
+        // ============================================================================
+        // 全場暴動狂歡音效 (Crowd Explosion: 巨浪聲浪 + 雙哨 + 雙銅鐘 + 熱烈掌聲)
+        // ============================================================================
+        playCrowdExplosion() {
+          this.ensureContext();
+          this.swellCrowdRoar(0.4, 4.0);
+          this.playRefereeWhistle(true);
+          this.playBoxingBell(3);
+          this.playClappingApplause(3.0);
+        }
+
         setVolume(vol) {
           this.volume = Math.max(0, Math.min(1, vol));
           if (this.masterGain && this.ctx) {
@@ -373,6 +527,55 @@ function initChotouApp() {
         stadium.playRefereeWhistle(true);
       }
 
+      function playHumanCrowdChantSound() {
+        stadium.playHumanCrowdChant();
+      }
+
+      function playApplauseSound() {
+        stadium.playClappingApplause(2.2);
+      }
+
+      function playCrowdExplosionSound() {
+        stadium.playCrowdExplosion();
+      }
+
+      // ============================================================================
+      // 選手點擊出拳與跳躍互動動作控制 (Interactive Punching & Spring Jumping)
+      // ============================================================================
+      const isAJumping = ref(false);
+      const isBJumping = ref(false);
+      const isAPunching = ref(false);
+      const isBPunching = ref(false);
+
+      function triggerActionA() {
+        isAJumping.value = true;
+        isAPunching.value = true;
+        stadium.playPunchSound(true);
+        setTimeout(() => {
+          isAJumping.value = false;
+          isAPunching.value = false;
+        }, 650);
+      }
+
+      function triggerActionB() {
+        isBJumping.value = true;
+        isBPunching.value = true;
+        stadium.playPunchSound(true);
+        setTimeout(() => {
+          isBJumping.value = false;
+          isBPunching.value = false;
+        }, 650);
+      }
+
+      // ============================================================================
+      // 開啟網頁強制免責與教學警語彈窗狀態 (Mandatory Disclaimer Modal)
+      // ============================================================================
+      const showDisclaimerModal = ref(true);
+      function confirmDisclaimer() {
+        showDisclaimerModal.value = false;
+        stadium.playBoxingBell(1);
+      }
+
       // 舞台模式切換：'boxing' (熱血拳擊擂台) 或 'running' (疾速田徑賽跑)
       const arenaTheme = ref('boxing');
       function toggleArenaTheme() {
@@ -403,18 +606,45 @@ function initChotouApp() {
         let eyesSvg = '';
         if (isWinner) {
           eyesSvg = `
-            <path d="M 36 50 Q 44 42 52 50" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" fill="none" />
-            <path d="M 68 50 Q 76 42 84 50" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" fill="none" />
-            <polygon points="44,38 46,42 50,44 46,46 44,50 42,46 38,44 42,42" fill="#fbbf24" />
-            <polygon points="76,38 78,42 82,44 78,46 76,50 74,46 70,44 74,42" fill="#fbbf24" />
+            <!-- 得意單眼眨眼 + 閃亮星星眼 -->
+            <path d="M 36 50 Q 44 42 52 50" stroke="#0f172a" stroke-width="4" stroke-linecap="round" fill="none" />
+            <polygon class="tooth-sparkle" points="44,36 46,41 51,43 46,45 44,50 42,45 37,43 42,41" fill="#fbbf24" />
+            <ellipse cx="76" cy="49" rx="8" ry="10" fill="#0f172a" />
+            <ellipse cx="76" cy="51" rx="6.5" ry="7.5" fill="${isRed ? '#be123c' : '#1d4ed8'}" />
+            <circle cx="73.5" cy="46" r="3.2" fill="#ffffff" />
+            <circle cx="78.5" cy="52" r="1.6" fill="#ffffff" />
+            <polygon class="tooth-sparkle" points="76,34 78,39 83,41 78,43 76,48 74,43 69,41 74,39" fill="#fbbf24" />
           `;
         } else if (isLoser) {
           eyesSvg = `
-            <g stroke="#475569" stroke-width="2.5" fill="none">
-              <path d="M 44 46 A 4 4 0 0 1 44 54 A 8 8 0 0 1 44 38" />
-              <path d="M 76 46 A 4 4 0 0 1 76 54 A 8 8 0 0 1 76 38" />
+            <!-- 搞笑痛哭 X 眼睛與瀑布淚水 -->
+            <path d="M 37 45 L 49 55 M 49 45 L 37 55" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" />
+            <path d="M 71 45 L 83 55 M 83 45 L 71 55" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" />
+            <!-- 搞笑瀑布淚水噴射動畫 -->
+            <g class="tears-flow">
+              <path d="M 38 55 C 34 66 30 80 30 96 C 30 102 44 102 44 96 C 44 80 44 66 44 55 Z" fill="#38bdf8" opacity="0.85" />
+              <circle cx="36" cy="100" r="3.5" fill="#7dd3fc" />
+              <path d="M 76 55 C 76 66 76 80 76 96 C 76 102 90 102 90 96 C 90 80 86 66 82 55 Z" fill="#38bdf8" opacity="0.85" />
+              <circle cx="84" cy="100" r="3.5" fill="#7dd3fc" />
             </g>
-            <path d="M 88 36 C 92 42 90 47 85 47 C 80 47 78 42 82 36 Z" fill="#38bdf8" />
+            <!-- 額頭冷汗滴 -->
+            <path d="M 88 32 C 92 37 91 42 87 42 C 83 42 81 37 84 32 Z" fill="#67e8f9" />
+          `;
+        } else if (isPunching) {
+          eyesSvg = `
+            <!-- 認真熱血出拳眼神 + 額頭暴起青筋 💢 -->
+            <g class="vein-pop" transform="translate(${isRed ? '32, 28' : '78, 28'})">
+              <path d="M -5 -5 L 5 5 M 5 -5 L -5 5" stroke="#dc2626" stroke-width="3" stroke-linecap="round" />
+              <path d="M -6 0 Q -2 0 -2 -4 M 6 0 Q 2 0 2 -4 M 0 -6 Q 0 -2 -4 -2 M 0 6 Q 0 2 4 2" stroke="#ef4444" stroke-width="2" fill="none" />
+            </g>
+            <ellipse cx="44" cy="49" rx="8" ry="9" fill="#0f172a" />
+            <ellipse cx="44" cy="50" rx="6" ry="6.5" fill="${isRed ? '#b91c1c' : '#1d4ed8'}" />
+            <circle cx="42" cy="47" r="2.5" fill="#ffffff" />
+            <path d="M 33 42 L 53 45" stroke="#0f172a" stroke-width="3" stroke-linecap="round" />
+            <ellipse cx="76" cy="49" rx="8" ry="9" fill="#0f172a" />
+            <ellipse cx="76" cy="50" rx="6" ry="6.5" fill="${isRed ? '#b91c1c' : '#1d4ed8'}" />
+            <circle cx="74" cy="47" r="2.5" fill="#ffffff" />
+            <path d="M 87 42 L 67 45" stroke="#0f172a" stroke-width="3" stroke-linecap="round" />
           `;
         } else {
           const irisColor = isRed ? '#be123c' : '#1d4ed8';
@@ -437,11 +667,23 @@ function initChotouApp() {
         // 嘴巴
         let mouthSvg = '';
         if (isWinner) {
-          mouthSvg = `<path d="M 52 64 Q 60 76 68 64 Z" fill="#e11d48" stroke="#0f172a" stroke-width="2" />`;
+          mouthSvg = `
+            <!-- 吐舌頭得意大笑 + 牙齒星光 -->
+            <path d="M 50 63 Q 60 76 70 63 Z" fill="#e11d48" stroke="#0f172a" stroke-width="2" />
+            <path d="M 55 69 Q 60 78 65 69 Z" fill="#f43f5e" />
+            <polygon class="tooth-sparkle" points="67,61 68,63 71,64 68,65 67,67 66,65 63,64 66,63" fill="#ffffff" />
+          `;
         } else if (isPunching) {
-          mouthSvg = `<path d="M 53 65 Q 60 72 67 65 Z" fill="#be123c" stroke="#0f172a" stroke-width="2" />`;
+          mouthSvg = `
+            <!-- 咬牙切齒喊叫嘴形 -->
+            <rect x="52" y="62" width="16" height="8" rx="2" fill="#ffffff" stroke="#0f172a" stroke-width="2" />
+            <line x1="60" y1="62" x2="60" y2="70" stroke="#0f172a" stroke-width="1.5" />
+          `;
         } else if (isLoser) {
-          mouthSvg = `<path d="M 54 68 Q 60 62 66 68" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none" />`;
+          mouthSvg = `
+            <!-- 倒 V 委屈嚎啕大哭嘴 -->
+            <path d="M 52 70 Q 60 61 68 70 Q 60 66 52 70 Z" fill="#991b1b" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" />
+          `;
         } else {
           mouthSvg = `<path d="M 54 64 Q 60 70 66 64" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none" />`;
         }
@@ -558,6 +800,25 @@ function initChotouApp() {
               <circle cx="86" cy="34" r="2.5" fill="#ffffff" />
             `;
             break;
+          case 'boy_cool':
+            hairAndAccessories = `
+              <!-- 酷炫銀藍挑染短髮與單側耳機 -->
+              <path d="M 24 46 L 16 34 L 28 34 L 22 20 L 38 28 L 46 14 L 56 30 L 68 12 L 76 28 L 86 18 L 92 32 L 96 46 Z" fill="#334155" />
+              <path d="M 32 26 L 44 16 L 52 28 L 64 15 L 72 26 Z" fill="#38bdf8" />
+              <circle cx="94" cy="50" r="4.5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
+            `;
+            break;
+          case 'girl_glasses':
+            hairAndAccessories = `
+              <!-- 知性文青長直髮與紅色圓形眼鏡 -->
+              <path d="M 24 45 L 20 90 L 32 90 L 30 55 Z" fill="#3b0764" />
+              <path d="M 96 45 L 100 90 L 88 90 L 90 55 Z" fill="#3b0764" />
+              <path d="M 24 45 Q 22 18 60 15 Q 98 18 96 45 Q 80 34 60 36 Q 40 34 24 45 Z" fill="#581c87" />
+              <circle cx="44" cy="50" r="11" fill="none" stroke="#ef4444" stroke-width="2.5" />
+              <circle cx="76" cy="50" r="11" fill="none" stroke="#ef4444" stroke-width="2.5" />
+              <line x1="55" y1="50" x2="65" y2="50" stroke="#ef4444" stroke-width="2.5" />
+            `;
+            break;
           default:
             hairAndAccessories = `
               <path d="M 24 45 Q 22 18 60 14 Q 98 18 96 45 Q 80 34 60 36 Q 40 34 24 45 Z" fill="#334155" />
@@ -586,24 +847,28 @@ function initChotouApp() {
         } else if (isPunching) {
           const isRedPunch = isRed;
           glovesSvg = isRedPunch ? `
-            <g transform="translate(76, 56) rotate(10)">
-              <ellipse cx="18" cy="14" rx="16" ry="14" fill="${gloveColor}" stroke="#0f172a" stroke-width="2.5" />
-              <rect x="2" y="9" width="8" height="10" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
-              <line x1="36" y1="8" x2="46" y2="4" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
-              <line x1="38" y1="14" x2="50" y2="14" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round" />
-              <line x1="36" y1="20" x2="46" y2="24" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
+            <g transform="translate(74, 50) rotate(12)">
+              <!-- 巨力拳套出拳打擊 + 衝擊波星光 -->
+              <ellipse cx="22" cy="16" rx="20" ry="17" fill="${gloveColor}" stroke="#0f172a" stroke-width="2.5" />
+              <rect x="2" y="10" width="10" height="12" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+              <line x1="44" y1="6" x2="56" y2="2" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round" />
+              <line x1="46" y1="16" x2="60" y2="16" stroke="#ef4444" stroke-width="4" stroke-linecap="round" />
+              <line x1="44" y1="26" x2="56" y2="30" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round" />
+              <polygon points="54,12 56,15 59,16 56,17 54,20 53,17 50,16 53,15" fill="#facc15" />
             </g>
-            <g transform="translate(20, 68)">
+            <g transform="translate(18, 68)">
               <ellipse cx="12" cy="12" rx="12" ry="12" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
               <rect x="6" y="20" width="12" height="5" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
             </g>
           ` : `
-            <g transform="translate(12, 56) rotate(-10)">
-              <ellipse cx="14" cy="14" rx="16" ry="14" fill="${gloveColor}" stroke="#0f172a" stroke-width="2.5" />
-              <rect x="22" y="9" width="8" height="10" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
-              <line x1="-4" y1="8" x2="-14" y2="4" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
-              <line x1="-6" y1="14" x2="-18" y2="14" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round" />
-              <line x1="-4" y1="20" x2="-14" y2="24" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
+            <g transform="translate(6, 50) rotate(-12)">
+              <!-- 巨力拳套出拳打擊 + 衝擊波星光 -->
+              <ellipse cx="16" cy="16" rx="20" ry="17" fill="${gloveColor}" stroke="#0f172a" stroke-width="2.5" />
+              <rect x="26" y="10" width="10" height="12" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+              <line x1="-8" y1="6" x2="-20" y2="2" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round" />
+              <line x1="-10" y1="16" x2="-24" y2="16" stroke="#3b82f6" stroke-width="4" stroke-linecap="round" />
+              <line x1="-8" y1="26" x2="-20" y2="30" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round" />
+              <polygon points="-16,12 -14,15 -11,16 -14,17 -16,20 -17,17 -20,16 -17,15" fill="#facc15" />
             </g>
             <g transform="translate(76, 68)">
               <ellipse cx="12" cy="12" rx="12" ry="12" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
@@ -651,6 +916,8 @@ function initChotouApp() {
       }
 
       function getStudentState(side) {
+        if (side === 'A' && isAPunching.value) return 'punching';
+        if (side === 'B' && isBPunching.value) return 'punching';
         if (isScanning.value) return 'punching';
         if (!quizRevealed.value) return 'idle';
         const winner = quizComparison.value.winner;
@@ -1050,7 +1317,14 @@ function initChotouApp() {
         } else if (type === 'BALANCED') {
           userChoiceList.value = ['whsh', 'nchu', 'tc2sh', 'zmsh', 'xysh', 'csesh'];
         } else if (type === 'TECH_STAR') {
-          userChoiceList.value = ['tcivs_cs', 'tc2sh', 'tchcvs_en', 'zmsh', 'csesh', 'fyhs'];
+          // 頂尖名門高職 (臺中高工電資 + 臺中家商熱門科 + 興大附農)
+          userChoiceList.value = ['tcivs_cs', 'tcivs_ee', 'tcivs_elec', 'tchcvs_en', 'tchcvs_ad', 'nchu_av'];
+        } else if (type === 'TECH_DIVERSE') {
+          // 跨類群技術專精 (機械、化工、商管、農藝、建築)
+          userChoiceList.value = ['tcivs_mech', 'tcivs_chem', 'tchcvs_acc', 'tsvs_arch', 'nchu_hort', 'slvs_ee'];
+        } else if (type === 'TECH_REGIONAL') {
+          // 中投在地優質高職 (沙鹿、東勢、霧峰、草屯、南投)
+          userChoiceList.value = ['slvs_auto', 'tsvs_elec', 'wfvsh_fd', 'wfvsh_ee', 'ctvs_elec', 'ntvs_data'];
         } else if (type === 'COMMUNITY') {
           userChoiceList.value = ['hwsh', 'zmsh', 'xysh', 'fyhs', 'dlsh', 'cyhs'];
         }
@@ -1347,6 +1621,10 @@ function initChotouApp() {
         openImageModal,
         closeImageModal,
 
+        // 提醒警語全螢幕彈窗
+        showDisclaimerModal,
+        confirmDisclaimer,
+
         // 模式一 (動漫拳擊擂台與手遊音效)
         quizList,
         currentQuizIndex,
@@ -1366,6 +1644,15 @@ function initChotouApp() {
         setStadiumVolume,
         playBoxingBellSound,
         playRefereeWhistleSound,
+        playHumanCrowdChantSound,
+        playApplauseSound,
+        playCrowdExplosionSound,
+        isAJumping,
+        isBJumping,
+        isAPunching,
+        isBPunching,
+        triggerActionA,
+        triggerActionB,
         arenaTheme,
         toggleArenaTheme,
         comboStreak,

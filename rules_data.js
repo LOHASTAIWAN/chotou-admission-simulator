@@ -48,14 +48,20 @@ const SUBJECT_ORDER = [
 
 // 代表性中投區學校與科別清單
 const POPULAR_SCHOOLS = [
+  // 公立明星高中
   { id: 'tcfsh', name: '臺中一中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'tcgs',  name: '臺中女中', department: '普通科', quota: 1, type: '公立高中' },
-  { id: 'n科',   name: '中科實中', department: '普通科', quota: 1, type: '公立高中' },
+  { id: 'nehs',  name: '中科實中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'nchu',  name: '興大附中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'tc2sh', name: '臺中二中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'whsh',  name: '文華高中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'hwsh',  name: '惠文高中', department: '普通科', quota: 1, type: '公立高中' },
   { id: 'zmsh',  name: '忠明高中', department: '普通科', quota: 1, type: '公立高中' },
+  { id: 'csesh', name: '清水高中', department: '普通科', quota: 1, type: '公立高中' },
+  { id: 'cyhs',  name: '長億高中', department: '普通科', quota: 1, type: '公立高中' },
+  { id: 'djhs',  name: '大甲高中', department: '普通科', quota: 1, type: '公立高中' },
+
+  // 臺中高工 (專業群科旗艦)
   { id: 'tcivs_ee', name: '臺中高工', department: '電機科', quota: 1, type: '公立高職' },
   { id: 'tcivs_el', name: '臺中高工', department: '電子科', quota: 1, type: '公立高職' },
   { id: 'tcivs_cs', name: '臺中高工', department: '資訊科', quota: 1, type: '公立高職' },
@@ -65,8 +71,58 @@ const POPULAR_SCHOOLS = [
   { id: 'tcivs_mech', name: '臺中高工', department: '機械科', quota: 1, type: '公立高職' },
   { id: 'tcivs_draw', name: '臺中高工', department: '圖文傳播科', quota: 1, type: '公立高職' },
   { id: 'tcivs_auto', name: '臺中高工', department: '汽車科', quota: 1, type: '公立高職' },
-  { id: 'tchcvs', name: '臺中家商', department: '應用英語科', quota: 1, type: '公立高職' },
-  { id: 'csesh', name: '清水高中', department: '普通科', quota: 1, type: '公立高中' }
+  { id: 'tcivs_ref', name: '臺中高工', department: '冷凍空調科', quota: 1, type: '公立高職' },
+  { id: 'tcivs_sheet', name: '臺中高工', department: '板金科', quota: 1, type: '公立高職' },
+
+  // 臺中家商 (商業管理與家事旗艦)
+  { id: 'tchcvs_en', name: '臺中家商', department: '應用英語科', quota: 1, type: '公立高職' },
+  { id: 'tchcvs_bm', name: '臺中家商', department: '商業經營科', quota: 1, type: '公立高職' },
+  { id: 'tchcvs_it', name: '臺中家商', department: '國際貿易科', quota: 1, type: '公立高職' },
+  { id: 'tchcvs_dp', name: '臺中家商', department: '資料處理科', quota: 1, type: '公立高職' },
+  { id: 'tchcvs_ac', name: '臺中家商', department: '會計事務科', quota: 1, type: '公立高職' },
+  { id: 'tchcvs_cc', name: '臺中家商', department: '幼兒保育科', quota: 1, type: '公立高職' },
+  { id: 'tchcvs_fd', name: '臺中家商', department: '服裝設計科', quota: 1, type: '公立高職' },
+
+  // 興大附農 (臺中高農)
+  { id: 'nchuv_tour', name: '興大附農', department: '觀光事業科', quota: 1, type: '公立高職' },
+  { id: 'nchuv_food', name: '興大附農', department: '餐飲管理科', quota: 1, type: '公立高職' },
+  { id: 'nchuv_hort', name: '興大附農', department: '園藝科', quota: 1, type: '公立高職' },
+  { id: 'nchuv_proc', name: '興大附農', department: '食品加工科', quota: 1, type: '公立高職' },
+  { id: 'nchuv_anim', name: '興大附農', department: '畜產保健科', quota: 1, type: '公立高職' },
+  { id: 'nchuv_farm', name: '興大附農', department: '農場經營科', quota: 1, type: '公立高職' },
+  { id: 'nchuv_bio',  name: '興大附農', department: '生物產業機電科', quota: 1, type: '公立高職' },
+
+  // 沙鹿高工
+  { id: 'slvs_cs',   name: '沙鹿高工', department: '資訊科', quota: 1, type: '公立高職' },
+  { id: 'slvs_el',   name: '沙鹿高工', department: '電子科', quota: 1, type: '公立高職' },
+  { id: 'slvs_mech', name: '沙鹿高工', department: '機械科', quota: 1, type: '公立高職' },
+  { id: 'slvs_chem', name: '沙鹿高工', department: '化工科', quota: 1, type: '公立高職' },
+  { id: 'slvs_auto', name: '沙鹿高工', department: '汽車科', quota: 1, type: '公立高職' },
+
+  // 東勢高工
+  { id: 'tsvs_ee',   name: '東勢高工', department: '電機科', quota: 1, type: '公立高職' },
+  { id: 'tsvs_el',   name: '東勢高工', department: '電子科', quota: 1, type: '公立高職' },
+  { id: 'tsvs_arch', name: '東勢高工', department: '建築科', quota: 1, type: '公立高職' },
+  { id: 'tsvs_int',  name: '東勢高工', department: '室內空間設計科', quota: 1, type: '公立高職' },
+  { id: 'tsvs_mech', name: '東勢高工', department: '機械科', quota: 1, type: '公立高職' },
+
+  // 霧峰農工
+  { id: 'wfvs_ee',   name: '霧峰農工', department: '電機科', quota: 1, type: '公立高職' },
+  { id: 'wfvs_el',   name: '霧峰農工', department: '電子科', quota: 1, type: '公立高職' },
+  { id: 'wfvs_food', name: '霧峰農工', department: '餐飲管理科', quota: 1, type: '公立高職' },
+  { id: 'wfvs_proc', name: '霧峰農工', department: '食品加工科', quota: 1, type: '公立高職' },
+  { id: 'wfvs_mech', name: '霧峰農工', department: '機械科', quota: 1, type: '公立高職' },
+
+  // 南投公立技術型高中
+  { id: 'ctvs_en',   name: '草屯商工', department: '應用英語科', quota: 1, type: '公立高職' },
+  { id: 'ctvs_bm',   name: '草屯商工', department: '商業經營科', quota: 1, type: '公立高職' },
+  { id: 'ctvs_mech', name: '草屯商工', department: '機械科', quota: 1, type: '公立高職' },
+  { id: 'ntvs_en',   name: '南投高商', department: '應用英語科', quota: 1, type: '公立高職' },
+  { id: 'ntvs_bm',   name: '南投高商', department: '商業經營科', quota: 1, type: '公立高職' },
+  { id: 'ntvs_dp',   name: '南投高商', department: '資料處理科', quota: 1, type: '公立高職' },
+  { id: 'plvs_ee',   name: '埔里高工', department: '電機科', quota: 1, type: '公立高職' },
+  { id: 'plvs_cs',   name: '埔里高工', department: '資訊科', quota: 1, type: '公立高職' },
+  { id: 'plvs_chem', name: '埔里高工', department: '化工科', quota: 1, type: '公立高職' }
 ];
 
 // =========================================================================
@@ -572,10 +628,400 @@ const SCHOOL_CAPACITIES_AND_CUTOFFS = [
     minScore: 91,
     safePoints: 68,
     minPoints: 63,
-    minGradeDesc: '熱門外語科: 2A3B ~ 1A4B',
+    minGradeDesc: '熱門外語科: 2A3B ~ 1A4B (63點)',
     rankRange: '8,000 ~ 11,000 名',
     tier: 'T5'
   },
+  {
+    id: 'tchcvs_bm',
+    name: '臺中家商',
+    dept: '商業經營科',
+    category: '公立高職',
+    quota: 160,
+    minScore: 89,
+    safePoints: 64,
+    minPoints: 59,
+    minGradeDesc: '商管核心科: 1A4B (59點)',
+    rankRange: '9,500 ~ 12,000 名',
+    tier: 'T5'
+  },
+  {
+    id: 'tchcvs_it',
+    name: '臺中家商',
+    dept: '國際貿易科',
+    category: '公立高職',
+    quota: 160,
+    minScore: 89,
+    safePoints: 65,
+    minPoints: 60,
+    minGradeDesc: '商管國際科: 1A4B~2A3B (60點)',
+    rankRange: '9,000 ~ 11,800 名',
+    tier: 'T5'
+  },
+  {
+    id: 'tchcvs_dp',
+    name: '臺中家商',
+    dept: '資料處理科',
+    category: '公立高職',
+    quota: 160,
+    minScore: 89,
+    safePoints: 63,
+    minPoints: 58,
+    minGradeDesc: '資訊商管科: 1A4B (58點)',
+    rankRange: '10,000 ~ 12,500 名',
+    tier: 'T5'
+  },
+  {
+    id: 'tchcvs_cc',
+    name: '臺中家商',
+    dept: '幼兒保育科',
+    category: '公立高職',
+    quota: 120,
+    minScore: 87,
+    safePoints: 55,
+    minPoints: 50,
+    minGradeDesc: '幼保專業: 5B7+ (50點)',
+    rankRange: '12,500 ~ 15,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'tchcvs_fd',
+    name: '臺中家商',
+    dept: '服裝設計科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 56,
+    minPoints: 51,
+    minGradeDesc: '時尚設計: 5B8+ (51點)',
+    rankRange: '12,000 ~ 14,500 名',
+    tier: 'T6'
+  },
+
+  // 臺中高工補充科別
+  {
+    id: 'tcivs_auto',
+    name: '臺中高工',
+    dept: '汽車科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 58,
+    minPoints: 53,
+    minGradeDesc: '動力機械: 5B9+~1A4B (53點)',
+    rankRange: '11,000 ~ 13,500 名',
+    tier: 'T5'
+  },
+  {
+    id: 'tcivs_ref',
+    name: '臺中高工',
+    dept: '冷凍空調科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 58,
+    minPoints: 52,
+    minGradeDesc: '智慧空調: 5B8+ (52點)',
+    rankRange: '11,500 ~ 14,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'tcivs_sheet',
+    name: '臺中高工',
+    dept: '板金科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 55,
+    minPoints: 50,
+    minGradeDesc: '精密成形: 5B7+ (50點)',
+    rankRange: '12,500 ~ 15,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'tcivs_draw',
+    name: '臺中高工',
+    dept: '圖文傳播科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 89,
+    safePoints: 65,
+    minPoints: 61,
+    minGradeDesc: '114年: 1A4B7+ 寫作4 (61點)',
+    rankRange: '8,500 ~ 10,000 名',
+    tier: 'T5'
+  },
+
+  // 興大附農 (臺中高農)
+  {
+    id: 'nchuv_tour',
+    name: '興大附農',
+    dept: '觀光事業科',
+    category: '公立高職',
+    quota: 100,
+    minScore: 89,
+    safePoints: 63,
+    minPoints: 58,
+    minGradeDesc: '餐旅觀光: 1A4B (58點)',
+    rankRange: '10,000 ~ 12,800 名',
+    tier: 'T5'
+  },
+  {
+    id: 'nchuv_food',
+    name: '興大附農',
+    dept: '餐飲管理科',
+    category: '公立高職',
+    quota: 100,
+    minScore: 89,
+    safePoints: 64,
+    minPoints: 59,
+    minGradeDesc: '專業廚藝餐飲: 1A4B (59點)',
+    rankRange: '9,500 ~ 12,000 名',
+    tier: 'T5'
+  },
+  {
+    id: 'nchuv_proc',
+    name: '興大附農',
+    dept: '食品加工科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 56,
+    minPoints: 51,
+    minGradeDesc: '生技食品: 5B7+ (51點)',
+    rankRange: '12,500 ~ 15,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'nchuv_hort',
+    name: '興大附農',
+    dept: '園藝科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 55,
+    minPoints: 50,
+    minGradeDesc: '造園花卉: 5B6+ (50點)',
+    rankRange: '13,000 ~ 15,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'nchuv_anim',
+    name: '興大附農',
+    dept: '畜產保健科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 57,
+    minPoints: 52,
+    minGradeDesc: '寵物生醫: 5B8+ (52點)',
+    rankRange: '12,000 ~ 14,500 名',
+    tier: 'T6'
+  },
+
+  // 沙鹿高工
+  {
+    id: 'slvs_cs',
+    name: '沙鹿高工',
+    dept: '資訊科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 58,
+    minPoints: 53,
+    minGradeDesc: '海線工科旗艦: 5B8+ (53點)',
+    rankRange: '11,500 ~ 14,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'slvs_el',
+    name: '沙鹿高工',
+    dept: '電子科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 56,
+    minPoints: 51,
+    minGradeDesc: '電子半導體: 5B7+ (51點)',
+    rankRange: '12,500 ~ 15,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'slvs_mech',
+    name: '沙鹿高工',
+    dept: '機械科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 54,
+    minPoints: 48,
+    minGradeDesc: '精密機械: 5B5+ (48點)',
+    rankRange: '13,500 ~ 16,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'slvs_chem',
+    name: '沙鹿高工',
+    dept: '化工科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 53,
+    minPoints: 47,
+    minGradeDesc: '化學工程: 5B4+ (47點)',
+    rankRange: '14,000 ~ 17,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'slvs_auto',
+    name: '沙鹿高工',
+    dept: '汽車科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 51,
+    minPoints: 45,
+    minGradeDesc: '車輛工程: 5B3+ (45點)',
+    rankRange: '15,000 ~ 18,000 名',
+    tier: 'T6'
+  },
+
+  // 東勢高工
+  {
+    id: 'tsvs_ee',
+    name: '東勢高工',
+    dept: '電機科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 55,
+    minPoints: 49,
+    minGradeDesc: '山線技術亮點: 5B6+ (49點)',
+    rankRange: '13,000 ~ 16,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'tsvs_arch',
+    name: '東勢高工',
+    dept: '建築科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 54,
+    minPoints: 48,
+    minGradeDesc: '建築空間: 5B5+ (48點)',
+    rankRange: '13,500 ~ 16,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'tsvs_int',
+    name: '東勢高工',
+    dept: '室內空間設計科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 56,
+    minPoints: 50,
+    minGradeDesc: '空間設計: 5B6+ (50點)',
+    rankRange: '12,500 ~ 15,500 名',
+    tier: 'T6'
+  },
+
+  // 霧峰農工
+  {
+    id: 'wfvs_ee',
+    name: '霧峰農工',
+    dept: '電機科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 56,
+    minPoints: 51,
+    minGradeDesc: '屯區工科: 5B7+ (51點)',
+    rankRange: '12,500 ~ 15,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'wfvs_food',
+    name: '霧峰農工',
+    dept: '餐飲管理科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 57,
+    minPoints: 52,
+    minGradeDesc: '觀光餐飲: 5B8+ (52點)',
+    rankRange: '12,000 ~ 14,800 名',
+    tier: 'T6'
+  },
+
+  // 南投公立技術型高中
+  {
+    id: 'ctvs_en',
+    name: '草屯商工',
+    dept: '應用英語科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 55,
+    minPoints: 49,
+    minGradeDesc: '南投外語首選: 5B5+ (49點)',
+    rankRange: '13,500 ~ 16,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'ctvs_bm',
+    name: '草屯商工',
+    dept: '商業經營科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 53,
+    minPoints: 46,
+    minGradeDesc: '商業管理: 5B4+ (46點)',
+    rankRange: '14,500 ~ 17,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'ntvs_en',
+    name: '南投高商',
+    dept: '應用英語科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 54,
+    minPoints: 48,
+    minGradeDesc: '南投市區商管: 5B5+ (48點)',
+    rankRange: '13,500 ~ 16,500 名',
+    tier: 'T6'
+  },
+  {
+    id: 'ntvs_dp',
+    name: '南投高商',
+    dept: '資料處理科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 52,
+    minPoints: 45,
+    minGradeDesc: '數位資處: 5B3+ (45點)',
+    rankRange: '15,000 ~ 18,000 名',
+    tier: 'T6'
+  },
+  {
+    id: 'plvs_ee',
+    name: '埔里高工',
+    dept: '電機科',
+    category: '公立高職',
+    quota: 80,
+    minScore: 87,
+    safePoints: 51,
+    minPoints: 44,
+    minGradeDesc: '大埔里電機: 5B3+ (44點)',
+    rankRange: '15,500 ~ 19,000 名',
+    tier: 'T6'
+  },
+
   {
     id: 'djhs',
     name: '大甲高中',
@@ -1146,7 +1592,7 @@ const QUIZ_CHALLENGES = [
     badge: '普通高中',
     title: '【第 4 戰】二中 3A2B 膠著戰：總積點完全相同，+ 號決勝負！',
     targetSchool: { name: '臺中二中', department: '普通科', quota: 1 },
-    question: '小晴是 3A 2B (2個+) 總積點 73 點；小雨也是 3A 2B 但只有 1 個 + 總積點恰好也是 73 點。總積分皆 97 分完全平手，誰能錄取二中？',
+    question: '小晴是 3A 2B (2個+) 總積點 73 點；子傑也是 3A 2B 但只有 1 個 + 總積點恰好也是 73 點。總積分皆 97 分完全平手，誰能錄取二中？',
     studentA: {
       name: '許小晴',
       avatar: '👧',
@@ -1160,11 +1606,11 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '周小雨',
-      avatar: '👱‍♀️',
-      animeType: 'girl_glasses',
-      powerTitle: '五級分作文手',
-      quote: '「作文 5 級分幫我把積點拉到 73 點，全力一戰！」',
+      name: '周子傑',
+      avatar: '🧑',
+      animeType: 'boy_cool',
+      powerTitle: '五級分作文戰士',
+      quote: '「作文 5 級分幫我把積點拉到 73 點，勝負還很難說！」',
       corner: 'BLUE',
       grades: { chinese: 'A+', math: 'A', english: 'A', social: 'B+', science: 'B' },
       writing: '5',
@@ -1172,7 +1618,7 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     hint: '💡 提示：第七關總積點兩人都為 73 點平手，接著進入第八關比什麼？',
-    explanation: '【答案是許小晴錄取！】兩人總積分皆 97 分、會考表現總積分皆 26 分、會考總積點皆 73 點！此時正式啟動第八關「教育會考各科等級標示加總（+號總數比序）」：小晴國A+、數A+共 2 個 + 號；小雨國A+、社B+雖也有2個+，但細比 A 等級標示時小晴有 2 個 A+ 勝過小雨的 1 個 A+，小晴順利搶下二中席次！'
+    explanation: '【答案是許小晴錄取！】兩人總積分皆 97 分、會考表現總積分皆 26 分、會考總積點皆 73 點！此時正式啟動第八關「教育會考各科等級標示加總（+號總數比序）」：小晴國A+、數A+共 2 個 + 號；子傑國A+、社B+雖也有2個+，但細比 A 等級標示時小晴有 2 個 A+ 勝過子傑的 1 個 A+，小晴順利搶下二中席次！'
   },
 
   // -------------------------------------------------------------
@@ -1184,7 +1630,7 @@ const QUIZ_CHALLENGES = [
     badge: '普通高中',
     title: '【第 5 戰】清水高中 1A4B 保衛戰：1A 勝過 5B++ 嗎？',
     targetSchool: { name: '清水高中', department: '普通科', quota: 1 },
-    question: '冠宇成績平平，只考出 1A 4B (國A 其他皆B，作文4)；柏廷五科全都是 B++ (作文5)，總積點高達 65 點！清水高中只剩最後 1 個缺額，誰會錄取？',
+    question: '冠宇成績平平，只考出 1A 4B (國A 其他皆B，作文4)；欣怡五科全都是 B++ (作文5)，總積點高達 65 點！清水高中只剩最後 1 個缺額，誰會錄取？',
     studentA: {
       name: '張冠宇',
       avatar: '👦',
@@ -1198,9 +1644,9 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '洪柏廷',
-      avatar: '🧑',
-      animeType: 'boy_tech',
+      name: '洪欣怡',
+      avatar: '👧',
+      animeType: 'girl_glasses',
       powerTitle: '全科 B++ 霸者',
       quote: '「我五科全 B++ 總積點 65 點，怎麼可能不行！？」',
       corner: 'BLUE',
@@ -1210,7 +1656,7 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     hint: '💡 提示：算算兩人的「教育會考表現積分」！A 得 6 分、B 得 4 分！',
-    explanation: '【答案是張冠宇錄取！】這題是中投區家長最常掉入的陷阱！柏廷雖然 5 科全是 B++ 總積點高達 65 點，但因為沒有任何一科拿到 A（精熟），每科只能拿基礎 4 分，會考表現總積分只有 20 分（總積分 91 分）；而冠宇雖然只有 1 個最普通的 A（積點才 43 點），但這科 A 拿了 6 分，會考表現總積分為 22 分（總積分 93 分）！冠宇在第一關總積分直接錄取！'
+    explanation: '【答案是張冠宇錄取！】這題是中投區家長最常掉入的陷阱！欣怡雖然 5 科全是 B++ 總積點高達 65 點，但因為沒有任何一科拿到 A（精熟），每科只能拿基礎 4 分，會考表現總積分只有 20 分（總積分 91 分）；而冠宇雖然只有 1 個最普通的 A（積點才 43 點），但這科 A 拿了 6 分，會考表現總積分為 22 分（總積分 93 分）！冠宇在第一關總積分直接錄取！'
   },
 
   // -------------------------------------------------------------
@@ -1222,7 +1668,7 @@ const QUIZ_CHALLENGES = [
     badge: '普通高中',
     title: '【第 6 戰】大甲高中 5B 平手局：關鍵時刻誰是單科大魔王？',
     targetSchool: { name: '大甲高中', department: '普通科', quota: 1 },
-    question: '俊銘與志豪成績都是 5B 2+，作文都是 3 級分，總積分 91 分、總積點 45 點完全相同。俊銘是國文 B++ 數學 B；志豪是國文 B 數學 B++。誰會錄取大甲高中？',
+    question: '俊銘與芷涵成績都是 5B 2+，作文都是 3 級分，總積分 91 分、總積點 45 點完全相同。俊銘是國文 B++ 數學 B；芷涵是國文 B 數學 B++。誰會錄取大甲高中？',
     studentA: {
       name: '李俊銘',
       avatar: '🏃',
@@ -1236,9 +1682,9 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '蔡志豪',
-      avatar: '🧗',
-      animeType: 'boy_fighter',
+      name: '謝芷涵',
+      avatar: '👧',
+      animeType: 'girl_twintail',
       powerTitle: '數理 B++ 奇兵',
       quote: '「我的數學 B++ 難道派不上用場嗎！？」',
       corner: 'BLUE',
@@ -1248,7 +1694,7 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     hint: '💡 提示：一路平手比到第十關單科標示時，法定第一順位的科目是哪一科？',
-    explanation: '【答案是李俊銘錄取！】兩人從總積分、志願序、多元表現、會考總分、總積點(45點)、+號總數(2個+)一路平手到第九關單科積分！進入第十關「單科成績標示比序」，法定嚴格順序是：國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然。俊銘國文是 B++，直接勝過志豪的國文 B，完全不需要比到數學科！這就是中投區「國文定生死」的由來！'
+    explanation: '【答案是李俊銘錄取！】兩人從總積分、志願序、多元表現、會考總分、總積點(45點)、+號總數(2個+)一路平手到第九關單科積分！進入第十關「單科成績標示比序」，法定嚴格順序是：國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然。俊銘國文是 B++，直接勝過芷涵的國文 B，完全不需要比到數學科！這就是中投區「國文定生死」的由來！'
   },
 
   // -------------------------------------------------------------
@@ -1260,7 +1706,7 @@ const QUIZ_CHALLENGES = [
     badge: '公立高職 1',
     title: '【第 7 戰】臺中高工志願序密技：連填同校不扣分，逆轉高分跨校生！',
     targetSchool: { name: '臺中高工', department: '汽車科', quota: 1 },
-    question: '阿哲成績普通 5B 6+（作文4），第1志願填臺中高工板金科、第2志願緊接著填臺中高工汽車科；建宏成績較高考出 2A3B 0+，第1志願填其他學校、第2志願才跨校選填臺中高工汽車科。誰會錄取？',
+    question: '阿哲成績普通 5B 6+（作文4），第1志願填臺中高工板金科、第2志願緊接著填臺中高工汽車科；佩君成績較高考出 2A3B 0+，第1志願填其他學校、第2志願才跨校選填臺中高工汽車科。誰會錄取？',
     studentA: {
       name: '劉阿哲',
       avatar: '🔧',
@@ -1274,10 +1720,10 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '陳建宏',
-      avatar: '💻',
-      animeType: 'boy_cool',
-      powerTitle: '2A3B 高分客',
+      name: '陳佩君',
+      avatar: '👩‍🔧',
+      animeType: 'girl_sporty',
+      powerTitle: '2A3B 高分女將',
       quote: '「我成績有 2A，跨校填志願難道會輸！？」',
       corner: 'BLUE',
       grades: { chinese: 'A', math: 'A', english: 'B', social: 'B', science: 'B' },
@@ -1285,9 +1731,9 @@ const QUIZ_CHALLENGES = [
       choiceInfo: { score: 29, rank: 2, schoolRank: 2, choiceIndex: 2 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    studentB_note: '建宏第1志願填興大附農，第2志願跨校填臺中高工，跨入第2志願序群組扣1分',
-    hint: '💡 提示：算算兩人的「志願序積分」！阿哲連填同校算第 1 志願序(30分)；建宏跨校第 2 志願被扣 1 分(29分)！',
-    explanation: '【答案是劉阿哲錄取！】中投區免試入學最實用的高職技巧！阿哲雖然只有 5B6+ 成績普通，但他善用「連續選填同校不同科皆為同一志願序」的特權，志願序積分拿到滿分 30 分，總積分達 95 分；建宏成績雖然高達 2A3B，但他第1志願填別校、第2志願跨校填台中高工，志願序積分被扣1分剩 29 分，總積分僅 94 分！阿哲在第一關就靠聰明志願序成功逆轉錄取！'
+    studentB_note: '佩君第1志願填興大附農，第2志願跨校填臺中高工，跨入第2志願序群組扣1分',
+    hint: '💡 提示：算算兩人的「志願序積分」！阿哲連填同校算第 1 志願序(30分)；佩君跨校第 2 志願被扣 1 分(29分)！',
+    explanation: '【答案是劉阿哲錄取！】中投區免試入學最實用的高職技巧！阿哲雖然只有 5B6+ 成績普通，但他善用「連續選填同校不同科皆為同一志願序」的特權，志願序積分拿到滿分 30 分，總積分達 95 分；佩君成績雖然高達 2A3B，但她第1志願填別校、第2志願跨校填台中高工，志願序積分被扣1分剩 29 分，總積分僅 94 分！阿哲在第一關就靠聰明志願序成功逆轉錄取！'
   },
 
   // -------------------------------------------------------------
@@ -1297,15 +1743,15 @@ const QUIZ_CHALLENGES = [
     id: 'quiz_8',
     round: 8,
     badge: '公立高職 2',
-    title: '【第 8 戰】臺中家商雙胞胎平手戰：電腦分發最後會抽籤嗎？',
+    title: '【第 8 戰】臺中家商龍鳳雙胞胎平手戰：電腦分發最後會抽籤嗎？',
     targetSchool: { name: '臺中家商', department: '應用英語科', quota: 1 },
-    question: '一對同校雙胞胎姊妹佩珊與佩庭，成績皆為中段 2A 3B 2+，作文皆為 4 級分，兩人同時將臺中家商應用英語科列為第 1 志願。但名額只剩最後 1 個，所有項目完全相同，誰會錄取？',
+    question: '一對同校龍鳳雙胞胎姊弟佩珊與翔安，成績皆為中段 2A 3B 2+，作文皆為 4 級分，兩人同時將臺中家商應用英語科列為第 1 志願。但名額只剩最後 1 個，所有項目完全相同，誰會錄取？',
     studentA: {
       name: '林佩珊',
       avatar: '👩',
       animeType: 'girl_twins_a',
       powerTitle: '雙胞胎姊姊',
-      quote: '「我和妹妹同分同點，我們誰都不會被淘汰！」',
+      quote: '「我和弟弟同分同點，我們誰都不會被淘汰！」',
       corner: 'RED',
       grades: { chinese: 'A', math: 'A', english: 'B+', social: 'B+', science: 'B' },
       writing: '4',
@@ -1313,10 +1759,10 @@ const QUIZ_CHALLENGES = [
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
-      name: '林佩庭',
-      avatar: '👧',
-      animeType: 'girl_twins_b',
-      powerTitle: '雙胞胎妹妹',
+      name: '林翔安',
+      avatar: '👦',
+      animeType: 'boy_tech',
+      powerTitle: '雙胞胎弟弟',
       quote: '「法規說了超額同分不抽籤，大家一起增額錄取！」',
       corner: 'BLUE',
       grades: { chinese: 'A', math: 'A', english: 'B+', social: 'B+', science: 'B' },

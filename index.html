@@ -77,10 +77,10 @@
         <!-- 導覽頁籤切換 (6大模式支援手機格狀與電腦單行) -->
         <nav class="grid grid-cols-3 sm:flex sm:items-center bg-slate-800/90 p-1 sm:p-1.5 rounded-2xl border border-slate-700/60 text-xs sm:text-sm font-bold w-full sm:w-auto gap-1">
           <button @click="activeTab = 'quiz'"
-                  :class="activeTab === 'quiz' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
+                  :class="activeTab === 'quiz' ? 'bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white shadow-lg' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
                   class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
-            <i class="fa-solid fa-gamepad text-yellow-300"></i>
-            <span>PK 猜猜看</span>
+            <i class="fa-solid fa-trophy text-yellow-300"></i>
+            <span>🥊 PK擂台賽</span>
           </button>
 
           <button @click="activeTab = 'simulator'"
@@ -125,36 +125,92 @@
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 flex-grow w-full">
 
       <!-- ============================================================== -->
-      <!-- TAB 1: 比序猜猜看 (PK 競猜大挑戰) -->
+      <!-- TAB 1: 比序猜猜看 (動漫手遊風・熱血拳擊擂台爭霸賽) -->
       <!-- ============================================================== -->
       <section v-if="activeTab === 'quiz'" class="space-y-5">
         
-        <!-- 題目導覽按鈕列 -->
-        <div class="glass-dark rounded-2xl p-3 sm:p-4 border border-slate-700/60 shadow-lg">
-          <div class="flex items-center justify-between mb-2.5">
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] uppercase tracking-wider text-indigo-400 font-extrabold">CHALLENGE ARENA</span>
-              <span class="text-slate-400 text-xs hidden sm:inline">| 選擇考題關卡：</span>
+        <!-- 賽事氣氛與運動現場音效控制台 -->
+        <div class="glass-dark rounded-2xl p-3 sm:p-4 border border-indigo-500/40 shadow-xl relative overflow-hidden">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+            
+            <!-- 左側標題與關卡選擇說明 -->
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-gradient-to-r from-red-600 to-amber-600 text-white shadow-md flex items-center gap-1.5">
+                <i class="fa-solid fa-trophy text-yellow-300"></i>
+                <span>CHOTOU BATTLE ARENA</span>
+              </span>
+              <span class="text-slate-300 text-xs font-bold hidden sm:inline">中投區比序擂台賽</span>
+              
+              <!-- 手遊 Combo 連勝徽章 -->
+              <div v-if="comboStreak > 1" class="combo-badge animate-bounce">
+                <i class="fa-solid fa-fire text-yellow-300"></i>
+                <span>COMBO x{{ comboStreak }}! 連勝中</span>
+              </div>
             </div>
-            <div class="text-xs font-bold text-amber-300 bg-amber-950/70 border border-amber-600/50 px-2.5 py-1 rounded-full">
-              🎯 答對：{{ quizScore.correct }} / {{ quizScore.total }}
+
+            <!-- 右側：運動賽事現場加油音控台 -->
+            <div class="flex items-center gap-2 flex-wrap w-full md:w-auto justify-end">
+              
+              <!-- 現場加油聲切換按鈕 -->
+              <button @click="toggleStadiumCrowd"
+                      :class="isStadiumCrowdPlaying ? 'bg-emerald-600/90 text-white border-emerald-400 shadow-emerald-500/30' : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white'"
+                      class="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-2 transition active:scale-95 shadow-md">
+                <div v-if="isStadiumCrowdPlaying" class="flex items-end gap-0.5 h-3">
+                  <span class="equalizer-bar"></span>
+                  <span class="equalizer-bar"></span>
+                  <span class="equalizer-bar"></span>
+                  <span class="equalizer-bar"></span>
+                </div>
+                <i v-else class="fa-solid fa-volume-xmark text-slate-400"></i>
+                <span>{{ isStadiumCrowdPlaying ? '🏟️ 現場吶喊中' : '🔈 開啟加油聲' }}</span>
+              </button>
+
+              <!-- 敲鐘按鈕 -->
+              <button @click="playBoxingBellSound"
+                      title="敲響擂台銅鐘"
+                      class="bg-amber-600/80 hover:bg-amber-500 text-white px-2.5 py-1.5 rounded-xl border border-amber-400/50 text-xs font-bold transition active:scale-95 shadow flex items-center gap-1">
+                <i class="fa-solid fa-bell"></i>
+                <span class="hidden sm:inline">敲鐘</span>
+              </button>
+
+              <!-- 裁判哨音按鈕 -->
+              <button @click="playRefereeWhistleSound"
+                      title="裁判哨音"
+                      class="bg-indigo-600/80 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-xl border border-indigo-400/50 text-xs font-bold transition active:scale-95 shadow flex items-center gap-1">
+                <i class="fa-solid fa-bullhorn"></i>
+                <span class="hidden sm:inline">哨音</span>
+              </button>
+
+              <!-- 舞台切換：拳擊場 ⇋ 賽跑道 -->
+              <button @click="toggleArenaTheme"
+                      class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-3 py-1.5 rounded-xl border border-pink-400/50 text-xs font-black transition active:scale-95 shadow-md flex items-center gap-1.5">
+                <span>{{ arenaTheme === 'boxing' ? '🥊 拳擊擂台' : '🏃 疾速賽跑' }}</span>
+                <i class="fa-solid fa-repeat text-[10px]"></i>
+              </button>
+
+              <!-- 答對戰績牌 -->
+              <div class="text-xs font-extrabold text-amber-300 bg-amber-950/80 border border-amber-500/60 px-3 py-1.5 rounded-xl shadow">
+                🎯 {{ quizScore.correct }} / {{ quizScore.total }}
+              </div>
             </div>
+
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5">
+          <!-- 8 戰關卡選擇按鈕列 -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5 mt-3">
             <button v-for="(quiz, idx) in quizList" :key="quiz.id"
                     @click="selectQuiz(idx)"
                     :disabled="isScanning"
                     :class="[
                       currentQuizIndex === idx 
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-400 shadow-md ring-2 ring-indigo-400/50' 
+                        ? 'bg-gradient-to-r from-amber-500 via-rose-600 to-indigo-600 text-white border-amber-300 shadow-lg ring-2 ring-amber-400/50 scale-[1.02]' 
                         : 'bg-slate-800/90 text-slate-300 border-slate-700 hover:bg-slate-700/70',
                       isScanning ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                     ]"
-                    class="p-2 sm:p-2.5 rounded-xl border text-left text-xs transition-all flex flex-col justify-between h-20 sm:h-22 active:scale-95">
+                    class="p-2 rounded-xl border text-left text-xs transition-all flex flex-col justify-between h-20 active:scale-95">
               <div class="flex items-center justify-between w-full">
-                <span class="font-black text-white">第 {{ idx + 1 }} 戰</span>
-                <span class="text-[9px] px-1 py-0.5 rounded bg-slate-900/80 text-indigo-300 font-bold truncate max-w-[50px]">{{ quiz.badge }}</span>
+                <span class="font-black text-white text-[11px]">第 {{ idx + 1 }} 戰</span>
+                <span class="text-[9px] px-1 py-0.5 rounded bg-slate-900/80 text-amber-300 font-bold truncate max-w-[50px]">{{ quiz.badge }}</span>
               </div>
               <div class="font-black truncate text-[11px] text-amber-200 mt-1">{{ quiz.targetSchool.name }}</div>
               <div class="text-[9px] text-slate-400 truncate">{{ quiz.targetSchool.department }}</div>
@@ -162,227 +218,323 @@
           </div>
         </div>
 
-        <!-- 當前考題題目卡 -->
-        <div class="bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-slate-900/40 glass-dark rounded-3xl p-4 sm:p-6 border border-indigo-500/30 shadow-2xl relative overflow-hidden">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-700/60">
+        <!-- 考題與競逐目標卡片 -->
+        <div class="bg-gradient-to-r from-slate-900/90 via-indigo-950/70 to-slate-900/90 glass-dark rounded-3xl p-4 sm:p-5 border-2 border-indigo-500/40 shadow-2xl relative overflow-hidden">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-slate-700/60">
             <div>
-              <div class="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-300 text-xs font-bold px-2.5 py-1 rounded-full mb-1.5 border border-indigo-400/30">
-                <i class="fa-solid fa-flag-checkered"></i>
-                <span>{{ currentQuiz.badge }}</span>
+              <div class="inline-flex items-center gap-1.5 bg-rose-500/20 text-rose-300 text-xs font-black px-3 py-1 rounded-full mb-1.5 border border-rose-500/30">
+                <i class="fa-solid fa-fire text-amber-400"></i>
+                <span>ROUND {{ currentQuiz.round || (currentQuizIndex + 1) }} / 8：{{ currentQuiz.badge }}</span>
               </div>
-              <h2 class="text-lg sm:text-2xl font-black text-white tracking-wide">
+              <h2 class="text-base sm:text-xl font-black text-white tracking-wide">
                 {{ currentQuiz.title }}
               </h2>
             </div>
 
-            <!-- 目標學校牌子 -->
-            <div class="bg-slate-800/90 border border-amber-500/40 rounded-2xl px-4 py-2 flex items-center gap-2.5 shadow-inner w-full sm:w-auto">
-              <div class="text-amber-400 text-xl sm:text-2xl">
+            <!-- 目標學校看板 -->
+            <div class="bg-slate-950/90 border border-amber-500/50 rounded-2xl px-4 py-2 flex items-center gap-3 shadow-inner w-full lg:w-auto">
+              <div class="text-amber-400 text-2xl">
                 <i class="fa-solid fa-school"></i>
               </div>
               <div>
-                <div class="text-[10px] text-slate-400 font-medium">競逐目標與缺額</div>
-                <div class="text-sm sm:text-base font-extrabold text-amber-300">
+                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">TARGET & QUOTA</div>
+                <div class="text-sm sm:text-base font-black text-amber-300">
                   {{ currentQuiz.targetSchool.name }} ({{ currentQuiz.targetSchool.department }})
-                  <span class="text-[10px] bg-red-500/20 text-red-300 border border-red-500/40 px-1.5 py-0.5 rounded-full ml-1 font-bold">剩餘：{{ currentQuiz.targetSchool.quota }} 名</span>
+                  <span class="text-[10px] bg-red-500/30 text-red-200 border border-red-500/50 px-2 py-0.5 rounded-full ml-1 font-bold">最後剩餘：{{ currentQuiz.targetSchool.quota }} 名</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <p class="text-slate-200 text-sm sm:text-base leading-relaxed mt-3 font-medium">
+          <p class="text-slate-200 text-xs sm:text-sm leading-relaxed mt-2.5 font-medium">
             {{ currentQuiz.question }}
           </p>
 
-          <div class="mt-2.5 text-xs text-amber-200/90 bg-amber-950/40 border border-amber-800/40 p-2.5 rounded-xl flex items-center gap-2">
+          <div class="mt-2 text-xs text-amber-200/90 bg-amber-950/40 border border-amber-800/40 p-2.5 rounded-xl flex items-center gap-2">
             <i class="fa-solid fa-lightbulb text-amber-400 flex-shrink-0"></i>
             <span>{{ currentQuiz.hint }}</span>
           </div>
         </div>
 
-        <!-- 雙雄卡牌對抗區 (VS 戰場) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 relative">
+        <!-- ============================================================== -->
+        <!-- 🥊 動漫熱血拳擊擂台 / 🏃 田徑賽跑對決舞台                       -->
+        <!-- ============================================================== -->
+        <div :class="arenaTheme === 'boxing' ? 'boxing-stage p-4 sm:p-6' : 'track-stage p-4 sm:p-6'">
           
-          <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600 items-center justify-center text-white font-black text-base shadow-xl shadow-rose-500/30 border-2 border-slate-900">
-            VS
-          </div>
+          <!-- 拳擊場專屬光影與繩索 -->
+          <template v-if="arenaTheme === 'boxing'">
+            <!-- 雙向掃射探照燈 -->
+            <div class="spotlight-left"></div>
+            <div class="spotlight-right"></div>
+            <!-- 三層立體圍繩 -->
+            <div class="rope-tier rope-tier-1" :class="{ 'rope-vibrate': isScanning }"></div>
+            <div class="rope-tier rope-tier-2" :class="{ 'rope-vibrate': isScanning }"></div>
+            <div class="rope-tier rope-tier-3" :class="{ 'rope-vibrate': isScanning }"></div>
+          </template>
 
-          <!-- 考生甲卡片 -->
-          <div :class="[
-                 quizRevealed && quizComparison.winner === 'A_WIN' ? 'ring-4 ring-emerald-400 bg-emerald-950/40' : '',
-                 quizRevealed && quizComparison.winner === 'B_WIN' ? 'opacity-60 grayscale-[30%]' : '',
-               ]"
-               class="glass-dark rounded-3xl p-4 sm:p-5 border border-slate-700/80 shadow-xl transition-all relative overflow-hidden">
-            
-            <div v-if="quizRevealed && quizComparison.winner === 'A_WIN'" 
-                 class="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg crown-anim flex items-center gap-1.5 z-10">
-              <i class="fa-solid fa-crown text-yellow-300"></i>
-              <span>錄取成功！</span>
+          <!-- 賽跑道專屬標線 -->
+          <template v-else>
+            <div class="track-line" style="top: 30%;"></div>
+            <div class="track-line" style="top: 70%;"></div>
+          </template>
+
+          <!-- 雙雄對陣主體區 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
+
+            <!-- 中央 3D 手遊風 VS 標章 -->
+            <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-16 h-16 rounded-full vs-badge-fire items-center justify-center text-white font-black text-xl shadow-2xl">
+              VS
             </div>
 
-            <div class="flex items-center gap-3 mb-3">
-              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-2xl sm:text-3xl shadow-inner flex-shrink-0">
-                {{ currentQuiz.studentA.avatar }}
+            <!-- ========================================================== -->
+            <!-- 🔴 紅角 (選手 A：RED CORNER)                               -->
+            <!-- ========================================================== -->
+            <div class="game-card game-card-red rounded-3xl p-4 sm:p-5 relative transition-all"
+                 :class="[
+                   quizRevealed && quizComparison.winner === 'A_WIN' ? 'ring-4 ring-emerald-400 fighter-aura-red' : '',
+                   quizRevealed && quizComparison.winner === 'B_WIN' ? 'opacity-65 grayscale-[25%]' : ''
+                 ]">
+              
+              <!-- 獲勝皇冠飄揚標章 -->
+              <div v-if="quizRevealed && quizComparison.winner === 'A_WIN'" 
+                   class="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-black px-3.5 py-1 rounded-full shadow-lg crown-anim flex items-center gap-1.5 z-20">
+                <i class="fa-solid fa-crown text-yellow-300"></i>
+                <span>🥊 判定勝出・錄取成功！</span>
               </div>
-              <div>
-                <span class="text-[10px] text-indigo-400 font-extrabold tracking-wider">CANDIDATE A</span>
-                <h3 class="text-lg sm:text-xl font-black text-white">{{ currentQuiz.studentA.name }}</h3>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  目標排在：<span class="text-indigo-300 font-bold">第 {{ currentQuiz.studentA.choiceInfo.choiceIndex }} 志願 (第 {{ currentQuiz.studentA.choiceInfo.rank }} 志願序)</span>
+
+              <!-- 頂部 SSR 閃卡與角色封號 -->
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="badge-ssr text-[10px] px-2 py-0.5 rounded-md uppercase">SSR 選手</span>
+                  <span class="text-red-400 font-extrabold text-xs">🔴 紅角 (RED CORNER)</span>
                 </div>
-              </div>
-            </div>
-
-            <!-- 成績指標一覽 -->
-            <div class="grid grid-cols-5 gap-1 sm:gap-1.5 mb-3 text-center">
-              <div v-for="sub in subjects" :key="sub.key" class="bg-slate-800/80 p-1.5 sm:p-2 rounded-xl border border-slate-700">
-                <div class="text-[10px] sm:text-[11px] text-slate-400 font-bold">{{ sub.name }}</div>
-                <div class="text-sm sm:text-base font-extrabold text-amber-300 mt-0.5">{{ currentQuiz.studentA.grades[sub.key] }}</div>
-                <div class="text-[9px] sm:text-[10px] text-slate-400">{{ GRADE_POINTS[currentQuiz.studentA.grades[sub.key]] }}點</div>
-              </div>
-            </div>
-
-            <!-- 關鍵戰力指標列表 -->
-            <div class="space-y-1.5 text-xs bg-slate-900/70 p-3 rounded-2xl border border-slate-800">
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">寫作測驗：</span>
-                <span class="font-bold text-white">{{ currentQuiz.studentA.writing }} 級分 ({{ currentQuiz.studentA.writing }}點)</span>
-              </div>
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">會考表現積分 (滿分30)：</span>
-                <span class="font-extrabold text-indigo-300">{{ quizComparison.statsA.examScore }} 分</span>
-              </div>
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">會考總積點 (滿分111)：</span>
-                <span class="font-black text-amber-400 text-sm">{{ quizComparison.statsA.examPoints }} 點</span>
-              </div>
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">標示 + 號統計：</span>
-                <span class="font-bold text-slate-200">
-                  <span class="text-indigo-300 font-extrabold">{{ quizComparison.statsA.aPlusCount }}</span> 個 A+、
-                  <span class="text-purple-300 font-extrabold">{{ quizComparison.statsA.bPlusCount }}</span> 個 B+
+                <span class="text-[11px] font-black text-amber-300 bg-red-950/80 px-2 py-0.5 rounded-lg border border-red-500/40">
+                  {{ currentQuiz.studentA.powerTitle || '5A 壓線奇蹟' }}
                 </span>
               </div>
-              <div class="flex justify-between items-center py-0.5 pt-1.5 border-t border-slate-800">
-                <span class="text-slate-300 font-bold">總積分 (滿分100)：</span>
-                <span class="font-black text-emerald-400 text-sm sm:text-base">{{ quizComparison.statsA.totalScore }} 分</span>
-              </div>
-            </div>
-          </div>
 
-          <!-- 考生乙卡片 -->
-          <div :class="[
-                 quizRevealed && quizComparison.winner === 'B_WIN' ? 'ring-4 ring-emerald-400 bg-emerald-950/40' : '',
-                 quizRevealed && quizComparison.winner === 'A_WIN' ? 'opacity-60 grayscale-[30%]' : '',
-               ]"
-               class="glass-dark rounded-3xl p-4 sm:p-5 border border-slate-700/80 shadow-xl transition-all relative overflow-hidden">
-            
-            <div v-if="quizRevealed && quizComparison.winner === 'B_WIN'" 
-                 class="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg crown-anim flex items-center gap-1.5 z-10">
-              <i class="fa-solid fa-crown text-yellow-300"></i>
-              <span>錄取成功！</span>
-            </div>
-
-            <div class="flex items-center gap-3 mb-3">
-              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-purple-600/30 border border-purple-400/40 flex items-center justify-center text-2xl sm:text-3xl shadow-inner flex-shrink-0">
-                {{ currentQuiz.studentB.avatar }}
+              <!-- 動漫漫畫風發言對白氣泡 -->
+              <div class="manga-bubble manga-bubble-left px-3 py-1.5 text-xs mb-3">
+                <i class="fa-solid fa-comment-dots text-red-500 mr-1"></i>
+                <span>{{ currentQuiz.studentA.quote || '「這場分發比序，我全力以赴！」' }}</span>
               </div>
-              <div>
-                <span class="text-[10px] text-purple-400 font-extrabold tracking-wider">CANDIDATE B</span>
-                <h3 class="text-lg sm:text-xl font-black text-white">{{ currentQuiz.studentB.name }}</h3>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  目標排在：<span class="text-purple-300 font-bold">第 {{ currentQuiz.studentB.choiceInfo.choiceIndex }} 志願 (第 {{ currentQuiz.studentB.choiceInfo.rank }} 志願序)</span>
+
+              <!-- 可愛動漫造型角色展示 (Chibi SVG) -->
+              <div class="flex items-center gap-4 mb-3">
+                <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 relative">
+                  <div class="w-full h-full"
+                       :class="[
+                         isScanning ? 'punch-a-anim' : '',
+                         quizRevealed && quizComparison.winner === 'A_WIN' ? 'winner-jump' : '',
+                         quizRevealed && quizComparison.winner === 'B_WIN' ? 'loser-dizzy' : 'chibi-idle'
+                       ]"
+                       v-html="getAnimeAvatarSvg(currentQuiz.studentA, 'RED', getStudentState('A'))">
+                  </div>
+                </div>
+
+                <!-- 選手名與志願序資訊 -->
+                <div class="flex-grow">
+                  <h3 class="text-xl sm:text-2xl font-black text-white tracking-wide flex items-center gap-2">
+                    <span>{{ currentQuiz.studentA.name }}</span>
+                  </h3>
+                  <div class="text-xs text-red-300 font-bold mt-1">
+                    目標排在：第 {{ currentQuiz.studentA.choiceInfo.choiceIndex }} 志願 (第 {{ currentQuiz.studentA.choiceInfo.rank }} 志願序)
+                  </div>
+                  <div class="text-[11px] text-slate-300 mt-0.5">
+                    寫作測驗：<span class="font-extrabold text-amber-300">{{ currentQuiz.studentA.writing }} 級分</span> ({{ currentQuiz.studentA.writing }}點)
+                  </div>
                 </div>
               </div>
+
+              <!-- 手遊戰力血條 (HP 總積分 & SP 會考積點) -->
+              <div class="space-y-2 mb-3 bg-slate-950/70 p-3 rounded-2xl border border-red-900/40">
+                <!-- HP 總積分血條 (滿分100) -->
+                <div>
+                  <div class="flex justify-between text-[11px] font-extrabold mb-1">
+                    <span class="text-red-300">HP 免試入學總積分 (滿分100)</span>
+                    <span class="text-emerald-400 font-black text-xs">{{ quizComparison.statsA.totalScore }} 分</span>
+                  </div>
+                  <div class="game-hp-track h-3">
+                    <div class="game-hp-fill h-full" :style="{ width: quizComparison.statsA.totalScore + '%' }"></div>
+                  </div>
+                </div>
+
+                <!-- SP 會考總積點能量條 (滿分111) -->
+                <div>
+                  <div class="flex justify-between text-[11px] font-extrabold mb-1">
+                    <span class="text-amber-300">SP 會考總積點 (滿分111)</span>
+                    <span class="text-amber-400 font-black text-xs">{{ quizComparison.statsA.examPoints }} 點</span>
+                  </div>
+                  <div class="game-hp-track h-2.5">
+                    <div class="game-sp-fill h-full" :style="{ width: (quizComparison.statsA.examPoints / 111 * 100) + '%' }"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 5 科戰力成績徽章一覽 -->
+              <div class="grid grid-cols-5 gap-1 text-center">
+                <div v-for="sub in subjects" :key="sub.key" class="bg-slate-900/80 p-1.5 rounded-xl border border-red-900/30">
+                  <div class="text-[10px] text-slate-400 font-bold">{{ sub.name }}</div>
+                  <div class="text-sm font-black text-amber-300 mt-0.5">{{ currentQuiz.studentA.grades[sub.key] }}</div>
+                  <div class="text-[9px] text-slate-400">{{ GRADE_POINTS[currentQuiz.studentA.grades[sub.key]] }}點</div>
+                </div>
+              </div>
+
             </div>
 
-            <!-- 成績指標一覽 -->
-            <div class="grid grid-cols-5 gap-1 sm:gap-1.5 mb-3 text-center">
-              <div v-for="sub in subjects" :key="sub.key" class="bg-slate-800/80 p-1.5 sm:p-2 rounded-xl border border-slate-700">
-                <div class="text-[10px] sm:text-[11px] text-slate-400 font-bold">{{ sub.name }}</div>
-                <div class="text-sm sm:text-base font-extrabold text-amber-300 mt-0.5">{{ currentQuiz.studentB.grades[sub.key] }}</div>
-                <div class="text-[9px] sm:text-[10px] text-slate-400">{{ GRADE_POINTS[currentQuiz.studentB.grades[sub.key]] }}點</div>
+            <!-- ========================================================== -->
+            <!-- 🔵 藍角 (選手 B：BLUE CORNER)                              -->
+            <!-- ========================================================== -->
+            <div class="game-card game-card-blue rounded-3xl p-4 sm:p-5 relative transition-all"
+                 :class="[
+                   quizRevealed && quizComparison.winner === 'B_WIN' ? 'ring-4 ring-emerald-400 fighter-aura-blue' : '',
+                   quizRevealed && quizComparison.winner === 'A_WIN' ? 'opacity-65 grayscale-[25%]' : ''
+                 ]">
+              
+              <!-- 獲勝皇冠飄揚標章 -->
+              <div v-if="quizRevealed && quizComparison.winner === 'B_WIN'" 
+                   class="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-black px-3.5 py-1 rounded-full shadow-lg crown-anim flex items-center gap-1.5 z-20">
+                <i class="fa-solid fa-crown text-yellow-300"></i>
+                <span>🥊 判定勝出・錄取成功！</span>
               </div>
-            </div>
 
-            <!-- 關鍵戰力指標列表 -->
-            <div class="space-y-1.5 text-xs bg-slate-900/70 p-3 rounded-2xl border border-slate-800">
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">寫作測驗：</span>
-                <span class="font-bold text-white">{{ currentQuiz.studentB.writing }} 級分 ({{ currentQuiz.studentB.writing }}點)</span>
-              </div>
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">會考表現積分 (滿分30)：</span>
-                <span class="font-extrabold text-indigo-300">{{ quizComparison.statsB.examScore }} 分</span>
-              </div>
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">會考總積點 (滿分111)：</span>
-                <span class="font-black text-amber-400 text-sm">{{ quizComparison.statsB.examPoints }} 點</span>
-              </div>
-              <div class="flex justify-between items-center py-0.5">
-                <span class="text-slate-400">標示 + 號統計：</span>
-                <span class="font-bold text-slate-200">
-                  <span class="text-indigo-300 font-extrabold">{{ quizComparison.statsB.aPlusCount }}</span> 個 A+、
-                  <span class="text-purple-300 font-extrabold">{{ quizComparison.statsB.bPlusCount }}</span> 個 B+
+              <!-- 頂部 UR 炫彩卡與角色封號 -->
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="badge-ur text-[10px] px-2 py-0.5 rounded-md uppercase">UR 選手</span>
+                  <span class="text-blue-400 font-extrabold text-xs">🔵 藍角 (BLUE CORNER)</span>
+                </div>
+                <span class="text-[11px] font-black text-amber-300 bg-blue-950/80 px-2 py-0.5 rounded-lg border border-blue-500/40">
+                  {{ currentQuiz.studentB.powerTitle || '積點破百戰神' }}
                 </span>
               </div>
-              <div class="flex justify-between items-center py-0.5 pt-1.5 border-t border-slate-800">
-                <span class="text-slate-300 font-bold">總積分 (滿分100)：</span>
-                <span class="font-black text-emerald-400 text-sm sm:text-base">{{ quizComparison.statsB.totalScore }} 分</span>
+
+              <!-- 動漫漫畫風發言對白氣泡 -->
+              <div class="manga-bubble manga-bubble-right px-3 py-1.5 text-xs mb-3 text-right">
+                <i class="fa-solid fa-comment-dots text-blue-500 mr-1"></i>
+                <span>{{ currentQuiz.studentB.quote || '「我的戰力絕不會輸給任何人！」' }}</span>
               </div>
+
+              <!-- 可愛動漫造型角色展示 (Chibi SVG) -->
+              <div class="flex items-center gap-4 mb-3">
+                <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 relative">
+                  <div class="w-full h-full"
+                       :class="[
+                         isScanning ? 'punch-b-anim' : '',
+                         quizRevealed && quizComparison.winner === 'B_WIN' ? 'winner-jump' : '',
+                         quizRevealed && quizComparison.winner === 'A_WIN' ? 'loser-dizzy' : 'chibi-idle'
+                       ]"
+                       v-html="getAnimeAvatarSvg(currentQuiz.studentB, 'BLUE', getStudentState('B'))">
+                  </div>
+                </div>
+
+                <!-- 選手名與志願序資訊 -->
+                <div class="flex-grow">
+                  <h3 class="text-xl sm:text-2xl font-black text-white tracking-wide flex items-center gap-2">
+                    <span>{{ currentQuiz.studentB.name }}</span>
+                  </h3>
+                  <div class="text-xs text-blue-300 font-bold mt-1">
+                    目標排在：第 {{ currentQuiz.studentB.choiceInfo.choiceIndex }} 志願 (第 {{ currentQuiz.studentB.choiceInfo.rank }} 志願序)
+                  </div>
+                  <div class="text-[11px] text-slate-300 mt-0.5">
+                    寫作測驗：<span class="font-extrabold text-amber-300">{{ currentQuiz.studentB.writing }} 級分</span> ({{ currentQuiz.studentB.writing }}點)
+                  </div>
+                </div>
+              </div>
+
+              <!-- 手遊戰力血條 (HP 總積分 & SP 會考積點) -->
+              <div class="space-y-2 mb-3 bg-slate-950/70 p-3 rounded-2xl border border-blue-900/40">
+                <!-- HP 總積分血條 (滿分100) -->
+                <div>
+                  <div class="flex justify-between text-[11px] font-extrabold mb-1">
+                    <span class="text-blue-300">HP 免試入學總積分 (滿分100)</span>
+                    <span class="text-emerald-400 font-black text-xs">{{ quizComparison.statsB.totalScore }} 分</span>
+                  </div>
+                  <div class="game-hp-track h-3">
+                    <div class="game-hp-fill h-full" :style="{ width: quizComparison.statsB.totalScore + '%' }"></div>
+                  </div>
+                </div>
+
+                <!-- SP 會考總積點能量條 (滿分111) -->
+                <div>
+                  <div class="flex justify-between text-[11px] font-extrabold mb-1">
+                    <span class="text-amber-300">SP 會考總積點 (滿分111)</span>
+                    <span class="text-amber-400 font-black text-xs">{{ quizComparison.statsB.examPoints }} 點</span>
+                  </div>
+                  <div class="game-hp-track h-2.5">
+                    <div class="game-sp-fill h-full" :style="{ width: (quizComparison.statsB.examPoints / 111 * 100) + '%' }"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 5 科戰力成績徽章一覽 -->
+              <div class="grid grid-cols-5 gap-1 text-center">
+                <div v-for="sub in subjects" :key="sub.key" class="bg-slate-900/80 p-1.5 rounded-xl border border-blue-900/30">
+                  <div class="text-[10px] text-slate-400 font-bold">{{ sub.name }}</div>
+                  <div class="text-sm font-black text-amber-300 mt-0.5">{{ currentQuiz.studentB.grades[sub.key] }}</div>
+                  <div class="text-[9px] text-slate-400">{{ GRADE_POINTS[currentQuiz.studentB.grades[sub.key]] }}點</div>
+                </div>
+              </div>
+
             </div>
+
           </div>
         </div>
 
-        <!-- 學生下注競猜按鈕區 -->
-        <div v-if="!quizRevealed && !isScanning" class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 text-center shadow-xl">
-          <div class="text-xs sm:text-sm font-bold text-indigo-300 mb-3 flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-hand-pointer text-amber-400 animate-bounce"></i>
-            <span>請點選按鈕猜猜看：誰會獲得這唯一的錄取資格？</span>
+        <!-- ============================================================== -->
+        <!-- 學生下注競猜動作按鈕區 (街機手遊指令按鈕)                       -->
+        <!-- ============================================================== -->
+        <div v-if="!quizRevealed && !isScanning" class="glass-dark rounded-3xl p-4 sm:p-5 border-2 border-indigo-500/50 text-center shadow-2xl">
+          <div class="text-xs sm:text-sm font-black text-amber-300 mb-3 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-gamepad text-rose-400 animate-bounce"></i>
+            <span>【決鬥下注指令】請按下按鈕猜猜看：誰會擊敗對手奪得唯一錄取名額？</span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl mx-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-3xl mx-auto">
+            <!-- 猜 A 贏 -->
             <button @click="makeGuess('A')"
-                    class="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-95 text-white font-black py-3.5 px-4 rounded-2xl shadow-lg shadow-indigo-600/30 transition-all card-hover flex items-center justify-center gap-2 text-sm sm:text-base">
-              <span class="text-lg">{{ currentQuiz.studentA.avatar }}</span>
-              <span>猜【{{ currentQuiz.studentA.name }}】錄取</span>
+                    class="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 active:scale-95 text-white font-black py-3.5 px-4 rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center justify-center gap-2.5 text-sm sm:text-base border-2 border-red-400/50">
+              <span class="text-xl">🥊</span>
+              <span>【紅角出拳】猜 {{ currentQuiz.studentA.name }} 勝出</span>
             </button>
 
+            <!-- 猜 B 贏 -->
             <button @click="makeGuess('B')"
-                    class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 active:scale-95 text-white font-black py-3.5 px-4 rounded-2xl shadow-lg shadow-purple-600/30 transition-all card-hover flex items-center justify-center gap-2 text-sm sm:text-base">
-              <span class="text-lg">{{ currentQuiz.studentB.avatar }}</span>
-              <span>猜【{{ currentQuiz.studentB.name }}】錄取</span>
+                    class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 active:scale-95 text-white font-black py-3.5 px-4 rounded-2xl shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-2.5 text-sm sm:text-base border-2 border-blue-400/50">
+              <span class="text-xl">⚡</span>
+              <span>【藍角反擊】猜 {{ currentQuiz.studentB.name }} 勝出</span>
             </button>
 
+            <!-- 猜 平手增額 -->
             <button @click="makeGuess('BOTH')"
-                    class="bg-gradient-to-r from-amber-600 to-emerald-600 hover:from-amber-500 hover:to-emerald-500 active:scale-95 text-white font-black py-3.5 px-4 rounded-2xl shadow-lg shadow-emerald-600/30 transition-all card-hover flex items-center justify-center gap-2 text-sm sm:text-base">
-              <span class="text-lg">🤝</span>
-              <span>兩人平手【增額錄取】</span>
+                    class="bg-gradient-to-r from-amber-600 via-emerald-600 to-teal-600 hover:from-amber-500 hover:to-teal-500 active:scale-95 text-white font-black py-3.5 px-4 rounded-2xl shadow-xl shadow-emerald-600/30 transition-all flex items-center justify-center gap-2.5 text-sm sm:text-base border-2 border-emerald-400/50">
+              <span class="text-xl">🤝</span>
+              <span>【同分握手】兩者增額錄取</span>
             </button>
           </div>
         </div>
 
-        <!-- 正在掃描比序動畫提示 -->
-        <div v-if="isScanning" class="glass-dark rounded-2xl p-4 sm:p-5 border border-indigo-500/50 text-center shadow-2xl">
-          <div class="inline-flex items-center gap-2.5 text-indigo-300 font-extrabold text-sm sm:text-base">
-            <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg sm:text-xl"></i>
-            <span>電腦分發演算法比序中... (正在判定關卡)</span>
+        <!-- 電腦分發比序掃描中動態條 (出拳激烈戰鬥演出) -->
+        <div v-if="isScanning" class="glass-dark rounded-2xl p-4 sm:p-5 border-2 border-amber-400/60 text-center shadow-2xl">
+          <div class="inline-flex items-center gap-3 text-amber-300 font-black text-sm sm:text-base">
+            <i class="fa-solid fa-bolt text-yellow-300 text-lg sm:text-xl animate-pulse"></i>
+            <span>電腦超額比序演算法擂台決戰中... (正在逐關判定打擊)</span>
           </div>
-          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
-            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-300"
+          <div class="w-full bg-slate-800 h-3 rounded-full mt-3 overflow-hidden border border-slate-700">
+            <div class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full transition-all duration-300"
                  :style="{ width: ((currentScanningStepIndex + 1) / quizComparison.allSteps.length * 100) + '%' }"></div>
           </div>
         </div>
 
-        <!-- 動態比序光速天梯 -->
+        <!-- 逐關比序戰報 (Round Battle History) -->
         <div v-if="activeStepsToDisplay.length > 0" class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-2xl space-y-2.5">
           <div class="flex items-center justify-between pb-2.5 border-b border-slate-700">
             <div class="flex items-center gap-2 text-white font-extrabold text-sm sm:text-base">
               <i class="fa-solid fa-sitemap text-indigo-400"></i>
-              <span>分發比序天梯逐關判定歷程</span>
+              <span>分發超額比序歷程逐關戰報</span>
             </div>
             <div class="text-[11px] text-slate-400">
-              共 {{ quizComparison.allSteps.length }} 道檢核程序
+              檢驗進度：{{ activeStepsToDisplay.length }} / {{ quizComparison.allSteps.length }} 道關卡
             </div>
           </div>
 
@@ -398,7 +550,7 @@
                  class="step-node p-2.5 sm:p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
               
               <div class="flex items-center gap-2.5">
-                <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs flex-shrink-0"
+                <span class="w-6 h-6 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0"
                       :class="step.outcome === 'TIE' ? 'bg-slate-700 text-slate-300' : 'bg-emerald-500 text-white'">
                   {{ sIdx + 1 }}
                 </span>
@@ -414,30 +566,30 @@
               <!-- 雙方數值比對 -->
               <div class="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-1.5 sm:pt-0 border-slate-800">
                 <div class="flex items-center gap-1.5">
-                  <span class="text-slate-400 text-[11px]">{{ currentQuiz.studentA.name }}：</span>
-                  <span class="font-black text-indigo-300 text-xs sm:text-sm">{{ step.valA }}</span>
+                  <span class="text-red-400 text-[11px] font-bold">{{ currentQuiz.studentA.name }}：</span>
+                  <span class="font-black text-red-300 text-xs sm:text-sm">{{ step.valA }}</span>
                 </div>
 
                 <div class="text-slate-500 font-bold text-[11px]">vs</div>
 
                 <div class="flex items-center gap-1.5">
-                  <span class="text-slate-400 text-[11px]">{{ currentQuiz.studentB.name }}：</span>
-                  <span class="font-black text-purple-300 text-xs sm:text-sm">{{ step.valB }}</span>
+                  <span class="text-blue-400 text-[11px] font-bold">{{ currentQuiz.studentB.name }}：</span>
+                  <span class="font-black text-blue-300 text-xs sm:text-sm">{{ step.valB }}</span>
                 </div>
 
                 <!-- 判定結果徽章 -->
                 <div class="min-w-[65px] text-right">
                   <span v-if="step.outcome === 'TIE'" class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">
-                    平手
+                    雙方平手
                   </span>
-                  <span v-else-if="step.outcome === 'A_WIN'" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
-                    勝出！
+                  <span v-else-if="step.outcome === 'A_WIN'" class="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
+                    🥊 紅角勝出！
                   </span>
-                  <span v-else-if="step.outcome === 'B_WIN'" class="bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
-                    勝出！
+                  <span v-else-if="step.outcome === 'B_WIN'" class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
+                    ⚡ 藍角勝出！
                   </span>
                   <span v-else-if="step.outcome === 'BOTH_WIN'" class="bg-amber-600 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
-                    增額錄取
+                    🤝 增額錄取
                   </span>
                 </div>
               </div>
@@ -446,17 +598,19 @@
           </div>
         </div>
 
-        <!-- 結果揭曉與解答剖析卡片 -->
-        <div v-if="quizRevealed" class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 rounded-3xl p-4 sm:p-6 border-2 border-indigo-500/80 shadow-2xl space-y-3.5">
+        <!-- ============================================================== -->
+        <!-- 結果揭曉與解答剖析卡片 (K.O. 勝利大橫幅)                         -->
+        <!-- ============================================================== -->
+        <div v-if="quizRevealed" class="bg-gradient-to-r from-slate-900 via-indigo-950/80 to-slate-900 rounded-3xl p-4 sm:p-6 border-2 border-indigo-400/80 shadow-2xl space-y-4">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-xl sm:text-2xl font-bold shadow-lg flex-shrink-0"
+              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg flex-shrink-0"
                    :class="((userGuess === 'A' && quizComparison.winner === 'A_WIN') || (userGuess === 'B' && quizComparison.winner === 'B_WIN') || (userGuess === 'BOTH' && quizComparison.winner === 'BOTH_WIN')) ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
-                <i :class="((userGuess === 'A' && quizComparison.winner === 'A_WIN') || (userGuess === 'B' && quizComparison.winner === 'B_WIN') || (userGuess === 'BOTH' && quizComparison.winner === 'BOTH_WIN')) ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"></i>
+                <i :class="((userGuess === 'A' && quizComparison.winner === 'A_WIN') || (userGuess === 'B' && quizComparison.winner === 'B_WIN') || (userGuess === 'BOTH' && quizComparison.winner === 'BOTH_WIN')) ? 'fa-solid fa-trophy' : 'fa-solid fa-skull'"></i>
               </div>
               <div>
                 <h3 class="text-base sm:text-xl font-black text-white">
-                  {{ ((userGuess === 'A' && quizComparison.winner === 'A_WIN') || (userGuess === 'B' && quizComparison.winner === 'B_WIN') || (userGuess === 'BOTH' && quizComparison.winner === 'BOTH_WIN')) ? '太厲害了！你完全猜對了！🎉' : '差一點點！這正是許多考生的最大盲點！' }}
+                  {{ ((userGuess === 'A' && quizComparison.winner === 'A_WIN') || (userGuess === 'B' && quizComparison.winner === 'B_WIN') || (userGuess === 'BOTH' && quizComparison.winner === 'BOTH_WIN')) ? '🎉 K.O.! 太神了！你完全猜對了！' : '💥 殘念判定！這正是許多考生的最大陷阱盲點！' }}
                 </h3>
                 <div class="text-xs sm:text-sm text-slate-300 mt-0.5">
                   決勝關鍵關卡：<span class="text-amber-300 font-extrabold">{{ quizComparison.decidingStep.title }}</span>
@@ -465,16 +619,16 @@
             </div>
 
             <button @click="nextQuiz"
-                    class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-95 text-white text-xs sm:text-sm font-black px-5 py-2.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
-              <span>下一題挑戰</span>
+                    class="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-600 hover:to-pink-700 active:scale-95 text-white text-xs sm:text-sm font-black px-5 py-3 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
+              <span>下一回合挑戰</span>
               <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
 
-          <div class="bg-slate-900/80 p-3.5 sm:p-4 rounded-2xl border border-slate-700/80 text-xs sm:text-sm leading-relaxed text-slate-200">
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-indigo-500/30 text-xs sm:text-sm leading-relaxed text-slate-200">
             <div class="font-bold text-amber-300 mb-1 flex items-center gap-1.5">
               <i class="fa-solid fa-book-open"></i>
-              <span>【中投區作業要點官方規範解析】</span>
+              <span>【中投區作業要點官方規範深度剖析】</span>
             </div>
             <p>{{ currentQuiz.explanation }}</p>
           </div>

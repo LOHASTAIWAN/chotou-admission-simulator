@@ -1028,13 +1028,18 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_1',
+    round: 1,
     badge: '名校對決 1',
     title: '【第 1 戰】5A 壓線 vs 4A1B 破百積點，誰能稱霸中投？',
     targetSchool: { name: '臺中一中', department: '普通科', quota: 1 },
     question: '志遠考出「5A 0+」作文4級分；明軒考出「4A++ 1B++」作文6級分滿分（總積點破百點！）。當一中只剩最後 1 個缺額，誰會被電腦錄取？',
     studentA: {
       name: '陳志遠',
-      avatar: '👨‍🎓',
+      avatar: '🥊',
+      animeType: 'boy_hotblood',
+      powerTitle: '5A 壓線奇蹟',
+      quote: '「就算每一科都是剛好 5A，我的總積分一樣是滿分 97 分！」',
+      corner: 'RED',
       grades: { chinese: 'A', math: 'A', english: 'A', social: 'A', science: 'A' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1042,7 +1047,11 @@ const QUIZ_CHALLENGES = [
     },
     studentB: {
       name: '林明軒',
-      avatar: '🧑‍🎓',
+      avatar: '⚡',
+      animeType: 'boy_glasses',
+      powerTitle: '四科雙加暴擊',
+      quote: '「四科 A++ 總積點破百點，這場戰鬥我志在必得！」',
+      corner: 'BLUE',
       grades: { chinese: 'A++', math: 'A++', english: 'A++', social: 'A++', science: 'B++' },
       writing: '6',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1057,6 +1066,7 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_2',
+    round: 2,
     badge: '名校對決 2',
     title: '【第 2 戰】同為 5A 頂尖名校線，先比 + 號還是先比積點？',
     targetSchool: { name: '臺中女中', department: '普通科', quota: 1 },
@@ -1064,6 +1074,10 @@ const QUIZ_CHALLENGES = [
     studentA: {
       name: '張羽彤',
       avatar: '🎀',
+      animeType: 'girl_twintail',
+      powerTitle: '四連加號疾風',
+      quote: '「我有 4 個 + 號！學科實力絕不認輸！」',
+      corner: 'RED',
       grades: { chinese: 'A+', math: 'A+', english: 'A+', social: 'A+', science: 'A' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1072,6 +1086,10 @@ const QUIZ_CHALLENGES = [
     studentB: {
       name: '李若瑄',
       avatar: '🌟',
+      animeType: 'girl_longhair',
+      powerTitle: '國文雙加超能',
+      quote: '「先比第七關總積點！我的 92 點比妳高喔！」',
+      corner: 'BLUE',
       grades: { chinese: 'A++', math: 'A', english: 'A', social: 'A', science: 'A' },
       writing: '5',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1086,13 +1104,18 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_3',
+    round: 3,
     badge: '長億高中',
     title: '【第 3 戰】長億高中 5B 壓線戰：少記嘉獎差 0.5 分的慘痛代價！',
     targetSchool: { name: '長億高中', department: '普通科', quota: 1 },
     question: '家豪會考考出 5B 7+（總積點 55 點），但國中三年只有 2 支嘉獎（獎勵紀錄只得1分）；雅婷考出 5B 4+（總積點 48 點），但三年累積滿大功小功獎勵拿滿 4 分。爭奪長億高中最後名額，誰會勝出？',
     studentA: {
       name: '王家豪',
-      avatar: '🧢',
+      avatar: '🥊',
+      animeType: 'boy_cap',
+      powerTitle: '5B7+ 會考猛將',
+      quote: '「我會考衝出 55 點，難道長億上不了嗎！？」',
+      corner: 'RED',
       grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1100,7 +1123,11 @@ const QUIZ_CHALLENGES = [
     },
     studentB: {
       name: '陳雅婷',
-      avatar: '🎒',
+      avatar: '🌟',
+      animeType: 'girl_sporty',
+      powerTitle: '多元大功滿分王',
+      quote: '「平時熱心服務記滿大功，多元滿分 27 分直接勝出！」',
+      corner: 'BLUE',
       grades: { chinese: 'B+', math: 'B+', english: 'B+', social: 'B+', science: 'B' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1115,6 +1142,7 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_4',
+    round: 4,
     badge: '普通高中',
     title: '【第 4 戰】二中 3A2B 膠著戰：總積點完全相同，+ 號決勝負！',
     targetSchool: { name: '臺中二中', department: '普通科', quota: 1 },
@@ -1122,6 +1150,10 @@ const QUIZ_CHALLENGES = [
     studentA: {
       name: '許小晴',
       avatar: '👧',
+      animeType: 'girl_cute',
+      powerTitle: '雙 A+ 破局者',
+      quote: '「總積點平手時，我有 2 個 A+ 搶下勝利！」',
+      corner: 'RED',
       grades: { chinese: 'A+', math: 'A+', english: 'A', social: 'B', science: 'B' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1130,6 +1162,10 @@ const QUIZ_CHALLENGES = [
     studentB: {
       name: '周小雨',
       avatar: '👱‍♀️',
+      animeType: 'girl_glasses',
+      powerTitle: '五級分作文手',
+      quote: '「作文 5 級分幫我把積點拉到 73 點，全力一戰！」',
+      corner: 'BLUE',
       grades: { chinese: 'A+', math: 'A', english: 'A', social: 'B+', science: 'B' },
       writing: '5',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1144,6 +1180,7 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_5',
+    round: 5,
     badge: '普通高中',
     title: '【第 5 戰】清水高中 1A4B 保衛戰：1A 勝過 5B++ 嗎？',
     targetSchool: { name: '清水高中', department: '普通科', quota: 1 },
@@ -1151,6 +1188,10 @@ const QUIZ_CHALLENGES = [
     studentA: {
       name: '張冠宇',
       avatar: '👦',
+      animeType: 'boy_runner',
+      powerTitle: '關鍵 1A 守護神',
+      quote: '「就算只有 1 個 A，會考積分就多了整整 2 分！」',
+      corner: 'RED',
       grades: { chinese: 'A', math: 'B', english: 'B', social: 'B', science: 'B' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1159,6 +1200,10 @@ const QUIZ_CHALLENGES = [
     studentB: {
       name: '洪柏廷',
       avatar: '🧑',
+      animeType: 'boy_tech',
+      powerTitle: '全科 B++ 霸者',
+      quote: '「我五科全 B++ 總積點 65 點，怎麼可能不行！？」',
+      corner: 'BLUE',
       grades: { chinese: 'B++', math: 'B++', english: 'B++', social: 'B++', science: 'B++' },
       writing: '5',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1173,6 +1218,7 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_6',
+    round: 6,
     badge: '普通高中',
     title: '【第 6 戰】大甲高中 5B 平手局：關鍵時刻誰是單科大魔王？',
     targetSchool: { name: '大甲高中', department: '普通科', quota: 1 },
@@ -1180,6 +1226,10 @@ const QUIZ_CHALLENGES = [
     studentA: {
       name: '李俊銘',
       avatar: '🏃',
+      animeType: 'boy_hoodie',
+      powerTitle: '國文 B++ 斬擊',
+      quote: '「中投區第一主科就是國文！單科比序看我的！」',
+      corner: 'RED',
       grades: { chinese: 'B++', math: 'B', english: 'B', social: 'B', science: 'B' },
       writing: '3',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1188,6 +1238,10 @@ const QUIZ_CHALLENGES = [
     studentB: {
       name: '蔡志豪',
       avatar: '🧗',
+      animeType: 'boy_fighter',
+      powerTitle: '數理 B++ 奇兵',
+      quote: '「我的數學 B++ 難道派不上用場嗎！？」',
+      corner: 'BLUE',
       grades: { chinese: 'B', math: 'B++', english: 'B', social: 'B', science: 'B' },
       writing: '3',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1202,6 +1256,7 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_7',
+    round: 7,
     badge: '公立高職 1',
     title: '【第 7 戰】臺中高工志願序密技：連填同校不扣分，逆轉高分跨校生！',
     targetSchool: { name: '臺中高工', department: '汽車科', quota: 1 },
@@ -1209,6 +1264,10 @@ const QUIZ_CHALLENGES = [
     studentA: {
       name: '劉阿哲',
       avatar: '🔧',
+      animeType: 'boy_mechanic',
+      powerTitle: '連填同校戰術家',
+      quote: '「高工同校連續填，第 1 志願序 30 分穩拿！」',
+      corner: 'RED',
       grades: { chinese: 'B++', math: 'B+', english: 'B+', social: 'B+', science: 'B+' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 2 },
@@ -1217,6 +1276,10 @@ const QUIZ_CHALLENGES = [
     studentB: {
       name: '陳建宏',
       avatar: '💻',
+      animeType: 'boy_cool',
+      powerTitle: '2A3B 高分客',
+      quote: '「我成績有 2A，跨校填志願難道會輸！？」',
+      corner: 'BLUE',
       grades: { chinese: 'A', math: 'A', english: 'B', social: 'B', science: 'B' },
       writing: '4',
       choiceInfo: { score: 29, rank: 2, schoolRank: 2, choiceIndex: 2 },
@@ -1232,6 +1295,7 @@ const QUIZ_CHALLENGES = [
   // -------------------------------------------------------------
   {
     id: 'quiz_8',
+    round: 8,
     badge: '公立高職 2',
     title: '【第 8 戰】臺中家商雙胞胎平手戰：電腦分發最後會抽籤嗎？',
     targetSchool: { name: '臺中家商', department: '應用英語科', quota: 1 },
@@ -1239,6 +1303,10 @@ const QUIZ_CHALLENGES = [
     studentA: {
       name: '林佩珊',
       avatar: '👩',
+      animeType: 'girl_twins_a',
+      powerTitle: '雙胞胎姊姊',
+      quote: '「我和妹妹同分同點，我們誰都不會被淘汰！」',
+      corner: 'RED',
       grades: { chinese: 'A', math: 'A', english: 'B+', social: 'B+', science: 'B' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
@@ -1247,6 +1315,10 @@ const QUIZ_CHALLENGES = [
     studentB: {
       name: '林佩庭',
       avatar: '👧',
+      animeType: 'girl_twins_b',
+      powerTitle: '雙胞胎妹妹',
+      quote: '「法規說了超額同分不抽籤，大家一起增額錄取！」',
+      corner: 'BLUE',
       grades: { chinese: 'A', math: 'A', english: 'B+', social: 'B+', science: 'B' },
       writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },

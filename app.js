@@ -86,6 +86,582 @@ function initChotouApp() {
         setTimeout(() => playBeep(261.63, 'sawtooth', 0.25), 160);
       }
 
+      // ============================================================================
+      // 運動賽事現場加油與擂台音效引擎 (Web Audio Sports Stadium Sound Engine)
+      // ============================================================================
+      class StadiumSoundEngine {
+        constructor() {
+          this.ctx = null;
+          this.masterGain = null;
+          this.crowdGain = null;
+          this.noiseNode = null;
+          this.lfo = null;
+          this.isPlaying = false;
+          this.volume = 0.35;
+          this.ambientTimer = null;
+        }
+
+        init() {
+          if (this.ctx) return;
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+            this.masterGain.connect(this.ctx.destination);
+          } catch (e) {
+            console.warn('Web Audio not supported:', e);
+          }
+        }
+
+        ensureContext() {
+          this.init();
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+          }
+        }
+
+        startCrowd() {
+          this.ensureContext();
+          if (!this.ctx || this.isPlaying) return;
+
+          try {
+            // 生成 4 秒粉紅/白噪聲循環緩衝區以模擬萬人體育館背景群眾聲浪
+            const bufferSize = this.ctx.sampleRate * 4;
+            const noiseBuffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
+            for (let ch = 0; ch < 2; ch++) {
+              const data = noiseBuffer.getChannelData(ch);
+              let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+              for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
+                b6 = white * 0.115926;
+              }
+            }
+
+            this.noiseNode = this.ctx.createBufferSource();
+            this.noiseNode.buffer = noiseBuffer;
+            this.noiseNode.loop = true;
+
+            // 雙帶通共鳴濾波器 (模擬遠端群眾歡呼波浪 460Hz 與 1400Hz)
+            const bpf = this.ctx.createBiquadFilter();
+            bpf.type = 'bandpass';
+            bpf.frequency.setValueAtTime(460, this.ctx.currentTime);
+            bpf.Q.setValueAtTime(1.8, this.ctx.currentTime);
+
+            const lpf = this.ctx.createBiquadFilter();
+            lpf.type = 'lowpass';
+            lpf.frequency.setValueAtTime(1600, this.ctx.currentTime);
+
+            this.crowdGain = this.ctx.createGain();
+            this.crowdGain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+            this.crowdGain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 1.0);
+
+            // LFO 低頻起伏振盪器 (0.16Hz，模擬現場人潮一波波歡呼聲浪)
+            this.lfo = this.ctx.createOscillator();
+            this.lfo.frequency.setValueAtTime(0.16, this.ctx.currentTime);
+            const lfoGain = this.ctx.createGain();
+            lfoGain.gain.setValueAtTime(0.10, this.ctx.currentTime);
+            this.lfo.connect(lfoGain);
+            lfoGain.connect(this.crowdGain.gain);
+
+            this.noiseNode.connect(bpf);
+            bpf.connect(lpf);
+            lpf.connect(this.crowdGain);
+            this.crowdGain.connect(this.masterGain);
+
+            this.noiseNode.start();
+            this.lfo.start();
+            this.isPlaying = true;
+
+            // 定期隨機穿插球證哨聲或遠端加油熱烈度
+            if (this.ambientTimer) clearInterval(this.ambientTimer);
+            this.ambientTimer = setInterval(() => {
+              if (!this.isPlaying) return;
+              const r = Math.random();
+              if (r < 0.35) {
+                this.playRefereeWhistle(false);
+              } else if (r < 0.7) {
+                this.swellCrowdRoar(0.15, 2.0);
+              }
+            }, 6500);
+
+          } catch (e) {
+            console.error('startCrowd error:', e);
+          }
+        }
+
+        stopCrowd() {
+          if (!this.isPlaying || !this.crowdGain) return;
+          try {
+            this.crowdGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
+            setTimeout(() => {
+              if (this.noiseNode) {
+                try { this.noiseNode.stop(); } catch (e) {}
+                this.noiseNode.disconnect();
+                this.noiseNode = null;
+              }
+              if (this.lfo) {
+                try { this.lfo.stop(); } catch (e) {}
+                this.lfo.disconnect();
+                this.lfo = null;
+              }
+              this.isPlaying = false;
+            }, 450);
+            if (this.ambientTimer) clearInterval(this.ambientTimer);
+          } catch (e) {}
+        }
+
+        swellCrowdRoar(amount = 0.2, duration = 2.0) {
+          if (!this.isPlaying || !this.crowdGain) return;
+          try {
+            const now = this.ctx.currentTime;
+            this.crowdGain.gain.linearRampToValueAtTime(0.35 + amount, now + 0.3);
+            this.crowdGain.gain.linearRampToValueAtTime(0.25, now + duration);
+          } catch (e) {}
+        }
+
+        // 拳擊擂台經典銅鐘響聲 (Ding! Ding! Ding!)
+        playBoxingBell(repeats = 3) {
+          this.ensureContext();
+          if (!this.ctx) return;
+          for (let i = 0; i < repeats; i++) {
+            setTimeout(() => {
+              try {
+                const now = this.ctx.currentTime;
+                const freqs = [1200, 2400, 3600];
+                freqs.forEach((f, idx) => {
+                  const osc = this.ctx.createOscillator();
+                  const gain = this.ctx.createGain();
+                  osc.type = 'sine';
+                  osc.frequency.setValueAtTime(f, now);
+                  const initAmp = (0.35 / (idx + 1)) * this.volume;
+                  gain.gain.setValueAtTime(initAmp, now);
+                  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
+                  osc.connect(gain);
+                  gain.connect(this.masterGain || this.ctx.destination);
+                  osc.start(now);
+                  osc.stop(now + 0.85);
+                });
+              } catch (e) {}
+            }, i * 160);
+          }
+        }
+
+        // 運動賽事哨聲 (Tweet! Tweet!)
+        playRefereeWhistle(double = true) {
+          this.ensureContext();
+          if (!this.ctx) return;
+          const playChirp = (delay = 0) => {
+            setTimeout(() => {
+              try {
+                const now = this.ctx.currentTime;
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(2850, now);
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(3150, now);
+                
+                gain.gain.setValueAtTime(0.12 * this.volume, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.masterGain || this.ctx.destination);
+                
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.2);
+                osc2.stop(now + 0.2);
+              } catch (e) {}
+            }, delay);
+          };
+
+          playChirp(0);
+          if (double) playChirp(130);
+        }
+
+        // 拳擊出拳重擊打擊音 (Punch Impact)
+        playPunchSound(isHeavy = false) {
+          this.ensureContext();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(isHeavy ? 180 : 250, now);
+            osc.frequency.exponentialRampToValueAtTime(36, now + (isHeavy ? 0.22 : 0.12));
+
+            gain.gain.setValueAtTime((isHeavy ? 0.45 : 0.25) * this.volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + (isHeavy ? 0.22 : 0.12));
+
+            osc.connect(gain);
+            gain.connect(this.masterGain || this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + (isHeavy ? 0.22 : 0.12));
+          } catch (e) {}
+        }
+
+        // 獲勝全場大歡呼狂潮爆發 (Victory Crowd Climax)
+        playCheerClimax() {
+          this.ensureContext();
+          this.swellCrowdRoar(0.35, 3.5);
+          this.playBoxingBell(2);
+          try {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((note, i) => {
+              setTimeout(() => {
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(note, now);
+                gain.gain.setValueAtTime(0.14 * this.volume, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+                osc.connect(gain);
+                gain.connect(this.masterGain || this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.55);
+              }, i * 110);
+            });
+          } catch (e) {}
+        }
+
+        setVolume(vol) {
+          this.volume = Math.max(0, Math.min(1, vol));
+          if (this.masterGain && this.ctx) {
+            this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+          }
+        }
+      }
+
+      const stadium = new StadiumSoundEngine();
+      const isStadiumCrowdPlaying = ref(false);
+      const stadiumVolume = ref(0.4);
+
+      function toggleStadiumCrowd() {
+        if (isStadiumCrowdPlaying.value) {
+          stadium.stopCrowd();
+          isStadiumCrowdPlaying.value = false;
+        } else {
+          stadium.startCrowd();
+          isStadiumCrowdPlaying.value = true;
+        }
+      }
+
+      function setStadiumVolume(val) {
+        stadiumVolume.value = val;
+        stadium.setVolume(val);
+      }
+
+      function playBoxingBellSound() {
+        stadium.playBoxingBell(2);
+      }
+
+      function playRefereeWhistleSound() {
+        stadium.playRefereeWhistle(true);
+      }
+
+      // 舞台模式切換：'boxing' (熱血拳擊擂台) 或 'running' (疾速田徑賽跑)
+      const arenaTheme = ref('boxing');
+      function toggleArenaTheme() {
+        arenaTheme.value = arenaTheme.value === 'boxing' ? 'running' : 'boxing';
+        stadium.playRefereeWhistle(false);
+      }
+
+      // 手遊 Combo 連擊計數器
+      const comboStreak = ref(0);
+      const maxCombo = ref(0);
+
+      // ============================================================================
+      // 可愛動漫 Chibi 造型 SVG 生成器 (15 款活潑手遊立繪造型)
+      // ============================================================================
+      function getAnimeAvatarSvg(student, corner, state) {
+        const type = student?.animeType || (corner === 'RED' ? 'boy_hotblood' : 'girl_twintail');
+        const isRed = corner === 'RED';
+        const primaryColor = isRed ? '#ef4444' : '#3b82f6';
+        const secondaryColor = isRed ? '#f87171' : '#60a5fa';
+        const gloveColor = isRed ? '#dc2626' : '#2563eb';
+        const gloveTrim = '#ffffff';
+
+        const isWinner = state === 'winner';
+        const isLoser = state === 'loser';
+        const isPunching = state === 'punching';
+
+        // 眼睛與表情
+        let eyesSvg = '';
+        if (isWinner) {
+          eyesSvg = `
+            <path d="M 36 50 Q 44 42 52 50" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" fill="none" />
+            <path d="M 68 50 Q 76 42 84 50" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" fill="none" />
+            <polygon points="44,38 46,42 50,44 46,46 44,50 42,46 38,44 42,42" fill="#fbbf24" />
+            <polygon points="76,38 78,42 82,44 78,46 76,50 74,46 70,44 74,42" fill="#fbbf24" />
+          `;
+        } else if (isLoser) {
+          eyesSvg = `
+            <g stroke="#475569" stroke-width="2.5" fill="none">
+              <path d="M 44 46 A 4 4 0 0 1 44 54 A 8 8 0 0 1 44 38" />
+              <path d="M 76 46 A 4 4 0 0 1 76 54 A 8 8 0 0 1 76 38" />
+            </g>
+            <path d="M 88 36 C 92 42 90 47 85 47 C 80 47 78 42 82 36 Z" fill="#38bdf8" />
+          `;
+        } else {
+          const irisColor = isRed ? '#be123c' : '#1d4ed8';
+          eyesSvg = `
+            <g class="chibi-eye">
+              <ellipse cx="44" cy="49" rx="8" ry="10" fill="#0f172a" />
+              <ellipse cx="44" cy="51" rx="6.5" ry="7.5" fill="${irisColor}" />
+              <circle cx="41.5" cy="46" r="3.2" fill="#ffffff" />
+              <circle cx="46.5" cy="52" r="1.6" fill="#ffffff" />
+              <path d="M 35 42 Q 44 37 53 43" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none" />
+              <ellipse cx="76" cy="49" rx="8" ry="10" fill="#0f172a" />
+              <ellipse cx="76" cy="51" rx="6.5" ry="7.5" fill="${irisColor}" />
+              <circle cx="73.5" cy="46" r="3.2" fill="#ffffff" />
+              <circle cx="78.5" cy="52" r="1.6" fill="#ffffff" />
+              <path d="M 67 43 Q 76 37 85 42" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            </g>
+          `;
+        }
+
+        // 嘴巴
+        let mouthSvg = '';
+        if (isWinner) {
+          mouthSvg = `<path d="M 52 64 Q 60 76 68 64 Z" fill="#e11d48" stroke="#0f172a" stroke-width="2" />`;
+        } else if (isPunching) {
+          mouthSvg = `<path d="M 53 65 Q 60 72 67 65 Z" fill="#be123c" stroke="#0f172a" stroke-width="2" />`;
+        } else if (isLoser) {
+          mouthSvg = `<path d="M 54 68 Q 60 62 66 68" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none" />`;
+        } else {
+          mouthSvg = `<path d="M 54 64 Q 60 70 66 64" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none" />`;
+        }
+
+        // 髮型與專屬動漫配件
+        let hairAndAccessories = '';
+        switch (type) {
+          case 'boy_hotblood':
+            hairAndAccessories = `
+              <path d="M 24 50 Q 20 20 60 16 Q 100 20 96 50 Z" fill="#78350f" />
+              <rect x="23" y="32" width="74" height="11" rx="3" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+              <circle cx="60" cy="37.5" r="4.2" fill="#ef4444" />
+              <path d="M 24 35 L 36 44 L 46 33 L 56 45 L 66 33 L 78 45 L 94 35 L 86 24 L 60 18 L 32 24 Z" fill="#92400e" />
+            `;
+            break;
+          case 'boy_glasses':
+            hairAndAccessories = `
+              <path d="M 24 50 Q 20 18 60 14 Q 100 18 96 50 Z" fill="#1e1b4b" />
+              <path d="M 26 36 Q 44 48 60 38 Q 78 48 94 36 Q 76 20 60 16 Q 40 20 26 36 Z" fill="#312e81" />
+              <rect x="33" y="44" width="23" height="15" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5" />
+              <rect x="64" y="44" width="23" height="15" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5" />
+              <line x1="56" y1="51" x2="64" y2="51" stroke="#0f172a" stroke-width="2.5" />
+              <line x1="36" y1="46" x2="48" y2="56" stroke="#ffffff" stroke-width="2" opacity="0.8" />
+              <line x1="67" y1="46" x2="79" y2="56" stroke="#ffffff" stroke-width="2" opacity="0.8" />
+            `;
+            break;
+          case 'girl_twintail':
+            hairAndAccessories = `
+              <path d="M 26 40 C 6 42 0 72 16 84 C 24 74 24 52 26 40 Z" fill="#db2777" />
+              <circle cx="23" cy="40" r="5" fill="#f43f5e" />
+              <path d="M 94 40 C 114 42 120 72 104 84 C 96 74 96 52 94 40 Z" fill="#db2777" />
+              <circle cx="97" cy="40" r="5" fill="#f43f5e" />
+              <path d="M 26 38 C 40 46 50 42 60 44 C 70 42 80 46 94 38 C 90 20 78 16 60 15 C 42 16 30 20 26 38 Z" fill="#be185d" />
+            `;
+            break;
+          case 'girl_longhair':
+            hairAndAccessories = `
+              <path d="M 24 45 L 20 90 L 32 90 L 30 55 Z" fill="#1e293b" />
+              <path d="M 96 45 L 100 90 L 88 90 L 90 55 Z" fill="#1e293b" />
+              <path d="M 24 45 Q 22 18 60 15 Q 98 18 96 45 Q 80 34 60 36 Q 40 34 24 45 Z" fill="#0f172a" />
+              <circle cx="34" cy="34" r="5" fill="#f472b6" />
+              <circle cx="34" cy="34" r="2" fill="#fef08a" />
+            `;
+            break;
+          case 'girl_sporty':
+            hairAndAccessories = `
+              <path d="M 75 25 C 95 10 115 25 105 50 C 95 38 82 32 75 25 Z" fill="#c2410c" />
+              <circle cx="75" cy="25" r="4.5" fill="#38bdf8" />
+              <rect x="24" y="32" width="72" height="9" rx="3" fill="#38bdf8" />
+              <path d="M 24 38 Q 42 46 60 40 Q 78 46 96 38 Q 80 20 60 17 Q 40 20 24 38 Z" fill="#9a3412" />
+            `;
+            break;
+          case 'boy_cap':
+            hairAndAccessories = `
+              <path d="M 22 45 L 28 55 L 34 48 Z" fill="#451a03" />
+              <path d="M 98 45 L 92 55 L 86 48 Z" fill="#451a03" />
+              <ellipse cx="60" cy="28" rx="36" ry="18" fill="${primaryColor}" />
+              <path d="M 28 28 Q 60 12 92 28 Z" fill="${secondaryColor}" />
+              <path d="M 38 32 Q 60 38 82 32 L 86 36 Q 60 44 34 36 Z" fill="#0f172a" />
+            `;
+            break;
+          case 'girl_cute':
+            hairAndAccessories = `
+              <path d="M 24 45 Q 20 20 60 16 Q 100 20 96 45 Q 98 68 88 74 L 88 56 Q 60 44 32 56 L 32 74 Q 22 68 24 45 Z" fill="#be185d" />
+              <rect x="34" y="36" width="10" height="4" rx="2" fill="#facc15" />
+              <rect x="76" y="36" width="10" height="4" rx="2" fill="#facc15" />
+            `;
+            break;
+          case 'boy_tech':
+            hairAndAccessories = `
+              <path d="M 24 45 Q 22 18 60 14 Q 98 18 96 45 Q 80 34 60 36 Q 40 34 24 45 Z" fill="#0284c7" />
+              <path d="M 20 40 Q 60 16 100 40" stroke="#38bdf8" stroke-width="4" fill="none" />
+              <rect x="18" y="44" width="8" height="18" rx="3" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
+              <rect x="94" y="44" width="8" height="18" rx="3" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
+            `;
+            break;
+          case 'boy_runner':
+            hairAndAccessories = `
+              <path d="M 24 46 L 16 36 L 28 36 L 24 24 L 38 32 L 44 18 L 54 32 L 64 16 L 72 32 L 82 20 L 86 34 L 96 30 L 92 46 Z" fill="#ea580c" />
+              <rect x="23" y="32" width="74" height="10" rx="3" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+            `;
+            break;
+          case 'boy_hoodie':
+            hairAndAccessories = `
+              <path d="M 24 45 Q 22 18 60 14 Q 98 18 96 45 Q 80 34 60 36 Q 40 34 24 45 Z" fill="#475569" />
+              <path d="M 22 68 Q 60 84 98 68 L 102 82 Q 60 100 18 82 Z" fill="#334155" />
+            `;
+            break;
+          case 'boy_fighter':
+            hairAndAccessories = `
+              <path d="M 24 48 L 18 30 L 32 36 L 40 20 L 52 34 L 66 18 L 78 34 L 92 24 L 88 44 Z" fill="#b91c1c" />
+              <rect x="76" y="62" width="10" height="5" rx="1.5" fill="#fde68a" stroke="#d97706" stroke-width="1" transform="rotate(-15 76 62)" />
+            `;
+            break;
+          case 'boy_mechanic':
+            hairAndAccessories = `
+              <path d="M 24 45 Q 22 18 60 14 Q 98 18 96 45 Q 80 34 60 36 Q 40 34 24 45 Z" fill="#ca8a04" />
+              <rect x="36" y="26" width="20" height="12" rx="3" fill="#475569" stroke="#94a3b8" stroke-width="2" />
+              <rect x="64" y="26" width="20" height="12" rx="3" fill="#475569" stroke="#94a3b8" stroke-width="2" />
+              <line x1="56" y1="32" x2="64" y2="32" stroke="#94a3b8" stroke-width="3" />
+            `;
+            break;
+          case 'girl_twins_a':
+            hairAndAccessories = `
+              <path d="M 24 45 Q 20 20 60 16 Q 100 20 96 45 Q 98 68 88 74 L 88 56 Q 60 44 32 56 L 32 74 Q 22 68 24 45 Z" fill="#db2777" />
+              <circle cx="34" cy="34" r="6" fill="#f43f5e" />
+              <circle cx="34" cy="34" r="2.5" fill="#ffffff" />
+            `;
+            break;
+          case 'girl_twins_b':
+            hairAndAccessories = `
+              <path d="M 24 45 Q 20 20 60 16 Q 100 20 96 45 Q 98 68 88 74 L 88 56 Q 60 44 32 56 L 32 74 Q 22 68 24 45 Z" fill="#0284c7" />
+              <circle cx="86" cy="34" r="6" fill="#38bdf8" />
+              <circle cx="86" cy="34" r="2.5" fill="#ffffff" />
+            `;
+            break;
+          default:
+            hairAndAccessories = `
+              <path d="M 24 45 Q 22 18 60 14 Q 98 18 96 45 Q 80 34 60 36 Q 40 34 24 45 Z" fill="#334155" />
+            `;
+        }
+
+        // 拳擊手套與出拳/勝利姿態
+        let glovesSvg = '';
+        if (isWinner) {
+          glovesSvg = `
+            <g class="crown-anim" transform="translate(42, -2)">
+              <polygon points="0,14 6,4 18,10 30,4 36,14" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />
+              <circle cx="6" cy="4" r="2" fill="#ef4444" />
+              <circle cx="18" cy="10" r="2" fill="#3b82f6" />
+              <circle cx="30" cy="4" r="2" fill="#10b981" />
+            </g>
+            <g transform="translate(14, 22)">
+              <ellipse cx="12" cy="12" rx="11" ry="13" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
+              <rect x="6" y="21" width="12" height="6" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+            </g>
+            <g transform="translate(82, 22)">
+              <ellipse cx="12" cy="12" rx="11" ry="13" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
+              <rect x="6" y="21" width="12" height="6" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+            </g>
+          `;
+        } else if (isPunching) {
+          const isRedPunch = isRed;
+          glovesSvg = isRedPunch ? `
+            <g transform="translate(76, 56) rotate(10)">
+              <ellipse cx="18" cy="14" rx="16" ry="14" fill="${gloveColor}" stroke="#0f172a" stroke-width="2.5" />
+              <rect x="2" y="9" width="8" height="10" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+              <line x1="36" y1="8" x2="46" y2="4" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
+              <line x1="38" y1="14" x2="50" y2="14" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round" />
+              <line x1="36" y1="20" x2="46" y2="24" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
+            </g>
+            <g transform="translate(20, 68)">
+              <ellipse cx="12" cy="12" rx="12" ry="12" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
+              <rect x="6" y="20" width="12" height="5" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+            </g>
+          ` : `
+            <g transform="translate(12, 56) rotate(-10)">
+              <ellipse cx="14" cy="14" rx="16" ry="14" fill="${gloveColor}" stroke="#0f172a" stroke-width="2.5" />
+              <rect x="22" y="9" width="8" height="10" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+              <line x1="-4" y1="8" x2="-14" y2="4" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
+              <line x1="-6" y1="14" x2="-18" y2="14" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round" />
+              <line x1="-4" y1="20" x2="-14" y2="24" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
+            </g>
+            <g transform="translate(76, 68)">
+              <ellipse cx="12" cy="12" rx="12" ry="12" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
+              <rect x="6" y="20" width="12" height="5" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+            </g>
+          `;
+        } else {
+          glovesSvg = `
+            <g transform="translate(24, 70)">
+              <ellipse cx="12" cy="12" rx="12" ry="12" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
+              <rect x="6" y="20" width="12" height="5" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+            </g>
+            <g transform="translate(72, 70)">
+              <ellipse cx="12" cy="12" rx="12" ry="12" fill="${gloveColor}" stroke="#0f172a" stroke-width="2" />
+              <rect x="6" y="20" width="12" height="5" rx="2" fill="${gloveTrim}" stroke="#0f172a" stroke-width="1.5" />
+            </g>
+          `;
+        }
+
+        return `
+          <svg viewBox="0 0 120 120" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="aura-${isRed ? 'red' : 'blue'}" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="${primaryColor}" stop-opacity="0.3" />
+                <stop offset="100%" stop-color="${primaryColor}" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <circle cx="60" cy="62" r="50" fill="url(#aura-${isRed ? 'red' : 'blue'})" />
+            <g transform="translate(36, 74)">
+              <path d="M 6 0 L 42 0 L 46 36 L 2 36 Z" fill="${primaryColor}" stroke="#0f172a" stroke-width="2.5" />
+              <rect x="18" y="6" width="12" height="15" rx="2" fill="#ffffff" opacity="0.9" />
+              <text x="24" y="18" font-size="10" font-weight="900" fill="#0f172a" text-anchor="middle">${isRed ? 'A' : 'B'}</text>
+            </g>
+            <ellipse cx="28" cy="54" rx="5" ry="6" fill="#fde68a" stroke="#0f172a" stroke-width="2" />
+            <ellipse cx="92" cy="54" rx="5" ry="6" fill="#fde68a" stroke="#0f172a" stroke-width="2" />
+            <ellipse cx="60" cy="54" rx="34" ry="28" fill="#fde68a" stroke="#0f172a" stroke-width="2.5" />
+            <ellipse cx="38" cy="61" rx="6" ry="3.5" fill="#f43f5e" opacity="0.45" />
+            <ellipse cx="82" cy="61" rx="6" ry="3.5" fill="#f43f5e" opacity="0.45" />
+            ${eyesSvg}
+            ${mouthSvg}
+            ${hairAndAccessories}
+            ${glovesSvg}
+          </svg>
+        `;
+      }
+
+      function getStudentState(side) {
+        if (isScanning.value) return 'punching';
+        if (!quizRevealed.value) return 'idle';
+        const winner = quizComparison.value.winner;
+        if (winner === 'BOTH_WIN') return 'winner';
+        if (side === 'A') {
+          return winner === 'A_WIN' ? 'winner' : 'loser';
+        } else {
+          return winner === 'B_WIN' ? 'winner' : 'loser';
+        }
+      }
+
       // ==================== 模式一：PK 猜猜看狀態 ====================
       const quizList = ref(QUIZ_CHALLENGES);
       const currentQuizIndex = ref(0);
@@ -123,11 +699,18 @@ function initChotouApp() {
         isScanning.value = true;
         currentScanningStepIndex.value = 0;
 
+        // 敲響擂台開場鐘聲與裁判哨音
+        stadium.playBoxingBell(2);
+        stadium.playRefereeWhistle(false);
+        stadium.swellCrowdRoar(0.18, 3.0);
+
         const steps = quizComparison.value.allSteps;
         for (let i = 0; i < steps.length; i++) {
           currentScanningStepIndex.value = i;
+          const isDeciding = (steps[i].outcome !== 'TIE');
+          stadium.playPunchSound(isDeciding);
           playPassSound();
-          await new Promise(r => setTimeout(r, 380));
+          await new Promise(r => setTimeout(r, 400));
           const el = document.getElementById(`step-card-${i}`);
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -143,11 +726,14 @@ function initChotouApp() {
         quizScore.value.total++;
         if (isCorrect) {
           quizScore.value.correct++;
-          playWinSound();
+          comboStreak.value++;
+          maxCombo.value = Math.max(maxCombo.value, comboStreak.value);
+          stadium.playCheerClimax();
           if (window.confetti) {
-            window.confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            window.confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
           }
         } else {
+          comboStreak.value = 0;
           playWrongSound();
         }
       }
@@ -761,7 +1347,7 @@ function initChotouApp() {
         openImageModal,
         closeImageModal,
 
-        // 模式一
+        // 模式一 (動漫拳擊擂台與手遊音效)
         quizList,
         currentQuizIndex,
         currentQuiz,
@@ -774,6 +1360,18 @@ function initChotouApp() {
         selectQuiz,
         makeGuess,
         nextQuiz,
+        isStadiumCrowdPlaying,
+        stadiumVolume,
+        toggleStadiumCrowd,
+        setStadiumVolume,
+        playBoxingBellSound,
+        playRefereeWhistleSound,
+        arenaTheme,
+        toggleArenaTheme,
+        comboStreak,
+        maxCombo,
+        getStudentState,
+        getAnimeAvatarSvg,
 
         // 模式二
         popularSchools,

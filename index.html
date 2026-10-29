@@ -418,27 +418,47 @@
                 </div>
               </div>
 
-              <!-- 手遊戰力血條 (HP 總積分 & SP 會考積點) -->
-              <div class="space-y-2 mb-3 bg-slate-950/70 p-3 rounded-2xl border border-red-900/40">
-                <!-- HP 總積分血條 (滿分100) -->
+              <!-- 戰力三總分計量條 (1. 會考總積分 / 2. 免試入學總積分 / 3. 會考總積點) -->
+              <div class="space-y-2 mb-3 bg-slate-950/75 p-3 rounded-2xl border border-red-900/40">
+                <!-- 【第一個總分】會考總積分 (滿分30分) -->
                 <div>
                   <div class="flex justify-between text-[11px] font-extrabold mb-1">
-                    <span class="text-red-300">HP 免試入學總積分 (滿分100)</span>
-                    <span class="text-emerald-400 font-black text-xs">{{ quizComparison.statsA.totalScore }} 分</span>
+                    <span class="text-sky-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-graduation-cap text-sky-400"></i>
+                      <span>【第1總分】會考總積分 (滿分30)</span>
+                    </span>
+                    <span class="text-sky-300 font-black text-xs">{{ quizComparison.statsA.examScore }} 分</span>
                   </div>
-                  <div class="game-hp-track h-3">
-                    <div class="game-hp-fill h-full" :style="{ width: quizComparison.statsA.totalScore + '%' }"></div>
+                  <div class="game-hp-track h-2.5">
+                    <div class="game-score-fill h-full" :style="{ width: (quizComparison.statsA.examScore / 30 * 100) + '%' }"></div>
                   </div>
                 </div>
 
-                <!-- SP 會考總積點能量條 (滿分111) -->
+                <!-- 【第二個總分】免試入學總積分 (滿分100分) -->
                 <div>
                   <div class="flex justify-between text-[11px] font-extrabold mb-1">
-                    <span class="text-amber-300">SP 會考總積點 (滿分111)</span>
+                    <span class="text-emerald-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                      <span>【第2總分】免試入學總積分 (滿分100)</span>
+                    </span>
+                    <span class="text-emerald-400 font-black text-xs">{{ quizComparison.statsA.totalScore }} 分</span>
+                  </div>
+                  <div class="game-hp-track h-2.5">
+                    <div class="game-total-fill h-full" :style="{ width: quizComparison.statsA.totalScore + '%' }"></div>
+                  </div>
+                </div>
+
+                <!-- 【第三個總分】會考總積點 (滿分111點) -->
+                <div>
+                  <div class="flex justify-between text-[11px] font-extrabold mb-1">
+                    <span class="text-amber-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-bolt text-amber-400"></i>
+                      <span>【第3總分】會考總積點 (滿分111)</span>
+                    </span>
                     <span class="text-amber-400 font-black text-xs">{{ quizComparison.statsA.examPoints }} 點</span>
                   </div>
                   <div class="game-hp-track h-2.5">
-                    <div class="game-sp-fill h-full" :style="{ width: (quizComparison.statsA.examPoints / 111 * 100) + '%' }"></div>
+                    <div class="game-point-fill h-full" :style="{ width: (quizComparison.statsA.examPoints / 111 * 100) + '%' }"></div>
                   </div>
                 </div>
               </div>
@@ -522,27 +542,47 @@
                 </div>
               </div>
 
-              <!-- 手遊戰力血條 (HP 總積分 & SP 會考積點) -->
-              <div class="space-y-2 mb-3 bg-slate-950/70 p-3 rounded-2xl border border-blue-900/40">
-                <!-- HP 總積分血條 (滿分100) -->
+              <!-- 戰力三總分計量條 (1. 會考總積分 / 2. 免試入學總積分 / 3. 會考總積點) -->
+              <div class="space-y-2 mb-3 bg-slate-950/75 p-3 rounded-2xl border border-blue-900/40">
+                <!-- 【第一個總分】會考總積分 (滿分30分) -->
                 <div>
                   <div class="flex justify-between text-[11px] font-extrabold mb-1">
-                    <span class="text-blue-300">HP 免試入學總積分 (滿分100)</span>
-                    <span class="text-emerald-400 font-black text-xs">{{ quizComparison.statsB.totalScore }} 分</span>
+                    <span class="text-sky-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-graduation-cap text-sky-400"></i>
+                      <span>【第1總分】會考總積分 (滿分30)</span>
+                    </span>
+                    <span class="text-sky-300 font-black text-xs">{{ quizComparison.statsB.examScore }} 分</span>
                   </div>
-                  <div class="game-hp-track h-3">
-                    <div class="game-hp-fill h-full" :style="{ width: quizComparison.statsB.totalScore + '%' }"></div>
+                  <div class="game-hp-track h-2.5">
+                    <div class="game-score-fill h-full" :style="{ width: (quizComparison.statsB.examScore / 30 * 100) + '%' }"></div>
                   </div>
                 </div>
 
-                <!-- SP 會考總積點能量條 (滿分111) -->
+                <!-- 【第二個總分】免試入學總積分 (滿分100分) -->
                 <div>
                   <div class="flex justify-between text-[11px] font-extrabold mb-1">
-                    <span class="text-amber-300">SP 會考總積點 (滿分111)</span>
+                    <span class="text-emerald-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                      <span>【第2總分】免試入學總積分 (滿分100)</span>
+                    </span>
+                    <span class="text-emerald-400 font-black text-xs">{{ quizComparison.statsB.totalScore }} 分</span>
+                  </div>
+                  <div class="game-hp-track h-2.5">
+                    <div class="game-total-fill h-full" :style="{ width: quizComparison.statsB.totalScore + '%' }"></div>
+                  </div>
+                </div>
+
+                <!-- 【第三個總分】會考總積點 (滿分111點) -->
+                <div>
+                  <div class="flex justify-between text-[11px] font-extrabold mb-1">
+                    <span class="text-amber-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-bolt text-amber-400"></i>
+                      <span>【第3總分】會考總積點 (滿分111)</span>
+                    </span>
                     <span class="text-amber-400 font-black text-xs">{{ quizComparison.statsB.examPoints }} 點</span>
                   </div>
                   <div class="game-hp-track h-2.5">
-                    <div class="game-sp-fill h-full" :style="{ width: (quizComparison.statsB.examPoints / 111 * 100) + '%' }"></div>
+                    <div class="game-point-fill h-full" :style="{ width: (quizComparison.statsB.examPoints / 111 * 100) + '%' }"></div>
                   </div>
                 </div>
               </div>

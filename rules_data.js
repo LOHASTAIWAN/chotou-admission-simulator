@@ -1288,6 +1288,7 @@ function computeStudentStats(student) {
     writingPoint,
     aPlusCount,
     bPlusCount,
+    plusCount: aPlusCount + bPlusCount,
     balanced,
     conduct,
     demerit,
@@ -1516,13 +1517,13 @@ const QUIZ_CHALLENGES = [
     badge: '名校對決 2',
     title: '【第 2 戰】同為 5A 頂尖名校線，先比 + 號還是先比積點？',
     targetSchool: { name: '臺中女中', department: '普通科', quota: 1 },
-    question: '羽彤考出 5A 4+（作文4級分，學科+號較多）；若瑄考出 5A 3+（作文5級分，多拿1點作文點數）。爭奪女中最後一個名額，誰會勝出？',
+    question: '羽彤考出 5A 4+（4科A+、1科A，作文4級分，總積點 91 點）；若瑄也是 5A 4+（衝出雙A++、3科A，作文5級分，總積點 92 點）。兩人都是 4 個 + 號，誰能搶下臺中女中最後一個席次？',
     studentA: {
       name: '張羽彤',
       avatar: '🎀',
       animeType: 'girl_twintail',
       powerTitle: '四連加號疾風',
-      quote: '「我有 4 個 + 號！學科實力絕不認輸！」',
+      quote: '「我有 4 個 A+！學科實力絕不認輸！」',
       corner: 'RED',
       grades: { chinese: 'A+', math: 'A+', english: 'A+', social: 'A+', science: 'A' },
       writing: '4',
@@ -1533,16 +1534,16 @@ const QUIZ_CHALLENGES = [
       name: '李若瑄',
       avatar: '🌟',
       animeType: 'girl_longhair',
-      powerTitle: '國文雙加超能',
+      powerTitle: '雙 A++ 超能',
       quote: '「先比第七關總積點！我的 92 點比妳高喔！」',
       corner: 'BLUE',
-      grades: { chinese: 'A++', math: 'A', english: 'A', social: 'A', science: 'A' },
+      grades: { chinese: 'A++', math: 'A++', english: 'A', social: 'A', science: 'A' },
       writing: '5',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    hint: '💡 提示：算算兩人的「教育會考總積點(第七關)」！羽彤是 18*4+15+4 = 91點；若瑄是 21+15*4+5 = 92點！',
-    explanation: '【答案是李若瑄錄取！】這題是最常見的陷阱題！羽彤雖然有 4 個 + 號，若瑄只有 2 個 + 號（A++算2個+），但中投區是先比「第七關教育會考總積點（滿分111點）」，總積點相同時才進入第 8 關比「+ 號加總」！若瑄總積點 92 點高於羽彤的 91 點，因此在第七關直接勝出錄取！'
+    hint: '💡 提示：算算兩人的「教育會考總積點(第七關)」！羽彤是 18*4+15+4 = 91點；若瑄是 21*2+15*3+5 = 92點！',
+    explanation: '【答案是李若瑄錄取！】這題是最經典的觀念題！兩人雖然都是 4 個「+」號（羽彤是 4 個 A+，若瑄是 2 個 A++ 各算 2 個 +），但中投區在第一到六關平手後，先比的是「第七關：教育會考總積點（滿分111點）」！若瑄以 92 點勝過羽彤的 91 點，因此在第七關就由若瑄勝出錄取！根本不必比到第八關！'
   },
 
   // -------------------------------------------------------------
@@ -1592,7 +1593,7 @@ const QUIZ_CHALLENGES = [
     badge: '普通高中',
     title: '【第 4 戰】二中 3A2B 膠著戰：總積點完全相同，+ 號決勝負！',
     targetSchool: { name: '臺中二中', department: '普通科', quota: 1 },
-    question: '小晴是 3A 2B (2個+) 總積點 73 點；子傑也是 3A 2B 但只有 1 個 + 總積點恰好也是 73 點。總積分皆 97 分完全平手，誰能錄取二中？',
+    question: '小晴是 3A 2B (2個+) 總積點 67 點；子傑也是 3A 2B 總積點恰好也是 67 點。總積分皆 97 分完全平手，誰能錄取二中？',
     studentA: {
       name: '許小晴',
       avatar: '👧',
@@ -1609,16 +1610,16 @@ const QUIZ_CHALLENGES = [
       name: '周子傑',
       avatar: '🧑',
       animeType: 'boy_cool',
-      powerTitle: '五級分作文戰士',
-      quote: '「作文 5 級分幫我把積點拉到 73 點，勝負還很難說！」',
+      powerTitle: '單 A+ 追平者',
+      quote: '「我的總積點也是 67 點平手，勝負還很難說！」',
       corner: 'BLUE',
       grades: { chinese: 'A+', math: 'A', english: 'A', social: 'B+', science: 'B' },
-      writing: '5',
+      writing: '4',
       choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 1 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    hint: '💡 提示：第七關總積點兩人都為 73 點平手，接著進入第八關比什麼？',
-    explanation: '【答案是許小晴錄取！】兩人總積分皆 97 分、會考表現總積分皆 26 分、會考總積點皆 73 點！此時正式啟動第八關「教育會考各科等級標示加總（+號總數比序）」：小晴國A+、數A+共 2 個 + 號；子傑國A+、社B+雖也有2個+，但細比 A 等級標示時小晴有 2 個 A+ 勝過子傑的 1 個 A+，小晴順利搶下二中席次！'
+    hint: '💡 提示：第七關總積點兩人都為 67 點平手，接著進入第八關比什麼？',
+    explanation: '【答案是許小晴錄取！】兩人總積分皆 97 分、會考表現總積分皆 26 分、會考總積點皆 67 點！此時正式啟動第八關「教育會考各科等級標示加總（+號總數比序）」：小晴國A+、數A+共 2 個 + 號；子傑國A+、社B+雖也有2個+，但細比 A 等級標示時小晴有 2 個 A+ 勝過子傑的 1 個 A+，小晴順利搶下二中席次！'
   },
 
   // -------------------------------------------------------------
@@ -1698,42 +1699,42 @@ const QUIZ_CHALLENGES = [
   },
 
   // -------------------------------------------------------------
-  // 【公立高職 1】臺中高工：連續選填同校同科特權 vs 跨校扣分
+  // 【公立高職 1】臺中高工：志願序群組規範與連續選填同校同科特權
   // -------------------------------------------------------------
   {
     id: 'quiz_7',
     round: 7,
     badge: '公立高職 1',
-    title: '【第 7 戰】臺中高工志願序密技：連填同校不扣分，逆轉高分跨校生！',
+    title: '【第 7 戰】臺中高工志願序密技：連填同校不佔新志願序，逆轉高分跨校生！',
     targetSchool: { name: '臺中高工', department: '汽車科', quota: 1 },
-    question: '阿哲成績普通 5B 6+（作文4），第1志願填臺中高工板金科、第2志願緊接著填臺中高工汽車科；佩君成績較高考出 2A3B 0+，第1志願填其他學校、第2志願才跨校選填臺中高工汽車科。誰會錄取？',
+    question: '依台中市教育局公文規範：中投區免試入學以「10個志願序為1群組積分」（第1~10志願序30分、第11~20志願序29分），且「連續選填同校不同科計為同一志願序」。阿哲成績普通 5B 6+（作文4），第1~9志願填他校，第10志願填臺中高工板金科，第11志願緊接著填臺中高工汽車科；佩君考出 5B 10+（5科全B++，積點高達64點），但前10志願皆填不同學校，第11志願才跨校填臺中高工汽車科。誰會錄取？',
     studentA: {
       name: '劉阿哲',
       avatar: '🔧',
       animeType: 'boy_mechanic',
       powerTitle: '連填同校戰術家',
-      quote: '「高工同校連續填，第 1 志願序 30 分穩拿！」',
+      quote: '「高工同校連續填，第 11 志願仍屬第 10 志願序 30 分滿分！」',
       corner: 'RED',
       grades: { chinese: 'B++', math: 'B+', english: 'B+', social: 'B+', science: 'B+' },
       writing: '4',
-      choiceInfo: { score: 30, rank: 1, schoolRank: 1, choiceIndex: 2 },
+      choiceInfo: { score: 30, rank: 10, schoolRank: 10, choiceIndex: 11 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
     studentB: {
       name: '陳佩君',
       avatar: '👩‍🔧',
       animeType: 'girl_sporty',
-      powerTitle: '2A3B 高分女將',
-      quote: '「我成績有 2A，跨校填志願難道會輸！？」',
+      powerTitle: '5B 10+ 積點戰神',
+      quote: '「我 5 科全 B++ 積點高達 64 點，難道會輸在志願序！？」',
       corner: 'BLUE',
-      grades: { chinese: 'A', math: 'A', english: 'B', social: 'B', science: 'B' },
+      grades: { chinese: 'B++', math: 'B++', english: 'B++', social: 'B++', science: 'B++' },
       writing: '4',
-      choiceInfo: { score: 29, rank: 2, schoolRank: 2, choiceIndex: 2 },
+      choiceInfo: { score: 29, rank: 11, schoolRank: 11, choiceIndex: 11 },
       balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
     },
-    studentB_note: '佩君第1志願填興大附農，第2志願跨校填臺中高工，跨入第2志願序群組扣1分',
-    hint: '💡 提示：算算兩人的「志願序積分」！阿哲連填同校算第 1 志願序(30分)；佩君跨校第 2 志願被扣 1 分(29分)！',
-    explanation: '【答案是劉阿哲錄取！】中投區免試入學最實用的高職技巧！阿哲雖然只有 5B6+ 成績普通，但他善用「連續選填同校不同科皆為同一志願序」的特權，志願序積分拿到滿分 30 分，總積分達 95 分；佩君成績雖然高達 2A3B，但她第1志願填別校、第2志願跨校填台中高工，志願序積分被扣1分剩 29 分，總積分僅 94 分！阿哲在第一關就靠聰明志願序成功逆轉錄取！'
+    studentB_note: '佩君前 10 志願皆填不同學校用滿第 1 群組，第 11 志願跨校填臺中高工，跨入第 11~20 志願序群組被扣 1 分(得29分)',
+    hint: '💡 提示：算算兩人的「志願序積分」！依中投區公文規定：以「10個志願序為1群組」（第1~10志願序30分、第11~20志願序29分），且連續選填同校各科計為同一志願序！阿哲第 11 志願連填同校仍計為第 10 志願序(30分滿分)；佩君第 11 志願跨校落入第 11 志願序被扣 1 分(29分)！',
+    explanation: '【答案是劉阿哲錄取！】這是中投區免試入學最精妙也最實用的高職選填技巧！\n1. 依據台中市教育局公文規定：中投區免試入學以「10個志願序為1群組積分」，第1~10個志願序得滿分30分，第11~20個志願序得29分，第21個志願序以後得28分，且「連續選填同校不同類科均計為同一個志願序」。\n2. 阿哲雖然成績只有 5B 6+，但他善用連填特權，第10志願（板金科）與第11志願（汽車科）皆為臺中高工，因此第11志願汽車科仍計為「第10志願序」，在第1群組內穩穩拿到滿分30分，總積分高達 87 分！\n3. 佩君成績雖然考出 5B 頂標 10+（5科全B++，積點高達64點），但她前面10個志願填了10所不同學校（用滿了第1~10志願序的30分），第11志願跨校填台中高工，落入「第11志願序（第2群組）」，志願序積分被扣1分剩 29 分，總積分降為 86 分！\n4. 結果在「第一關：免試入學總積分」，阿哲就以 87 分擊敗佩君的 86 分！佩君雖然積點比阿哲高出整整12點，但連第七關總積點都還沒比到，在第一關總積分就因為志願序被扣分而遺憾落榜！這正是中投區選填志願最重要的避坑大原則！'
   },
 
   // -------------------------------------------------------------

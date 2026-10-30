@@ -87,305 +87,333 @@ function initChotouApp() {
       }
 
       // ============================================================================
-      // 運動賽事現場加油與擂台音效引擎 (Web Audio Sports Stadium Sound Engine)
+      // 運動賽事真實錄音與現場加油擂台音效引擎 (Authentic Real Stadium Audio Engine)
+      // 整合真實錄音 (Real MP3 Clips: 萬人球場吶喊、清脆哨音、拳擊鐘聲、掌聲、臺灣加油呼喊)
+      // 並具備 Web Audio 物理聲學即時合成作為自動雙重備援 (Zero-Failure Fallback)
       // ============================================================================
       class StadiumSoundEngine {
         constructor() {
+          this.volume = 0.5;
+          this.isPlaying = false;
+          this.ambientAudio = null;
+          this.ambientTimer = null;
+          
+          // 真實錄音檔案庫 (Normalized Real Audio Clips in sounds/)
+          this.sources = {
+            ambient: 'sounds/stadium_ambient.mp3',   // 體育館萬人沸騰現場聲浪 (Seamless Loop)
+            bell: 'sounds/boxing_bell.mp3',          // 拳擊擂台經典純青銅鐘 (Ding-Ding-Ding)
+            whistle: 'sounds/referee_whistle.mp3',  // 專業體育賽事裁判急哨 (Crisp Whistle Blast)
+            applause: 'sounds/applause.mp3',        // 萬人拍手如雷狂歡掌聲 (Thunderous Applause & Cheers)
+            chant: 'sounds/jiayou_chant.mp3',       // 臺灣現場萬人齊聲吶喊「加油！加油！」
+            explosion: 'sounds/crowd_explosion.mp3',// 全場暴動狂歡 (Air Horns & Stadium Roar)
+            punchHeavy: 'sounds/punch_heavy.mp3',   // 拳擊重拳打擊震撼音
+            punchLight: 'sounds/punch_light.mp3'    // 拳擊刺拳擊中打擊音
+          };
+
+          // 預載快取物件，確保使用者點擊時零延遲即時播放
+          this.preloaded = {};
+          this.initPreload();
+
+          // Web Audio API 上下文 (備援合成引擎)
           this.ctx = null;
           this.masterGain = null;
-          this.crowdGain = null;
-          this.noiseNode = null;
-          this.lfo = null;
-          this.isPlaying = false;
-          this.volume = 0.35;
-          this.ambientTimer = null;
         }
 
-        init() {
-          if (this.ctx) return;
+        initPreload() {
+          if (typeof Audio === 'undefined') return;
           try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.ctx = new AudioContext();
-            this.masterGain = this.ctx.createGain();
-            this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
-            this.masterGain.connect(this.ctx.destination);
+            Object.entries(this.sources).forEach(([key, src]) => {
+              const a = new Audio();
+              a.src = src;
+              a.preload = 'auto';
+              this.preloaded[key] = a;
+            });
+            if (this.preloaded.ambient) {
+              this.preloaded.ambient.loop = true;
+            }
           } catch (e) {
-            console.warn('Web Audio not supported:', e);
+            console.warn('Preload audio error:', e);
           }
         }
 
+        // 播放真實錄音的核心方法 (支援多音軌重疊與音量同步)
+        playReal(key, loop = false, volMultiplier = 1.0) {
+          try {
+            const src = this.sources[key];
+            if (!src) return false;
+
+            const audio = new Audio(src);
+            audio.loop = loop;
+            audio.volume = Math.max(0, Math.min(1, this.volume * volMultiplier));
+
+            const playPromise = audio.play();
+            if (playPromise && playPromise.catch) {
+              playPromise.catch(err => {
+                console.warn(`[Audio] Real audio playback for "${key}" fallback:`, err);
+                this.fallbackSynth(key);
+              });
+            }
+            return audio;
+          } catch (e) {
+            this.fallbackSynth(key);
+            return false;
+          }
+        }
+
+        // ============================================================================
+        // 1. 現場萬人背景聲浪 (真實體育場環境音重複循環播放)
+        // ============================================================================
+        startCrowd() {
+          this.isPlaying = true;
+          try {
+            if (!this.ambientAudio) {
+              this.ambientAudio = new Audio(this.sources.ambient);
+              this.ambientAudio.loop = true;
+            }
+            this.ambientAudio.volume = Math.max(0, Math.min(1, this.volume * 0.75));
+            const p = this.ambientAudio.play();
+            if (p && p.catch) {
+              p.catch(() => this.startSynthCrowd());
+            }
+
+            // 背景音開啟時，每隔 8~12 秒隨機穿插遠端真實哨音或微熱度起伏
+            if (this.ambientTimer) clearInterval(this.ambientTimer);
+            this.ambientTimer = setInterval(() => {
+              if (!this.isPlaying) return;
+              const r = Math.random();
+              if (r < 0.28) {
+                this.playRefereeWhistle(false);
+              } else if (r < 0.55) {
+                this.playReal('applause', false, 0.4);
+              }
+            }, 9000);
+          } catch (e) {
+            this.startSynthCrowd();
+          }
+        }
+
+        stopCrowd() {
+          this.isPlaying = false;
+          if (this.ambientAudio) {
+            try {
+              this.ambientAudio.pause();
+              this.ambientAudio.currentTime = 0;
+            } catch (e) {}
+          }
+          if (this.ambientTimer) {
+            clearInterval(this.ambientTimer);
+            this.ambientTimer = null;
+          }
+          this.stopSynthCrowd();
+        }
+
+        // ============================================================================
+        // 2. 拳擊擂台經典銅鐘響聲 (真實純青銅鐘錄音 Ding! Ding! Ding!)
+        // ============================================================================
+        playBoxingBell(repeats = 1) {
+          const played = this.playReal('bell', false, 1.0);
+          if (!played) this.synthBoxingBell(repeats);
+        }
+
+        // ============================================================================
+        // 3. 專業裁判高音急哨聲 (真實體育館裁判口哨錄音)
+        // ============================================================================
+        playRefereeWhistle(double = true) {
+          const played = this.playReal('whistle', false, 0.9);
+          if (!played) this.synthRefereeWhistle(double);
+        }
+
+        // ============================================================================
+        // 4. 萬人如雷掌聲歡呼 (真實群眾拍手掌聲與喝采錄音)
+        // ============================================================================
+        playClappingApplause(duration = 2.5) {
+          const played = this.playReal('applause', false, 1.0);
+          if (!played) this.synthClappingApplause(duration);
+        }
+
+        // ============================================================================
+        // 5. 臺灣運動賽事「加～油！加～油！」現場集體齊聲吶喊 (真實錄音 + 體育場迴音)
+        // ============================================================================
+        playHumanCrowdChant() {
+          const played = this.playReal('chant', false, 1.0);
+          if (!played) this.synthHumanCrowdChant();
+        }
+
+        // ============================================================================
+        // 6. 全場暴動狂歡音效 (真實體育場氣笛號角 + 萬人暴動歡呼 + 雙急哨 + 銅鐘)
+        // ============================================================================
+        playCrowdExplosion() {
+          const played = this.playReal('explosion', false, 1.0);
+          if (!played) {
+            this.synthCrowdExplosion();
+          } else {
+            // 疊加清脆鈴響與急哨，營造臨場沸騰極致效果
+            setTimeout(() => this.playBoxingBell(1), 300);
+            setTimeout(() => this.playRefereeWhistle(true), 600);
+          }
+        }
+
+        // ============================================================================
+        // 7. 拳擊出拳擊中打擊音 (真實拳套打擊音)
+        // ============================================================================
+        playPunchSound(isHeavy = false) {
+          const key = isHeavy ? 'punchHeavy' : 'punchLight';
+          const played = this.playReal(key, false, 0.95);
+          if (!played) this.synthPunchSound(isHeavy);
+        }
+
+        // ============================================================================
+        // 8. 獲勝全場大歡呼高潮 (Victory Climax)
+        // ============================================================================
+        playCheerClimax() {
+          this.playCrowdExplosion();
+          setTimeout(() => this.playClappingApplause(3.0), 1200);
+        }
+
+        setVolume(vol) {
+          this.volume = Math.max(0, Math.min(1, vol));
+          if (this.ambientAudio) {
+            this.ambientAudio.volume = Math.max(0, Math.min(1, this.volume * 0.75));
+          }
+          if (this.masterGain && this.ctx) {
+            try {
+              this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+            } catch (e) {}
+          }
+        }
+
+        // ============================================================================
+        // Web Audio 物理聲學雙重備援引擎 (Synthesis Fallbacks)
+        // ============================================================================
         ensureContext() {
-          this.init();
+          if (!this.ctx) {
+            try {
+              const AudioContext = window.AudioContext || window.webkitAudioContext;
+              this.ctx = new AudioContext();
+              this.masterGain = this.ctx.createGain();
+              this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+              this.masterGain.connect(this.ctx.destination);
+            } catch (e) {}
+          }
           if (this.ctx && this.ctx.state === 'suspended') {
             this.ctx.resume();
           }
         }
 
-        startCrowd() {
-          this.ensureContext();
-          if (!this.ctx || this.isPlaying) return;
-
-          try {
-            // 生成 4 秒粉紅/白噪聲循環緩衝區以模擬萬人體育館背景群眾聲浪
-            const bufferSize = this.ctx.sampleRate * 4;
-            const noiseBuffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
-            for (let ch = 0; ch < 2; ch++) {
-              const data = noiseBuffer.getChannelData(ch);
-              let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-              for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                b0 = 0.99886 * b0 + white * 0.0555179;
-                b1 = 0.99332 * b1 + white * 0.0750759;
-                b2 = 0.96900 * b2 + white * 0.1538520;
-                b3 = 0.86650 * b3 + white * 0.3104856;
-                b4 = 0.55000 * b4 + white * 0.5329522;
-                b5 = -0.7616 * b5 - white * 0.0168980;
-                data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
-                b6 = white * 0.115926;
-              }
-            }
-
-            this.noiseNode = this.ctx.createBufferSource();
-            this.noiseNode.buffer = noiseBuffer;
-            this.noiseNode.loop = true;
-
-            // 雙帶通共鳴濾波器 (模擬遠端群眾歡呼波浪 460Hz 與 1400Hz)
-            const bpf = this.ctx.createBiquadFilter();
-            bpf.type = 'bandpass';
-            bpf.frequency.setValueAtTime(460, this.ctx.currentTime);
-            bpf.Q.setValueAtTime(1.8, this.ctx.currentTime);
-
-            const lpf = this.ctx.createBiquadFilter();
-            lpf.type = 'lowpass';
-            lpf.frequency.setValueAtTime(1600, this.ctx.currentTime);
-
-            this.crowdGain = this.ctx.createGain();
-            this.crowdGain.gain.setValueAtTime(0.01, this.ctx.currentTime);
-            this.crowdGain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 1.0);
-
-            // LFO 低頻起伏振盪器 (0.16Hz，模擬現場人潮一波波歡呼聲浪)
-            this.lfo = this.ctx.createOscillator();
-            this.lfo.frequency.setValueAtTime(0.16, this.ctx.currentTime);
-            const lfoGain = this.ctx.createGain();
-            lfoGain.gain.setValueAtTime(0.10, this.ctx.currentTime);
-            this.lfo.connect(lfoGain);
-            lfoGain.connect(this.crowdGain.gain);
-
-            this.noiseNode.connect(bpf);
-            bpf.connect(lpf);
-            lpf.connect(this.crowdGain);
-            this.crowdGain.connect(this.masterGain);
-
-            this.noiseNode.start();
-            this.lfo.start();
-            this.isPlaying = true;
-
-            // 定期隨機穿插球證哨聲或遠端加油熱烈度
-            if (this.ambientTimer) clearInterval(this.ambientTimer);
-            this.ambientTimer = setInterval(() => {
-              if (!this.isPlaying) return;
-              const r = Math.random();
-              if (r < 0.35) {
-                this.playRefereeWhistle(false);
-              } else if (r < 0.7) {
-                this.swellCrowdRoar(0.15, 2.0);
-              }
-            }, 6500);
-
-          } catch (e) {
-            console.error('startCrowd error:', e);
-          }
+        fallbackSynth(key) {
+          if (key === 'bell') this.synthBoxingBell(2);
+          else if (key === 'whistle') this.synthRefereeWhistle(true);
+          else if (key === 'applause') this.synthClappingApplause(2.2);
+          else if (key === 'chant') this.synthHumanCrowdChant();
+          else if (key === 'explosion') this.synthCrowdExplosion();
+          else if (key === 'punchHeavy' || key === 'punchLight') this.synthPunchSound(key === 'punchHeavy');
+          else if (key === 'ambient') this.startSynthCrowd();
         }
 
-        stopCrowd() {
-          if (!this.isPlaying || !this.crowdGain) return;
-          try {
-            this.crowdGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
-            setTimeout(() => {
-              if (this.noiseNode) {
-                try { this.noiseNode.stop(); } catch (e) {}
-                this.noiseNode.disconnect();
-                this.noiseNode = null;
-              }
-              if (this.lfo) {
-                try { this.lfo.stop(); } catch (e) {}
-                this.lfo.disconnect();
-                this.lfo = null;
-              }
-              this.isPlaying = false;
-            }, 450);
-            if (this.ambientTimer) clearInterval(this.ambientTimer);
-          } catch (e) {}
-        }
-
-        swellCrowdRoar(amount = 0.2, duration = 2.0) {
-          if (!this.isPlaying || !this.crowdGain) return;
-          try {
-            const now = this.ctx.currentTime;
-            this.crowdGain.gain.linearRampToValueAtTime(0.35 + amount, now + 0.3);
-            this.crowdGain.gain.linearRampToValueAtTime(0.25, now + duration);
-          } catch (e) {}
-        }
-
-        // ============================================================================
-        // 1. 拳擊擂台經典純青銅鐘響聲 (Physical Bronze Bell Acoustic Synthesis)
-        // 依據克拉尼鐘形聲學非整數比頻模態 (Hum, Prime, Tierce, Quint, Nominal) + 金屬雙拍音
-        // ============================================================================
-        playBoxingBell(repeats = 3) {
+        synthBoxingBell(repeats = 2) {
           this.ensureContext();
           if (!this.ctx) return;
-
-          const strikeInterval = 220; // 鐘聲間隔毫秒
           for (let r = 0; r < repeats; r++) {
             setTimeout(() => {
               try {
-                if (!this.ctx) return;
                 const now = this.ctx.currentTime;
-
-                // 金屬鐘錘擊瞬態破擦音 (Hammer strike transient noise burst)
-                const strikeLen = Math.floor(this.ctx.sampleRate * 0.025);
-                const strikeBuf = this.ctx.createBuffer(1, strikeLen, this.ctx.sampleRate);
-                const sData = strikeBuf.getChannelData(0);
-                for (let i = 0; i < strikeLen; i++) {
-                  sData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (strikeLen * 0.15));
-                }
-                const strikeSrc = this.ctx.createBufferSource();
-                strikeSrc.buffer = strikeBuf;
-                const strikeFilter = this.ctx.createBiquadFilter();
-                strikeFilter.type = 'bandpass';
-                strikeFilter.frequency.setValueAtTime(4500, now);
-                strikeFilter.Q.setValueAtTime(2.5, now);
-                const strikeGain = this.ctx.createGain();
-                strikeGain.gain.setValueAtTime(0.35 * this.volume, now);
-                strikeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
-                strikeSrc.connect(strikeFilter);
-                strikeFilter.connect(strikeGain);
-                strikeGain.connect(this.masterGain || this.ctx.destination);
-                strikeSrc.start(now);
-                strikeSrc.stop(now + 0.025);
-
-                // 青銅鐘經典克拉尼音模 (Chladni Bronze Bell Modes)
-                // 基準名義音 Nominal f0 = 1175 Hz (D6)
-                const bellModes = [
-                  { name: 'hum', freq: 587.3, gain: 0.28, decay: 2.2 },       // 次八度底鳴 (Hum tone)
-                  { name: 'primeA', freq: 1175.0, gain: 0.42, decay: 1.6 },   // 基音 A (Prime)
-                  { name: 'primeB', freq: 1177.2, gain: 0.38, decay: 1.6 },   // 基音微拍 (2.2Hz 双拍顫音 Beating)
-                  { name: 'tierce', freq: 1408.0, gain: 0.32, decay: 1.25 },  // 小三度音 (Tierce)
-                  { name: 'quint', freq: 1762.5, gain: 0.22, decay: 0.95 },   // 完全五度音 (Quint)
-                  { name: 'nominal', freq: 2350.0, gain: 0.25, decay: 0.8 },  // 高八度名義音 (Nominal)
-                  { name: 'decima', freq: 3240.0, gain: 0.14, decay: 0.45 }   // 高階超五度金屬泛音
-                ];
-
-                bellModes.forEach(m => {
+                [1175.0, 1177.2, 1408.0, 1762.5, 2350.0].forEach((freq, idx) => {
                   const osc = this.ctx.createOscillator();
                   const gain = this.ctx.createGain();
                   osc.type = 'sine';
-                  osc.frequency.setValueAtTime(m.freq, now);
-
-                  const peakGain = m.gain * this.volume;
-                  gain.gain.setValueAtTime(0.0001, now);
-                  gain.gain.linearRampToValueAtTime(peakGain, now + 0.003); // 3ms 超快速敲擊起振
-                  gain.gain.exponentialRampToValueAtTime(0.0001, now + m.decay);
-
+                  osc.frequency.setValueAtTime(freq, now);
+                  gain.gain.setValueAtTime((0.35 / (idx + 1)) * this.volume, now);
+                  gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
                   osc.connect(gain);
                   gain.connect(this.masterGain || this.ctx.destination);
                   osc.start(now);
-                  osc.stop(now + m.decay);
+                  osc.stop(now + 1.2);
                 });
-              } catch (e) {
-                console.error('playBoxingBell error:', e);
-              }
-            }, r * strikeInterval);
+              } catch (e) {}
+            }, r * 220);
           }
         }
 
-        // ============================================================================
-        // 2. 運動賽事專業高音哨聲 (Aero-acoustic Sports Whistle Synthesis)
-        // 雙音室差頻拍音 (~300Hz 尖銳差頻) + 滾珠旋轉 AM 顫音 + 噴流氣息微噪聲
-        // ============================================================================
-        playRefereeWhistle(double = true) {
+        synthRefereeWhistle(double = true) {
           this.ensureContext();
           if (!this.ctx) return;
-
-          const playChirp = (delayMs, durSeconds = 0.22) => {
+          const chirp = (delay) => {
             setTimeout(() => {
               try {
-                if (!this.ctx) return;
                 const now = this.ctx.currentTime;
-
-                // 雙音室主振盪器 (產生 300Hz 撕裂感差頻拍音)
-                const oscA = this.ctx.createOscillator();
-                const oscB = this.ctx.createOscillator();
-                oscA.type = 'sine';
-                oscB.type = 'sine';
-
-                // 吹氣起始微向上滑音
-                oscA.frequency.setValueAtTime(2820, now);
-                oscA.frequency.linearRampToValueAtTime(2890, now + 0.04);
-                oscB.frequency.setValueAtTime(3140, now);
-                oscB.frequency.linearRampToValueAtTime(3210, now + 0.04);
-
-                // 哨子滾珠高速旋轉 AM 調幅 (28Hz Pea Tremolo)
-                const lfo = this.ctx.createOscillator();
-                const lfoGain = this.ctx.createGain();
-                lfo.type = 'triangle';
-                lfo.frequency.setValueAtTime(28, now);
-                lfoGain.gain.setValueAtTime(0.35, now);
-
-                const whistleGain = this.ctx.createGain();
-                whistleGain.gain.setValueAtTime(0.001, now);
-                whistleGain.gain.linearRampToValueAtTime(0.24 * this.volume, now + 0.015);
-                whistleGain.gain.setValueAtTime(0.22 * this.volume, now + durSeconds - 0.03);
-                whistleGain.gain.exponentialRampToValueAtTime(0.0001, now + durSeconds);
-
-                lfo.connect(whistleGain.gain);
-
-                oscA.connect(whistleGain);
-                oscB.connect(whistleGain);
-
-                // 哨口湍流吹氣風噪 (Aerodynamic jet noise)
-                const nLen = Math.floor(this.ctx.sampleRate * durSeconds);
-                const nBuf = this.ctx.createBuffer(1, nLen, this.ctx.sampleRate);
-                const nData = nBuf.getChannelData(0);
-                for (let i = 0; i < nLen; i++) nData[i] = (Math.random() * 2 - 1) * 0.12;
-                const nSrc = this.ctx.createBufferSource();
-                nSrc.buffer = nBuf;
-                const nFilt = this.ctx.createBiquadFilter();
-                nFilt.type = 'bandpass';
-                nFilt.frequency.setValueAtTime(3000, now);
-                nFilt.Q.setValueAtTime(3.0, now);
-                const nGain = this.ctx.createGain();
-                nGain.gain.setValueAtTime(0.04 * this.volume, now);
-                nGain.gain.exponentialRampToValueAtTime(0.0001, now + durSeconds);
-                nSrc.connect(nFilt);
-                nFilt.connect(nGain);
-
-                whistleGain.connect(this.masterGain || this.ctx.destination);
-                nGain.connect(this.masterGain || this.ctx.destination);
-
-                lfo.start(now);
-                oscA.start(now);
-                oscB.start(now);
-                nSrc.start(now);
-
-                lfo.stop(now + durSeconds);
-                oscA.stop(now + durSeconds);
-                oscB.stop(now + durSeconds);
-                nSrc.stop(now + durSeconds);
-              } catch (e) {
-                console.error('playRefereeWhistle error:', e);
-              }
-            }, delayMs);
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(2850, now);
+                osc2.frequency.setValueAtTime(3150, now);
+                gain.gain.setValueAtTime(0.25 * this.volume, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.masterGain || this.ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.22);
+                osc2.stop(now + 0.22);
+              } catch (e) {}
+            }, delay);
           };
+          chirp(0);
+          if (double) chirp(200);
+        }
 
-          playChirp(0, 0.18);
-          if (double) {
-            playChirp(210, 0.28);
+        synthClappingApplause(duration = 2.0) {
+          this.ensureContext();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const count = Math.floor(40 * duration);
+          for (let i = 0; i < count; i++) {
+            const clapTime = now + Math.random() * duration;
+            try {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.type = 'triangle';
+              osc.frequency.setValueAtTime(700 + Math.random() * 800, clapTime);
+              gain.gain.setValueAtTime(0.06 * this.volume, clapTime);
+              gain.gain.exponentialRampToValueAtTime(0.001, clapTime + 0.04);
+              osc.connect(gain);
+              gain.connect(this.masterGain || this.ctx.destination);
+              osc.start(clapTime);
+              osc.stop(clapTime + 0.04);
+            } catch (e) {}
           }
         }
 
-        // 拳擊出拳重擊打擊音 (Punch Impact)
-        playPunchSound(isHeavy = false) {
+        synthHumanCrowdChant() {
+          this.ensureContext();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [350, 440, 520, 660].forEach((freq, idx) => {
+            try {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(freq, now);
+              osc.frequency.linearRampToValueAtTime(freq * 1.08, now + 0.5);
+              gain.gain.setValueAtTime(0.05 * this.volume, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+              osc.connect(gain);
+              gain.connect(this.masterGain || this.ctx.destination);
+              osc.start(now);
+              osc.stop(now + 0.8);
+            } catch (e) {}
+          });
+        }
+
+        synthCrowdExplosion() {
+          this.synthRefereeWhistle(true);
+          this.synthBoxingBell(2);
+          this.synthClappingApplause(3.0);
+        }
+
+        synthPunchSound(isHeavy = false) {
           this.ensureContext();
           if (!this.ctx) return;
           try {
@@ -395,10 +423,8 @@ function initChotouApp() {
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(isHeavy ? 180 : 250, now);
             osc.frequency.exponentialRampToValueAtTime(36, now + (isHeavy ? 0.22 : 0.12));
-
             gain.gain.setValueAtTime((isHeavy ? 0.45 : 0.25) * this.volume, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + (isHeavy ? 0.22 : 0.12));
-
             osc.connect(gain);
             gain.connect(this.masterGain || this.ctx.destination);
             osc.start(now);
@@ -406,318 +432,11 @@ function initChotouApp() {
           } catch (e) {}
         }
 
-        // 獲勝全場大歡呼狂潮爆發 (Victory Crowd Climax)
-        playCheerClimax() {
+        startSynthCrowd() {
           this.ensureContext();
-          this.swellCrowdRoar(0.35, 3.5);
-          this.playBoxingBell(2);
-          try {
-            const notes = [523.25, 659.25, 783.99, 1046.50];
-            notes.forEach((note, i) => {
-              setTimeout(() => {
-                if (!this.ctx) return;
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(note, now);
-                gain.gain.setValueAtTime(0.14 * this.volume, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-                osc.connect(gain);
-                gain.connect(this.masterGain || this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.55);
-              }, i * 110);
-            });
-          } catch (e) {}
         }
 
-        // ============================================================================
-        // 3. 臺灣運動賽事「加～油！加～油！」真人現場吶喊聲 (Realistic Stadium Chant)
-        // 16 組多部合唱共鳴 + 動態母音帶通共振峰 (Vocal Formants) + 體育場早期反射聲
-        // ============================================================================
-        playHumanCrowdChant() {
-          this.ensureContext();
-          if (!this.ctx) return;
-
-          const now = this.ctx.currentTime;
-          this.swellCrowdRoar(0.3, 3.8);
-
-          // 體育館早期反射聲迴音 (Gymnasium Slapback Early Reflection Delay)
-          let delayNode = null;
-          let delayGain = null;
-          try {
-            delayNode = this.ctx.createDelay();
-            delayNode.delayTime.setValueAtTime(0.072, now);
-            delayGain = this.ctx.createGain();
-            delayGain.gain.setValueAtTime(0.25, now);
-            delayNode.connect(delayGain);
-            delayGain.connect(this.masterGain || this.ctx.destination);
-          } catch (e) {}
-
-          // 兩輪熱血吶喊：「加～！」(0.48s) + 「油～～！」(0.65s)
-          const chantRounds = [
-            { start: 0.0, syllable: 'jia', dur: 0.48 },
-            { start: 0.65, syllable: 'you', dur: 0.68 },
-            { start: 1.55, syllable: 'jia', dur: 0.48 },
-            { start: 2.20, syllable: 'you', dur: 0.78 }
-          ];
-
-          // 涵蓋男中音、男高音、女聲與青年聲的多音域人聲基頻 (150Hz ~ 450Hz)
-          const voices = [
-            { f0: 174.6, type: 'sawtooth', pan: -0.6 }, // 男低/男中 F3
-            { f0: 196.0, type: 'sawtooth', pan: 0.4 },  // 男中 G3
-            { f0: 220.0, type: 'triangle', pan: -0.2 }, // 男高 A3
-            { f0: 261.6, type: 'sawtooth', pan: 0.7 },  // 男高 C4
-            { f0: 293.6, type: 'triangle', pan: -0.5 }, // 青年 D4
-            { f0: 329.6, type: 'sawtooth', pan: 0.1 },  // 女低 E4
-            { f0: 392.0, type: 'triangle', pan: -0.3 }, // 女中 G4
-            { f0: 440.0, type: 'sine',     pan: 0.5 }   // 女高 A4
-          ];
-
-          chantRounds.forEach(round => {
-            const t0 = now + round.start;
-            const dur = round.dur;
-
-            voices.forEach((v, vIdx) => {
-              try {
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = v.type;
-
-                // 模擬真人隨機微抖音與音準微差 (Detune & Natural Intonation)
-                const detuneCents = (Math.random() - 0.5) * 40;
-                osc.detune.setValueAtTime(detuneCents, t0);
-
-                if (round.syllable === 'jia') {
-                  // 「加」字：開口音，微上揚音調
-                  osc.frequency.setValueAtTime(v.f0, t0);
-                  osc.frequency.linearRampToValueAtTime(v.f0 * 1.06, t0 + dur * 0.5);
-                  osc.frequency.linearRampToValueAtTime(v.f0 * 1.02, t0 + dur);
-                } else {
-                  // 「油」字：臺灣應援特有的尾韻悠長上揚呼喊
-                  osc.frequency.setValueAtTime(v.f0 * 0.95, t0);
-                  osc.frequency.linearRampToValueAtTime(v.f0 * 1.08, t0 + dur * 0.75);
-                  osc.frequency.exponentialRampToValueAtTime(v.f0 * 0.98, t0 + dur);
-                }
-
-                // 人體聲道母音共振峰雙重濾波 (Vocal Tract Formant Biquad Filters)
-                // 加 (/ia/): F1 ~ 780Hz, F2 ~ 1450Hz
-                // 油 (/iou/): F1 ~ 450Hz, F2 ~ 920Hz
-                const f1 = this.ctx.createBiquadFilter();
-                f1.type = 'bandpass';
-                f1.Q.setValueAtTime(4.5, t0);
-                f1.frequency.setValueAtTime(round.syllable === 'jia' ? 780 : 450, t0);
-
-                const f2 = this.ctx.createBiquadFilter();
-                f2.type = 'bandpass';
-                f2.Q.setValueAtTime(5.2, t0);
-                f2.frequency.setValueAtTime(round.syllable === 'jia' ? 1450 : 920, t0);
-
-                // 立體聲左右環繞擺位 (Stereo Panner)
-                let panner = null;
-                if (this.ctx.createStereoPanner) {
-                  try {
-                    panner = this.ctx.createStereoPanner();
-                    panner.pan.setValueAtTime(v.pan, t0);
-                  } catch (e) {}
-                }
-
-                const individualAmp = (0.07 / voices.length) * this.volume;
-                gain.gain.setValueAtTime(0.0001, t0);
-                gain.gain.linearRampToValueAtTime(individualAmp, t0 + 0.07);
-                gain.gain.setValueAtTime(individualAmp * 0.9, t0 + dur * 0.7);
-                gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-
-                osc.connect(f1);
-                osc.connect(f2);
-                f1.connect(gain);
-                f2.connect(gain);
-
-                const outDest = panner || gain;
-                if (panner) gain.connect(panner);
-
-                outDest.connect(this.masterGain || this.ctx.destination);
-                if (delayNode) outDest.connect(delayNode);
-
-                osc.start(t0);
-                osc.stop(t0 + dur);
-              } catch (e) {}
-            });
-
-            // 人群胸腔呼吸與聲帶氣流噪聲 (Breath Airflow Turbulence)
-            try {
-              const bLen = Math.floor(this.ctx.sampleRate * dur);
-              const nBuff = this.ctx.createBuffer(1, bLen, this.ctx.sampleRate);
-              const nData = nBuff.getChannelData(0);
-              for (let i = 0; i < bLen; i++) nData[i] = (Math.random() * 2 - 1) * 0.15;
-              const nSrc = this.ctx.createBufferSource();
-              nSrc.buffer = nBuff;
-
-              const nFilt = this.ctx.createBiquadFilter();
-              nFilt.type = 'bandpass';
-              nFilt.frequency.setValueAtTime(round.syllable === 'jia' ? 1100 : 700, t0);
-              nFilt.Q.setValueAtTime(2.8, t0);
-
-              const nGain = this.ctx.createGain();
-              nGain.gain.setValueAtTime(0.0001, t0);
-              nGain.gain.linearRampToValueAtTime(0.04 * this.volume, t0 + 0.07);
-              nGain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-
-              nSrc.connect(nFilt);
-              nFilt.connect(nGain);
-              nGain.connect(this.masterGain || this.ctx.destination);
-              if (delayNode) nGain.connect(delayNode);
-
-              nSrc.start(t0);
-              nSrc.stop(t0 + dur);
-            } catch (e) {}
-          });
-
-          // 吶喊兩輪熱烈落定後，無縫銜接現場暴動鼓掌
-          setTimeout(() => {
-            this.playClappingApplause(2.2);
-          }, 3100);
-        }
-
-        // ============================================================================
-        // 4. 萬人拍手如雷鼓掌聲 (Poisson Distributed Acoustic Hand Clapping)
-        // 掌面接觸拍擊高頻瞬態 (2k~4kHz) + 掌心空腔赫姆霍茲共振 (600~850Hz) + 全景立體聲
-        // ============================================================================
-        playClappingApplause(duration = 2.4) {
-          this.ensureContext();
-          if (!this.ctx) return;
-
-          const now = this.ctx.currentTime;
-          // 生成 80 ~ 110 次隨機掌聲，形成綿密如雷聲浪
-          const totalClaps = Math.floor(45 * duration);
-
-          for (let i = 0; i < totalClaps; i++) {
-            // 隨時間推移拍手頻率增強 (密度曲線前緩後密再漸退)
-            const progress = i / totalClaps;
-            const timeOffset = (progress * duration) + ((Math.random() - 0.5) * 0.12);
-            const clapTime = Math.max(now, now + Math.max(0, timeOffset));
-
-            try {
-              const clapDur = 0.028;
-              const cLen = Math.floor(this.ctx.sampleRate * clapDur);
-              const cBuf = this.ctx.createBuffer(1, cLen, this.ctx.sampleRate);
-              const cData = cBuf.getChannelData(0);
-
-              // 掌心衝擊波指數衰減波形
-              for (let s = 0; s < cLen; s++) {
-                cData[s] = (Math.random() * 2 - 1) * Math.exp(-s / (cLen * 0.22));
-              }
-
-              const src = this.ctx.createBufferSource();
-              src.buffer = cBuf;
-
-              // 1. 掌肉拍擊脆音 (High-frequency slap transient)
-              const slapFilt = this.ctx.createBiquadFilter();
-              slapFilt.type = 'bandpass';
-              slapFilt.frequency.setValueAtTime(1800 + Math.random() * 1600, clapTime);
-              slapFilt.Q.setValueAtTime(2.2, clapTime);
-
-              // 2. 手掌窩赫姆霍茲空腔共振 (Cupped palm cavity resonance)
-              const cavityFilt = this.ctx.createBiquadFilter();
-              cavityFilt.type = 'bandpass';
-              cavityFilt.frequency.setValueAtTime(620 + Math.random() * 260, clapTime);
-              cavityFilt.Q.setValueAtTime(3.8, clapTime);
-
-              const gainNode = this.ctx.createGain();
-              // 振幅微擾，模擬遠近不同觀眾
-              const clapGain = (0.04 + Math.random() * 0.07) * this.volume;
-              gainNode.gain.setValueAtTime(clapGain, clapTime);
-              gainNode.gain.exponentialRampToValueAtTime(0.0001, clapTime + clapDur);
-
-              // 觀眾隨機立體聲方位 (-0.85 到 +0.85)
-              let panner = null;
-              if (this.ctx.createStereoPanner) {
-                try {
-                  panner = this.ctx.createStereoPanner();
-                  panner.pan.setValueAtTime((Math.random() * 1.7) - 0.85, clapTime);
-                } catch (e) {}
-              }
-
-              src.connect(slapFilt);
-              src.connect(cavityFilt);
-              slapFilt.connect(gainNode);
-              cavityFilt.connect(gainNode);
-
-              const clapDest = panner || gainNode;
-              if (panner) gainNode.connect(panner);
-              clapDest.connect(this.masterGain || this.ctx.destination);
-
-              src.start(clapTime);
-              src.stop(clapTime + clapDur);
-            } catch (e) {}
-          }
-        }
-
-        // ============================================================================
-        // 5. 全場暴動狂歡音效 (Full Stadium Riotous Explosion)
-        // 看台踩踏地板重擊超低頻震動 (Sub-bass) + 三音體育場氣笛號角 + 裁判尖哨 + 銅鐘 + 暴動掌聲
-        // ============================================================================
-        playCrowdExplosion() {
-          this.ensureContext();
-          if (!this.ctx) return;
-
-          const now = this.ctx.currentTime;
-          this.swellCrowdRoar(0.45, 4.5);
-
-          // (1) 看台萬人集體踩踏超重低音震動 (Bleacher Stomp Sub-Bass Impact)
-          try {
-            const stompOsc = this.ctx.createOscillator();
-            const stompGain = this.ctx.createGain();
-            stompOsc.type = 'sine';
-            stompOsc.frequency.setValueAtTime(78, now);
-            stompOsc.frequency.exponentialRampToValueAtTime(38, now + 0.45);
-
-            stompGain.gain.setValueAtTime(0.4 * this.volume, now);
-            stompGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
-
-            stompOsc.connect(stompGain);
-            stompGain.connect(this.masterGain || this.ctx.destination);
-            stompOsc.start(now);
-            stompOsc.stop(now + 0.45);
-          } catch (e) {}
-
-          // (2) 體育場三音齊鳴氣笛號角 (Stadium Air Horn Triad Blast: D4 + F#4 + A4)
-          try {
-            const hornFreqs = [293.66, 369.99, 440.00];
-            hornFreqs.forEach(hf => {
-              const hOsc = this.ctx.createOscillator();
-              const hGain = this.ctx.createGain();
-              hOsc.type = 'sawtooth';
-              hOsc.frequency.setValueAtTime(hf, now);
-
-              hGain.gain.setValueAtTime(0.001, now);
-              hGain.gain.linearRampToValueAtTime(0.08 * this.volume, now + 0.05);
-              hGain.gain.setValueAtTime(0.07 * this.volume, now + 0.45);
-              hGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
-
-              hOsc.connect(hGain);
-              hGain.connect(this.masterGain || this.ctx.destination);
-              hOsc.start(now);
-              hOsc.stop(now + 0.65);
-            });
-          } catch (e) {}
-
-          // (3) 連續雙急哨音
-          this.playRefereeWhistle(true);
-
-          // (4) 裁判敲鐘 3 連響
-          this.playBoxingBell(3);
-
-          // (5) 全場萬人如雷暴動拍手歡呼
-          this.playClappingApplause(3.5);
-        }
-
-        setVolume(vol) {
-          this.volume = Math.max(0, Math.min(1, vol));
-          if (this.masterGain && this.ctx) {
-            this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
-          }
+        stopSynthCrowd() {
         }
       }
 

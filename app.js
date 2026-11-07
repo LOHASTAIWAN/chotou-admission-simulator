@@ -1551,6 +1551,8 @@ function initChotouApp() {
       const flowchartFilterAnalysis = ref(FLOWCHART_FILTER_ANALYSIS || []);
       const threeCoreStages = ref(THREE_CORE_STAGES || []);
       const volunteerOrderSimulation = ref(VOLUNTEER_ORDER_SIMULATION || null);
+      const tsaiStrategyGuide = ref(TSAI_STRATEGY_GUIDE || null);
+      const appVersionInfo = ref(APP_VERSION_INFO || { version: 'v3.2.0', buildTime: '2026-11-07 11:35' });
 
       // 單元測試套件執行狀態
       const unitTestResult = ref(null);

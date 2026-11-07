@@ -35,6 +35,7 @@ function initChotouApp() {
     FLOWCHART_FILTER_ANALYSIS,
     THREE_CORE_STAGES,
     VOLUNTEER_ORDER_SIMULATION,
+    TSAI_STRATEGY_GUIDE,
     runAlgorithmUnitTests
   } = window.ChotouRules;
 
@@ -1742,6 +1743,7 @@ function initChotouApp() {
         flowchartFilterAnalysis,
         threeCoreStages,
         volunteerOrderSimulation,
+        tsaiStrategyGuide,
         unitTestResult,
         isRunningUnitTests,
         selectedTestFilter,

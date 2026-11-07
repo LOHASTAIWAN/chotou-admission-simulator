@@ -2526,81 +2526,498 @@
           </div>
         </div>
 
-<!-- TAB 6: 選填錦囊與秘笈 (國三生避坑指南) -->
+<!-- TAB 6: 選填錦囊與秘笈 (國三生避坑指南 ‧ 蔡幸君老師適性輔導核心精華) -->
       <!-- ============================================================== -->
-      <section v-if="activeTab === 'tips'" class="space-y-5">
+      <section v-if="activeTab === 'tips'" class="space-y-6">
         
-        <div class="glass-dark rounded-3xl p-4 sm:p-6 border border-slate-700/80 shadow-xl">
-          <div class="text-center max-w-2xl mx-auto mb-6">
-            <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest bg-amber-950/60 border border-amber-800/40 px-2.5 py-0.5 rounded-full">STRATEGY GUIDE</span>
-            <h2 class="text-xl sm:text-2xl font-black text-white mt-1.5">116 中投區國三志願選填錦囊與避坑秘笈</h2>
-            <p class="text-xs text-slate-400 mt-1">
-              由簡章條文轉化而成的六大關鍵戰略，帶你看懂電腦分發背後的遊戲規則！
+        <!-- 頂部名師致敬與核心旗幟 Banner -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-7 border border-amber-500/40 shadow-2xl relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -left-10 -top-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10 text-center max-w-3xl mx-auto space-y-2.5">
+            <div class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-indigo-500/20 border border-amber-500/50 px-3.5 py-1 rounded-full">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span class="text-xs font-black text-amber-300 tracking-wider">適性輔導權威精華 ‧ 116 中投區深度整合</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              116 中投區國三志願選填全方位錦囊與避坑指南
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              核心取材自 <span class="text-amber-400 font-bold">臺南市立大橋國中 蔡幸君老師《志願選填輔導經驗分享》</span> 研習講義精髓，深度結合 <span class="text-indigo-400 font-bold">116 學年度中投區免試入學法規與選填特性</span>，指引國三親師生科學決策、排除落榜危機！
             </p>
+            <div class="pt-2 flex flex-wrap items-center justify-center gap-2">
+              <span class="text-[11px] font-bold bg-slate-800/90 text-amber-300 px-3 py-1 rounded-xl border border-amber-500/30">
+                ✨ 核心口訣：想好 ‧ 填好 ‧ 填滿
+              </span>
+              <span class="text-[11px] font-bold bg-slate-800/90 text-emerald-300 px-3 py-1 rounded-xl border border-emerald-500/30">
+                🛡️ 策略布局：夢想 ➔ 實際 ➔ 保險
+              </span>
+              <span class="text-[11px] font-bold bg-slate-800/90 text-rose-300 px-3 py-1 rounded-xl border border-rose-500/30">
+                ⚠️ 避坑法則：終結落榜三大危機
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 模組一：蔡幸君老師核心心法「2好 / 3WHY」與生涯關鍵能力 -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-700/60">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-base border border-amber-500/30">
+                <i class="fa-solid fa-lightbulb"></i>
+              </span>
+              <div>
+                <h3 class="text-base sm:text-lg font-black text-white">選填核心心法：2好 / 3WHY</h3>
+                <p class="text-[11px] text-slate-400">國中畢業生面對人生第一次重大抉擇的心理準備與思維框架</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-bold text-amber-400 bg-amber-950/60 border border-amber-700/50 px-2.5 py-1 rounded-full">
+              蔡老師適性輔導核心
+            </span>
+          </div>
+
+          <!-- 2好原則 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <div class="bg-gradient-to-br from-slate-800/90 to-slate-900/90 p-4 rounded-2xl border border-amber-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-amber-400 bg-amber-500/20 px-2.5 py-0.5 rounded-lg border border-amber-500/30">第 1 好</span>
+                <span class="text-xs text-slate-400">自我探索</span>
+              </div>
+              <h4 class="text-base font-black text-white">「想好」：看清自己，評估想進也能進的學校</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                盤點國中三年生涯歷程，反思求學歷程、看見個別差異（沒有標準答案、沒有人能複製他人的歷程）。依特質、能力、性向、興趣與學術/技術傾向，審慎思考目前想發展的方向，做一個讓自己沒有遺憾與後悔的選擇。
+              </p>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-800/90 to-slate-900/90 p-4 rounded-2xl border border-indigo-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-indigo-400 bg-indigo-500/20 px-2.5 py-0.5 rounded-lg border border-indigo-500/30">第 2 好</span>
+                <span class="text-xs text-slate-400">落實布局</span>
+              </div>
+              <h4 class="text-base font-black text-white">「填好、填滿」：科學排志願，做足保險嚴防落榜</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                志願選填絕不是憑感覺隨便填！必須依「三段式填法」有節奏地排列，前段志願大膽衝刺、中段志願穩健著陸、後段志願務必「做足保險區、填滿志願序」，確保 100% 穩健安全錄取！
+              </p>
+            </div>
+          </div>
+
+          <!-- 3WHY 價值思考 -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-2">
+            <div class="bg-slate-800/60 p-3.5 rounded-2xl border border-slate-700/80 space-y-1.5">
+              <span class="text-[10px] font-black text-indigo-300 bg-indigo-900/60 px-2 py-0.5 rounded-md">WHY 1</span>
+              <h5 class="text-xs sm:text-sm font-bold text-white">升學 / 分流</h5>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                普通型高中（強化通識與學術研究進路） vs 技術型高中與五專（培養專門技能與四技二專科大進路），依學生學習風格適性分流。
+              </p>
+            </div>
+
+            <div class="bg-slate-800/60 p-3.5 rounded-2xl border border-slate-700/80 space-y-1.5">
+              <span class="text-[10px] font-black text-teal-300 bg-teal-900/60 px-2 py-0.5 rounded-md">WHY 2</span>
+              <h5 class="text-xs sm:text-sm font-bold text-white">練習選擇</h5>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                培養國中生「生涯發展的關鍵能力」：自我評估、決策考量、資訊運用、獨立判斷。在選擇中學會面對自我與家庭溝通。
+              </p>
+            </div>
+
+            <div class="bg-slate-800/60 p-3.5 rounded-2xl border border-slate-700/80 space-y-1.5">
+              <span class="text-[10px] font-black text-emerald-300 bg-emerald-900/60 px-2 py-0.5 rounded-md">WHY 3</span>
+              <h5 class="text-xs sm:text-sm font-bold text-white">學習負責與開放心態</h5>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                學會承擔選擇的結果。生涯是長跑，就算真的選錯科系或未進入最理想志願，高中職隨時能轉換跑道！心態與自我提升才是關鍵。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 模組二：經典三段式黃金選填法（夢想區 ➔ 實際區 ➔ 保險區） -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-700/60">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-black text-base border border-indigo-500/30">
+                <i class="fa-solid fa-layer-group"></i>
+              </span>
+              <div>
+                <h3 class="text-base sm:text-lg font-black text-white">經典三段式黃金選填法（中投區專屬優勢融合）</h3>
+                <p class="text-[11px] text-slate-400">結合中投區「10 個志願序同為 30 分滿分」與「連填同校不佔新志願序」的高效布局</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-bold text-indigo-400 bg-indigo-950/60 border border-indigo-700/50 px-2.5 py-1 rounded-full">
+              金字塔攻防結構
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <!-- 夢想區 -->
+            <div class="bg-gradient-to-b from-amber-500/10 to-slate-900/80 p-4 sm:p-5 rounded-2xl border border-amber-500/40 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-amber-400 bg-amber-500/20 px-2.5 py-0.5 rounded-lg border border-amber-500/40">
+                  第 1 ～ 3 志願
+                </span>
+                <span class="text-[10px] font-bold text-amber-300">大膽進攻 ‧ 圓夢衝刺</span>
+              </div>
+              <h4 class="text-base font-black text-white">「夢想區」：心之所向，勇於挑戰</h4>
+              <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-amber-400 mt-0.5 text-[10px]"></i>
+                  <span>評估自己非常渴望、錄取門檻稍高但具微幅挑戰性的夢幻學校。</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-amber-400 mt-0.5 text-[10px]"></i>
+                  <span><strong>中投區專屬紅利：</strong>前 10 個志願同屬第 1 群組，皆獲滿分 30 分！前 3 志願大膽填寫夢想校<strong>完全不扣分</strong>！</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-amber-400 mt-0.5 text-[10px]"></i>
+                  <span>電腦分發逐筆檢驗，若未錄取將自然流至下一志願，<strong>絲毫不損及後續錄取機會</strong>！</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 實際區 -->
+            <div class="bg-gradient-to-b from-indigo-500/10 to-slate-900/80 p-4 sm:p-5 rounded-2xl border border-indigo-500/40 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-indigo-400 bg-indigo-500/20 px-2.5 py-0.5 rounded-lg border border-indigo-500/40">
+                  第 4 ～ 10 志願
+                </span>
+                <span class="text-[10px] font-bold text-indigo-300">務實落點 ‧ 實力著陸</span>
+              </div>
+              <h4 class="text-base font-black text-white">「實際區」：落點精準，填好填滿</h4>
+              <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-indigo-400 mt-0.5 text-[10px]"></i>
+                  <span>對照個人會考成績、總積點與<strong>「個別序位區間」</strong>，落點於實力相當的公私立高中職。</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-indigo-400 mt-0.5 text-[10px]"></i>
+                  <span><strong>蔡老師叮嚀：</strong>填好前段志願是關鍵！評估好自己想進也能進的學校，務必是自己真心願意念的科系。</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-indigo-400 mt-0.5 text-[10px]"></i>
+                  <span><strong>高職選填秘技：</strong>善用「連續選填同校不同科不佔新志願序」，集中火力填入同一所優質高職！</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 保險區 -->
+            <div class="bg-gradient-to-b from-emerald-500/10 to-slate-900/80 p-4 sm:p-5 rounded-2xl border border-emerald-500/40 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-emerald-400 bg-emerald-500/20 px-2.5 py-0.5 rounded-lg border border-emerald-500/40">
+                  第 11 志願以後
+                </span>
+                <span class="text-[10px] font-bold text-emerald-300">防禦保底 ‧ 絕對安全</span>
+              </div>
+              <h4 class="text-base font-black text-white">「保險區」：做足保底，杜絕落榜</h4>
+              <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-emerald-400 mt-0.5 text-[10px]"></i>
+                  <span>務必挑選門檻明顯低於自己落點、有把握<strong>「絕對穩上」</strong>的學校，做足防護網。</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-emerald-400 mt-0.5 text-[10px]"></i>
+                  <span><strong>蔡老師嚴正提醒：</strong>個別序位區間不理想者，務必腳踏實地，減少不切實際想像，保險區一定要做足！</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <i class="fa-solid fa-check text-emerald-400 mt-0.5 text-[10px]"></i>
+                  <span>把志願序盡量填滿，絕對不可只填 2~3 個志願，嚴防落榜悲劇！</span>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 模組三：蔡幸君老師「終結落榜三大危機因子」（落榜警示公式） -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-rose-500/40 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-rose-500/30">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-black text-base border border-rose-500/30">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </span>
+              <div>
+                <h3 class="text-base sm:text-lg font-black text-white">蔡幸君老師警示：終結落榜三大危機因子</h3>
+                <p class="text-[11px] text-slate-400">未進目標學校或意外落榜的關鍵病因診斷</p>
+              </div>
+            </div>
+            <div class="text-xs font-black text-rose-400 bg-rose-950/80 border border-rose-700/60 px-3 py-1 rounded-xl">
+              💥 危機公式：落榜 = 操作錯誤 + 不合邏輯 + 沒有現實感
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            
+            <div class="bg-slate-900/90 p-4 rounded-2xl border border-rose-900/60 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs font-bold">1</span>
+                <h4 class="text-sm font-black text-white">操作錯誤（技術失誤）</h4>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                忘記選填帳號密碼、錯過正式選填系統開放時間、系統填完未按「儲存確認送出」、或最後未將報表列印出來由家長雙方簽名繳回教務處，直接喪失分發資格！
+              </p>
+            </div>
+
+            <div class="bg-slate-900/90 p-4 rounded-2xl border border-rose-900/60 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs font-bold">2</span>
+                <h4 class="text-sm font-black text-white">不合邏輯（無效志願/亂填）</h4>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                <strong>最常見致命傷！</strong>把競爭激烈、錄取門檻很高的學校（如一中、女中、臺中高工熱門科），填在門檻極低學校的後面。電腦一旦先分發錄取了前面低門檻學校，後面高門檻志願根本輪不到電腦檢驗，<strong>形同廢物志願，白白浪費志願序！</strong>
+              </p>
+            </div>
+
+            <div class="bg-slate-900/90 p-4 rounded-2xl border border-rose-900/60 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs font-bold">3</span>
+                <h4 class="text-sm font-black text-white">沒有現實感（眼高手低）</h4>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                志願數填太少（只填前 2~3 個）、期望目標與自己實際成績落差過大、完全不肯填寫保險區、對個別序位區間抱持過度樂觀幻想。最後分數全未達標，導致落榜！
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 模組四：志願排序三大黃金鐵律（群體性意義 > 個別化意義） -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-700/60">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-black text-base border border-purple-500/30">
+                <i class="fa-solid fa-arrow-down-wide-short"></i>
+              </span>
+              <div>
+                <h3 class="text-base sm:text-lg font-black text-white">志願選填規則與排序三大黃金鐵律</h3>
+                <p class="text-[11px] text-slate-400">電腦分發核心邏輯：群體性意義遠大於個別化意義！</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-bold text-purple-400 bg-purple-950/60 border border-purple-700/50 px-2.5 py-1 rounded-full">
+              不可逆排序法則
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-purple-500/30 space-y-2">
+              <span class="text-[10px] font-black text-purple-300 bg-purple-900/60 px-2 py-0.5 rounded-md">鐵律 1</span>
+              <h4 class="text-sm font-black text-white">競爭力強的學校填在前面</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                客觀「群體」錄取標準高、歷年門檻高的學校，順序上必須排在前面。電腦分發是單向篩選漏斗，高門檻排在前面沒過，會自然無痛滑至下一志願，不會有任何懲罰！
+              </p>
+            </div>
+
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-purple-500/30 space-y-2">
+              <span class="text-[10px] font-black text-purple-300 bg-purple-900/60 px-2 py-0.5 rounded-md">鐵律 2</span>
+              <h4 class="text-sm font-black text-white">愈想要的學校填在愈前面</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                主觀「個人」意願。在競爭門檻相仿或同群組學校中，依個人生涯興趣、通學交通時間、專門科別，把最想念的填在第一順位。
+              </p>
+            </div>
+
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-purple-500/30 space-y-2">
+              <span class="text-[10px] font-black text-purple-300 bg-purple-900/60 px-2 py-0.5 rounded-md">鐵律 3</span>
+              <h4 class="text-sm font-black text-white">群體性意義 > 個別化意義</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                電腦分發一旦遇到符合資格的志願即宣告<strong>「錄取完成並立即停止後續分發」</strong>！千萬不可因個人好惡倒填志願，否則一旦被低門檻截胡，後面好學校全作廢，終生遺憾！
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 模組五：個別序位區間與累積人數的科學解讀法 -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-700/60">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-black text-base border border-cyan-500/30">
+                <i class="fa-solid fa-chart-simple"></i>
+              </span>
+              <div>
+                <h3 class="text-base sm:text-lg font-black text-white">個別序位區間與累積人數的科學解讀</h3>
+                <p class="text-[11px] text-slate-400">蔡幸君老師指導：如何理性看待區間數據與誤差值</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-700/50 px-2.5 py-1 rounded-full">
+              數據理性分析
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/70 space-y-2.5">
+              <h4 class="text-sm font-black text-white flex items-center gap-2">
+                <i class="fa-solid fa-bullseye text-cyan-400"></i>
+                個別序位區間代表「你最多輸給多少人」
+              </h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                例如：王同學在全區累積人數區間為 <strong>1,200 ～ 1,500 人</strong>，這代表王同學在全中投區目前成績<strong>最多只輸給 1,499 人</strong>。
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-xs text-slate-300 space-y-1">
+                <p>📌 <strong>推估錄取機率：</strong>若想追求的目標學校招生總名額為 1,600 人，則王同學即使在區間最末端（1,499名）也在錄取容量內，錄取機率極高！</p>
+              </div>
+            </div>
+
+            <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/70 space-y-2.5">
+              <h4 class="text-sm font-black text-white flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-cyan-400"></i>
+                切勿完全迷信單一數字，正視「誤差值」
+              </h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                <strong>蔡老師叮嚀：</strong>請不要完全仰賴區間預估數字，因為誤差值一定存在！愈靠近區間數字代表錄取機率愈高，但除極少數最頂尖名次外，沒人能保證一定錄取。
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-xs text-slate-300 space-y-1">
+                <p>🛡️ <strong>應對策略：</strong>男女名額差異、私校直升人數、技職專門群科分流皆會造成名次流動，因此<strong>保險區一定要做足</strong>，才是最穩健的保障！</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 模組六：116 中投區 6 大專屬法規戰略武器（原版升級保留） -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-700/60">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center font-black text-base border border-teal-500/30">
+                <i class="fa-solid fa-award"></i>
+              </span>
+              <div>
+                <h3 class="text-base sm:text-lg font-black text-white">116 中投區 6 大專屬法規戰略武器</h3>
+                <p class="text-[11px] text-slate-400">簡章法規條文轉化為實戰制勝關鍵</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-bold text-teal-400 bg-teal-950/60 border border-teal-700/50 px-2.5 py-1 rounded-full">
+              中投區特有規定
+            </span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             
-            <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
-              <div class="w-8 h-8 rounded-xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center text-base font-bold">
-                1
-              </div>
-              <h3 class="text-sm sm:text-base font-extrabold text-white">連續填同校不同科「完全不扣分」</h3>
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
+              <div class="w-8 h-8 rounded-xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center text-base font-bold">1</div>
+              <h4 class="text-sm sm:text-base font-extrabold text-white">連填同校不同科「完全不扣分」</h4>
               <p class="text-xs text-slate-300 leading-relaxed">
-                中投區特別規定：「連續選填同校不同類科者皆為同一志願序」。例如連續填寫臺中高工資訊科、電機科、機械科，3 個志願都算在第 1 志願序（30分滿分）！不用擔心第2科會被降分！
+                中投區特別規定：「連續選填同校不同類科者皆為同一志願序」。例如連續選填臺中高工資訊、電機、電子科，3 個志願通通享有第 1 志願序 30 分滿分！大幅增加技職上榜優勢！
               </p>
             </div>
 
-            <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
-              <div class="w-8 h-8 rounded-xl bg-purple-600/30 text-purple-400 flex items-center justify-center text-base font-bold">
-                2
-              </div>
-              <h3 class="text-sm sm:text-base font-extrabold text-white">10 個志願序同分！大膽前進夢幻</h3>
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
+              <div class="w-8 h-8 rounded-xl bg-purple-600/30 text-purple-400 flex items-center justify-center text-base font-bold">2</div>
+              <h4 class="text-sm sm:text-base font-extrabold text-white">10 個志願序同分！大膽前進夢想</h4>
               <p class="text-xs text-slate-300 leading-relaxed">
-                志願每 10 個志願為一群組。第 1 至第 10 志願序通通都是 30 分！這代表你在前幾個志願可以大膽填寫夢幻學校，就算沒上，第 2、第 3 志願依然享有 30 分滿分保障！
+                志願每 10 個為一群組。第 1 至第 10 志願序積分通通都是 30 分！這代表你在前幾個志願可以大膽填寫夢幻學校，就算未錄取，後方志願依然享有 30 分滿分保障！
               </p>
             </div>
 
-            <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
-              <div class="w-8 h-8 rounded-xl bg-amber-600/30 text-amber-400 flex items-center justify-center text-base font-bold">
-                3
-              </div>
-              <h3 class="text-sm sm:text-base font-extrabold text-white">「保 5A」遠比「拚 A++」更重要</h3>
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
+              <div class="w-8 h-8 rounded-xl bg-amber-600/30 text-amber-400 flex items-center justify-center text-base font-bold">3</div>
+              <h4 class="text-sm sm:text-base font-extrabold text-white">「保 5A」遠比「拚 A++」更重要</h4>
               <p class="text-xs text-slate-300 leading-relaxed">
-                第一關比的是「總積分」，只要有任一科掉到 B，會考積分立刻從 6 分跌至 4 分（少2分）。就算另外 4 科全 A++、作文滿分，總積分依然會直接輸給 5A 0+！均衡不偏科是第一準則！
+                第一關比的是「總積分」，只要任一科掉到 B，總積分立刻少 2 分（跌至 95 分）。哪怕其餘 4 科全 A++ 且作文 6 級分，第一關直接輸給 5A 0+！均衡不偏科是第一準則！
               </p>
             </div>
 
-            <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
-              <div class="w-8 h-8 rounded-xl bg-rose-600/30 text-rose-400 flex items-center justify-center text-base font-bold">
-                4
-              </div>
-              <h3 class="text-sm sm:text-base font-extrabold text-white">國文科是中投區的「定海神針」</h3>
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
+              <div class="w-8 h-8 rounded-xl bg-rose-600/30 text-rose-400 flex items-center justify-center text-base font-bold">4</div>
+              <h4 class="text-sm sm:text-base font-extrabold text-white">國文科是中投區的「定海神針」</h4>
               <p class="text-xs text-slate-300 leading-relaxed">
-                在單科比序的法定順序中，中投區依序為：國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然。國文科高居第一順位！當兩生積分、積點、+號數皆相同時，國文科等級較高者直接勝出！
+                在單科比序的法定順序中，中投區固定為：國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然。國文科高居第一順位！當兩生積分、積點、+號數皆相同時，國文科等級較高者直接勝出！
               </p>
             </div>
 
-            <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
-              <div class="w-8 h-8 rounded-xl bg-teal-600/30 text-teal-400 flex items-center justify-center text-base font-bold">
-                5
-              </div>
-              <h3 class="text-sm sm:text-base font-extrabold text-white">寫作 6 級分在一中女中的絕殺力</h3>
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
+              <div class="w-8 h-8 rounded-xl bg-teal-600/30 text-teal-400 flex items-center justify-center text-base font-bold">5</div>
+              <h4 class="text-sm sm:text-base font-extrabold text-white">寫作 6 級分在一中女中的絕殺力</h4>
               <p class="text-xs text-slate-300 leading-relaxed">
-                寫作測驗計入「會考總積點（佔 1~6 點）」。在競逐臺中一中、臺中女中等頂尖學校時，人人皆為 5A，此時總積點 100 點以上是兵家必爭之地，作文多 1 點就能決定能否上榜！
+                寫作測驗計入「會考總積點（最高 111 點，作文佔 1~6 點）」。在競逐臺中一中、臺中女中等頂尖學校時，人人皆為 5A，總積點 100 點以上競爭極度激烈，作文多 1 點就能決定勝負！
               </p>
             </div>
 
-            <div class="bg-slate-800/70 p-4 rounded-3xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
-              <div class="w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center text-base font-bold">
-                6
-              </div>
-              <h3 class="text-sm sm:text-base font-extrabold text-white">中投區絕不抽籤，同分增額錄取</h3>
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700 hover:border-indigo-500/60 transition-all card-hover space-y-2">
+              <div class="w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center text-base font-bold">6</div>
+              <h4 class="text-sm sm:text-base font-extrabold text-white">中投區絕不抽籤，同分全數增額</h4>
               <p class="text-xs text-slate-300 leading-relaxed">
-                經過 12 道比序若仍完全同分超額，依法令明文「不予抽籤，以增額錄取處理」。這展現了升學制度對每位同學努力成果的最高尊重！
+                經過 12 道比序若仍完全同分超額，依法令明文「不予抽籤，以增額錄取處理」。這展現了中投區對每位同學努力成果的最高尊重與法規保障！
               </p>
             </div>
 
+          </div>
+        </div>
+
+        <!-- 模組七：🧪 116 學年度中投區 8 戰演算法與法規單元測試驗證儀（TEST_1 ~ TEST_14） -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-emerald-500/50 shadow-2xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-slate-700/80">
+            <div class="flex items-center gap-3">
+              <span class="w-9 h-9 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-lg border border-emerald-500/40">
+                <i class="fa-solid fa-vial-circle-check"></i>
+              </span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-base sm:text-lg font-black text-white">116 中投區 8 戰演算法與法規單元測試驗證儀</h3>
+                  <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                    14/14 PASS 100%
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400">印證 8 戰經典比序、志願序順序極限對決、10個一組群組積分、總積點 111 與單科國文第一順位</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button @click="executeUnitTests" 
+                      :disabled="isRunningUnitTests"
+                      class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-95 text-white text-xs font-black shadow-lg shadow-emerald-900/40 border border-emerald-400/40 flex items-center gap-1.5 transition">
+                <i :class="isRunningUnitTests ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-rotate-right'"></i>
+                <span>{{ isRunningUnitTests ? '執行驗證中...' : '重新執行全部單元測試' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 篩選 Tab -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            <button @click="selectedTestFilter = 'ALL'"
+                    :class="selectedTestFilter === 'ALL' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-3 py-1 rounded-lg transition border border-slate-700 whitespace-nowrap">
+              全部測試 (14)
+            </button>
+            <button @click="selectedTestFilter = 'QUIZ'"
+                    :class="selectedTestFilter === 'QUIZ' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-3 py-1 rounded-lg transition border border-slate-700 whitespace-nowrap">
+              8 戰經典實戰 (8)
+            </button>
+            <button @click="selectedTestFilter = 'VOLUNTEER'"
+                    :class="selectedTestFilter === 'VOLUNTEER' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-3 py-1 rounded-lg transition border border-slate-700 whitespace-nowrap">
+              志願順序極限對決 (2)
+            </button>
+            <button @click="selectedTestFilter = 'LAW'"
+                    :class="selectedTestFilter === 'LAW' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+                    class="px-3 py-1 rounded-lg transition border border-slate-700 whitespace-nowrap">
+              法規與條文驗證 (4)
+            </button>
+          </div>
+
+          <!-- 測試項目清單網格 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-1">
+            <div v-for="test in filteredUnitTests" :key="test.id"
+                 class="bg-slate-900/90 rounded-2xl p-3.5 border border-slate-700/80 hover:border-emerald-500/50 transition-all space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-md"
+                      :class="test.passed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'">
+                  {{ test.id }} ‧ {{ test.passed ? '✅ PASS' : '❌ FAIL' }}
+                </span>
+                <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
+                  {{ test.category }}
+                </span>
+              </div>
+              <h5 class="text-xs sm:text-sm font-bold text-white leading-tight">
+                {{ test.title }}
+              </h5>
+              <div class="text-[11px] text-emerald-400/90 bg-slate-950/60 p-2 rounded-xl border border-slate-800 font-mono">
+                <i class="fa-solid fa-gavel mr-1 text-slate-400"></i>{{ test.lawRef }}
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                {{ test.detail }}
+              </p>
+            </div>
           </div>
         </div>
 

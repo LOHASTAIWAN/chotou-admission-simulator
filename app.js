@@ -36,6 +36,7 @@ function initChotouApp() {
     THREE_CORE_STAGES,
     VOLUNTEER_ORDER_SIMULATION,
     TSAI_STRATEGY_GUIDE,
+    APP_VERSION_INFO,
     runAlgorithmUnitTests
   } = window.ChotouRules;
 
@@ -1744,6 +1745,7 @@ function initChotouApp() {
         threeCoreStages,
         volunteerOrderSimulation,
         tsaiStrategyGuide,
+        appVersionInfo,
         unitTestResult,
         isRunningUnitTests,
         selectedTestFilter,

@@ -1,3 +1,13 @@
+// =========================================================================
+// 全域網頁版本與更新日期時間戳記（依規範每次更動自動同步）
+// =========================================================================
+const APP_VERSION_INFO = {
+  version: 'v3.2.0',
+  buildTime: '2026-11-07 11:35',
+  author: '中投區免試入學電腦比序研發小組',
+  notes: '納入蔡幸君老師選填錦囊、14項演算法與法規單元測試驗證儀、全域更新時間戳'
+};
+
 /**
  * 116學年度中投區免試入學比序規則資料庫與核心演算引擎
  * 依據臺中市及南投縣政府教育主管機關公告之「116學年度中投區高級中等學校免試入學作業要點」
@@ -2460,6 +2470,7 @@ if (typeof window !== 'undefined') {
     THREE_CORE_STAGES,
     VOLUNTEER_ORDER_SIMULATION,
     TSAI_STRATEGY_GUIDE,
+    APP_VERSION_INFO,
     runAlgorithmUnitTests
   };
 }
@@ -2487,6 +2498,7 @@ if (typeof module !== 'undefined' && module.exports) {
     THREE_CORE_STAGES,
     VOLUNTEER_ORDER_SIMULATION,
     TSAI_STRATEGY_GUIDE,
+    APP_VERSION_INFO,
     runAlgorithmUnitTests
   };
 }

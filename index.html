@@ -58,24 +58,37 @@
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
         
         <!-- Logo 與標題 -->
-        <div class="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-start">
-          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 text-lg sm:text-xl font-bold flex-shrink-0">
-            <i class="fa-solid fa-graduation-cap"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="bg-indigo-600/90 text-indigo-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-400/30">116學年最新</span>
-              <span class="bg-emerald-600/90 text-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-400/30">中投區專用</span>
-              <span class="bg-amber-600/90 text-amber-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-400/30">3萬人模擬母體</span>
+        <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 text-lg sm:text-xl font-bold flex-shrink-0">
+              <i class="fa-solid fa-graduation-cap"></i>
             </div>
-            <h1 class="text-base sm:text-xl font-black tracking-tight text-white flex items-center gap-2 mt-0.5">
-              國中免試入學電腦分發比序大作戰
-            </h1>
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="bg-indigo-600/90 text-indigo-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-400/30">116學年最新</span>
+                <span class="bg-emerald-600/90 text-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-400/30">中投區專用</span>
+                <span class="bg-amber-600/90 text-amber-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-400/30">3萬人模擬母體</span>
+              </div>
+              <h1 class="text-base sm:text-xl font-black tracking-tight text-white flex items-center gap-2 mt-0.5">
+                國中免試入學電腦分發比序大作戰
+              </h1>
+            </div>
+          </div>
+
+          <!-- 手機版右上方清晰小字：更新日期時間與版本 -->
+          <div class="lg:hidden flex items-center">
+            <div class="inline-flex items-center gap-1.5 text-[10px] font-mono text-emerald-300 bg-slate-900/95 border border-emerald-500/40 px-2.5 py-1 rounded-xl shadow-md">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="font-bold text-white">{{ appVersionInfo.version }}</span>
+              <span class="text-slate-500">|</span>
+              <span>{{ appVersionInfo.buildTime }}</span>
+            </div>
           </div>
         </div>
 
-        <!-- 導覽頁籤切換 (6大模式支援手機格狀與電腦單行) -->
-        <nav class="grid grid-cols-3 sm:flex sm:items-center bg-slate-800/90 p-1 sm:p-1.5 rounded-2xl border border-slate-700/60 text-xs sm:text-sm font-bold w-full sm:w-auto gap-1">
+        <!-- 導覽頁籤切換與桌機版右上方更新時間與版本 -->
+        <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto">
+          <nav class="grid grid-cols-3 sm:flex sm:items-center bg-slate-800/90 p-1 sm:p-1.5 rounded-2xl border border-slate-700/60 text-xs sm:text-sm font-bold w-full sm:w-auto gap-1">
           <button @click="activeTab = 'quiz'"
                   :class="activeTab === 'quiz' ? 'bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white shadow-lg' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'"
                   class="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95">
@@ -118,6 +131,16 @@
             <span>選填錦囊</span>
           </button>
         </nav>
+
+        <!-- 桌機版右上方清晰小字：更新日期時間與版本 (全域規範) -->
+        <div class="hidden lg:flex items-center flex-shrink-0">
+          <div class="inline-flex items-center gap-1.5 text-xs font-mono text-slate-300 bg-slate-900/95 border border-emerald-500/40 px-3 py-1.5 rounded-xl shadow-lg shadow-black/40 hover:border-emerald-400 transition select-none">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="font-bold text-emerald-400">{{ appVersionInfo.version }}</span>
+            <span class="text-slate-600">|</span>
+            <span class="text-slate-300">更新：{{ appVersionInfo.buildTime }}</span>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -3532,8 +3555,10 @@
     <!-- ==================== 頁尾版權與法規宣告 (Footer) ==================== -->
     <footer class="border-t border-slate-800/80 bg-slate-950/80 py-4 text-center text-xs text-slate-400">
       <div class="max-w-7xl mx-auto px-4 space-y-1">
-        <p class="text-slate-300 font-bold">
-          116 學年度中投區高級中等學校免試入學電腦比序互動平台
+        <p class="text-slate-300 font-bold flex items-center justify-center gap-2 flex-wrap">
+          <span>116 學年度中投區高級中等學校免試入學電腦比序互動平台</span>
+          <span class="text-slate-600">|</span>
+          <span class="font-mono text-emerald-400 font-normal text-[11px]">{{ appVersionInfo.version }} ({{ appVersionInfo.buildTime }})</span>
         </p>
         <p class="text-[11px] text-slate-400">
           依據臺中市政府教育局及南投縣政府公告之《116學年度中投區高級中等學校免試入學作業要點》核定標準製作。

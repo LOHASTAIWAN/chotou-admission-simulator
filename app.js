@@ -31,7 +31,11 @@ function initChotouApp() {
     estimateStudentRankIn30k,
     simulate30kAdmissions,
     QUIZ_CHALLENGES, 
-    FLOWCHART_TREE 
+    FLOWCHART_TREE,
+    FLOWCHART_FILTER_ANALYSIS,
+    THREE_CORE_STAGES,
+    VOLUNTEER_ORDER_SIMULATION,
+    runAlgorithmUnitTests
   } = window.ChotouRules;
 
   const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
@@ -1541,7 +1545,67 @@ function initChotouApp() {
         selectNode(flowchartNodes.value[0].id);
       }
 
+      // ==================== 12關篩選裁決力、三大核心階段與單元測試套件 ====================
+      const flowchartFilterAnalysis = ref(FLOWCHART_FILTER_ANALYSIS || []);
+      const threeCoreStages = ref(THREE_CORE_STAGES || []);
+      const volunteerOrderSimulation = ref(VOLUNTEER_ORDER_SIMULATION || null);
+
+      // 單元測試套件執行狀態
+      const unitTestResult = ref(null);
+      const isRunningUnitTests = ref(false);
+      const selectedTestFilter = ref('ALL'); // 'ALL' | 'QUIZ' | 'VOLUNTEER' | 'LAW'
+
+      function executeUnitTests() {
+        isRunningUnitTests.value = true;
+        stadium.playRefereeWhistle(false);
+        setTimeout(() => {
+          unitTestResult.value = runAlgorithmUnitTests();
+          isRunningUnitTests.value = false;
+          stadium.playBoxingBell(2);
+          if (typeof confetti === 'function' && unitTestResult.value.allPassed) {
+            confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+          }
+        }, 450);
+      }
+
+      // 篩選過濾後的單元測試清單
+      const filteredUnitTests = computed(() => {
+        if (!unitTestResult.value || !unitTestResult.value.results) return [];
+        if (selectedTestFilter.value === 'ALL') return unitTestResult.value.results;
+        if (selectedTestFilter.value === 'QUIZ') return unitTestResult.value.results.filter(t => t.category === '8戰經典實戰');
+        if (selectedTestFilter.value === 'VOLUNTEER') return unitTestResult.value.results.filter(t => t.category === '志願順序極限對決');
+        if (selectedTestFilter.value === 'LAW') return unitTestResult.value.results.filter(t => t.category !== '8戰經典實戰' && t.category !== '志願順序極限對決');
+        return unitTestResult.value.results;
+      });
+
+      // 將長億高中第 5 志願 vs 第 6 志願一鍵代入沙盒模擬
+      function loadVolunteerCaseToSandbox() {
+        customStudentA.value = {
+          name: '考生A(長億第5志願)',
+          grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B+' },
+          writing: '4',
+          balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10,
+          choiceInfo: { score: 30, rank: 5, schoolRank: 5, choiceIndex: 5 }
+        };
+        customStudentB.value = {
+          name: '考生B(長億第6志願)',
+          grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B+' },
+          writing: '4',
+          balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10,
+          choiceInfo: { score: 30, rank: 6, schoolRank: 6, choiceIndex: 6 }
+        };
+        activeTab.value = 'sandbox';
+        stadium.playRefereeWhistle(true);
+      }
+
       onMounted(() => {
+        // 初始自動預先執行一次單元測試，就緒即時檢驗資料
+        try {
+          unitTestResult.value = runAlgorithmUnitTests();
+        } catch (e) {
+          console.warn('Initial unit test error:', e);
+        }
+
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
             if (activeModalImage.value) closeImageModal();
@@ -1673,6 +1737,17 @@ function initChotouApp() {
         openFlowchartFullscreen,
         closeFlowchartFullscreen,
         setFlowchartSpeed,
+
+        // 12關篩選裁決力、三大核心階段與單元測試套件
+        flowchartFilterAnalysis,
+        threeCoreStages,
+        volunteerOrderSimulation,
+        unitTestResult,
+        isRunningUnitTests,
+        selectedTestFilter,
+        executeUnitTests,
+        filteredUnitTests,
+        loadVolunteerCaseToSandbox,
 
         // 工具清單
         gradeOptions,

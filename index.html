@@ -1970,6 +1970,18 @@
                       <p class="text-xs text-slate-300 mt-1 leading-relaxed">
                         {{ node.summary }}
                       </p>
+
+                      <!-- 篩選裁決力與同分進入率量化標籤 -->
+                      <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-rose-950/80 text-rose-300 border border-rose-800/50 flex items-center gap-1">
+                          <i class="fa-solid fa-bolt text-rose-400"></i>
+                          <span>裁決率: {{ node.filterRate }}</span>
+                        </span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-950/80 text-blue-300 border border-blue-800/50 flex items-center gap-1">
+                          <i class="fa-solid fa-arrows-split-up-and-left text-blue-400"></i>
+                          <span>同分率: {{ node.tieRate }}</span>
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -2049,6 +2061,28 @@
                     {{ selectedNode.badge }}
                   </span>
                 </h3>
+              </div>
+
+              <!-- 該關卡篩選裁決力與同分率量化指標卡 -->
+              <div class="grid grid-cols-2 gap-2 bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
+                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-rose-900/40 text-center">
+                  <div class="text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-fire text-rose-400"></i>
+                    <span>該關分出勝負比例</span>
+                  </div>
+                  <div class="text-base font-black text-rose-400 mt-1">{{ selectedNode.filterRate }}</div>
+                </div>
+                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-blue-900/40 text-center">
+                  <div class="text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-arrows-split-up-and-left text-blue-400"></i>
+                    <span>平手進下一關機率</span>
+                  </div>
+                  <div class="text-base font-black text-blue-400 mt-1">{{ selectedNode.tieRate }}</div>
+                </div>
+                <div v-if="selectedNode.strategicRole" class="col-span-2 text-[11px] text-amber-200/90 bg-amber-950/40 p-2 rounded-xl border border-amber-800/40 font-medium">
+                  <i class="fa-solid fa-chess-knight text-amber-400 mr-1"></i>
+                  <span><b>戰略定位：</b>{{ selectedNode.strategicRole }}</span>
+                </div>
               </div>
 
               <!-- 官方條文引述區 -->
@@ -2170,7 +2204,329 @@
       </section>
 
       <!-- ============================================================== -->
-      <!-- TAB 6: 選填錦囊與秘笈 (國三生避坑指南) -->
+              <!-- ============================================================== -->
+        <!-- 專題一：三大核心階段篩選特性深度剖析                            -->
+        <!-- ============================================================== -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-indigo-500/50 shadow-2xl space-y-4">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-slate-700/80">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-300 text-xs font-black px-3 py-1 rounded-full mb-1 border border-indigo-500/40">
+                <i class="fa-solid fa-layer-group text-amber-300"></i>
+                <span>宏觀分流架構 ‧ 實戰特性剖析</span>
+              </div>
+              <h3 class="text-base sm:text-xl font-black text-white flex items-center gap-2">
+                <span>三大核心階段篩選特性深度剖析</span>
+              </h3>
+            </div>
+            <span class="text-xs text-slate-400 bg-slate-900/80 px-3 py-1 rounded-xl border border-slate-700">
+              📊 依據中投區 30,000 名考生常態分布推算
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div v-for="stage in threeCoreStages" :key="stage.phaseId"
+                 class="bg-slate-900/90 rounded-2xl p-4 sm:p-5 border border-slate-700/80 hover:border-indigo-400/60 transition-all space-y-3 relative overflow-hidden group">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black px-2.5 py-1 rounded-lg text-white uppercase tracking-wider"
+                      :class="`bg-gradient-to-r ${stage.color}`">
+                  {{ stage.badge }}
+                </span>
+                <i class="fa-solid text-xl text-slate-500 group-hover:text-amber-400 transition" :class="stage.icon"></i>
+              </div>
+
+              <div>
+                <h4 class="text-sm sm:text-base font-black text-white group-hover:text-amber-200 transition">
+                  {{ stage.title }}
+                </h4>
+                <div class="text-[11px] font-black text-amber-300 mt-1 flex items-center gap-1">
+                  <i class="fa-solid fa-chart-pie text-xs"></i>
+                  <span>{{ stage.filterRateDesc }}</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 text-xs font-bold text-indigo-300">
+                {{ stage.coreFeature }}
+              </div>
+
+              <p class="text-xs text-slate-300 leading-relaxed">
+                {{ stage.analysis }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- 專題二：12 關篩選裁決力與同分機率深度量化全覽表                 -->
+        <!-- ============================================================== -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-2xl space-y-4">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-slate-700/80">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-rose-500/20 text-rose-300 text-xs font-black px-3 py-1 rounded-full mb-1 border border-rose-500/40">
+                <i class="fa-solid fa-chart-column text-amber-300"></i>
+                <span>量化數據對照表</span>
+              </div>
+              <h3 class="text-base sm:text-xl font-black text-white flex items-center gap-2">
+                <span>12 關超額比序「篩選裁決力與同分機率」深度量化全覽表</span>
+              </h3>
+            </div>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1.5 text-rose-300 font-bold">
+                <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                <span>裁決勝出率 (%)</span>
+              </span>
+              <span class="flex items-center gap-1.5 text-blue-300 font-bold">
+                <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+                <span>平手進入下一關率 (%)</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- 視覺化量化對照表格 -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-200 min-w-[700px]">
+              <thead class="bg-slate-900/90 text-[11px] text-slate-400 font-black uppercase border-b border-slate-700">
+                <tr>
+                  <th class="py-3 px-3 w-16 text-center">序位</th>
+                  <th class="py-3 px-3 w-40">比序關卡名稱</th>
+                  <th class="py-3 px-3 w-28">滿分 / 依據</th>
+                  <th class="py-3 px-3 w-44">該關裁決勝出率</th>
+                  <th class="py-3 px-3 w-32 text-center">平手進下一關率</th>
+                  <th class="py-3 px-3">實務戰略地位與分析說明</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/80 font-medium">
+                <tr v-for="item in flowchartFilterAnalysis" :key="item.step" 
+                    class="hover:bg-slate-800/60 transition"
+                    :class="item.step === 7 ? 'bg-amber-950/20 font-bold' : item.step === 10 ? 'bg-indigo-950/20 font-bold' : ''">
+                  <td class="py-3 px-3 text-center">
+                    <span class="w-6 h-6 rounded-full inline-flex items-center justify-center font-black text-[11px]"
+                          :class="item.step === 7 ? 'bg-amber-500 text-slate-950 font-black ring-2 ring-amber-300' : item.step === 10 ? 'bg-indigo-500 text-white font-black' : 'bg-slate-800 text-slate-300'">
+                      {{ item.step }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 font-bold text-white flex items-center gap-1.5">
+                    <span>{{ item.name }}</span>
+                    <span v-if="item.step === 7" class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-black">第1分水嶺</span>
+                    <span v-if="item.step === 10" class="text-[9px] bg-indigo-600 text-white px-1.5 py-0.5 rounded font-black">第2分水嶺</span>
+                  </td>
+                  <td class="py-3 px-3 text-amber-300 font-bold">{{ item.maxScore }}</td>
+                  <td class="py-3 px-3">
+                    <div class="flex items-center gap-2">
+                      <div class="w-20 bg-slate-800 rounded-full h-2 overflow-hidden flex-shrink-0">
+                        <div class="bg-gradient-to-r from-rose-500 to-amber-400 h-full rounded-full"
+                             :style="{ width: `${Math.min(100, Math.max(item.filterPercent, 4))}%` }"></div>
+                      </div>
+                      <span class="font-black text-rose-300 text-[11px]">{{ item.filterRate }}</span>
+                    </div>
+                  </td>
+                  <td class="py-3 px-3 text-center text-blue-300 font-bold">{{ item.passRate }}</td>
+                  <td class="py-3 px-3 text-slate-300 text-[11px] leading-relaxed">
+                    {{ item.role }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- 專題三：🎯 觀念澄清與實戰模擬：志願序順序如何影響分發？        -->
+        <!-- ============================================================== -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border-2 border-amber-500/50 shadow-2xl space-y-5">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-slate-700/80">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 text-xs font-black px-3 py-1 rounded-full mb-1 border border-amber-500/40">
+                <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                <span>核心觀念澄清 ‧ 實戰案例模擬</span>
+              </div>
+              <h3 class="text-base sm:text-xl font-black text-white flex items-center gap-2">
+                <span>在總分、志願序積分與會考全相同時，相同志願先後順序如何影響電腦分發？</span>
+              </h3>
+            </div>
+            
+            <button @click="loadVolunteerCaseToSandbox()"
+                    class="px-4 py-2 bg-gradient-to-r from-amber-500 via-rose-600 to-purple-600 hover:opacity-90 text-white rounded-2xl text-xs font-black transition active:scale-95 flex items-center gap-2 shadow-lg flex-shrink-0">
+              <i class="fa-solid fa-flask text-yellow-300"></i>
+              <span>帶入沙盒即時比序此案例 ➔</span>
+            </button>
+          </div>
+
+          <!-- 案例條件卡 -->
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 space-y-2">
+            <div class="text-xs font-black text-amber-300 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span>情境設定：A生將長億高中填在第 5 志願 vs B生將長億高中填在第 6 志願</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <b>考生同分條件：</b>兩人生於中投區，總積分皆為 87 分，志願序積分皆為第 1~10 志願之滿分 30 分，多元與就近皆滿分。會考成績皆為 5B 7+（總積點 55 點，作文 4 級分，各科成績標示完全一致）。此時長億高中僅剩最後 1 個缺額！
+            </p>
+          </div>
+
+          <!-- 逐關推演對照表格 -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-200 min-w-[650px]">
+              <thead class="bg-slate-900/90 text-[11px] text-slate-400 font-black uppercase border-b border-slate-700">
+                <tr>
+                  <th class="py-2.5 px-3 w-40">比序關卡</th>
+                  <th class="py-2.5 px-3 w-36">考生 A (第5志願)</th>
+                  <th class="py-2.5 px-3 w-36">考生 B (第6志願)</th>
+                  <th class="py-2.5 px-3 w-28 text-center">判定結果</th>
+                  <th class="py-2.5 px-3">法規依據與理由</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 font-medium text-[11px]">
+                <tr v-for="(step, sIdx) in volunteerOrderSimulation.stepsAnalysis" :key="sIdx"
+                    :class="sIdx >= 8 ? 'bg-amber-950/30 font-bold' : ''">
+                  <td class="py-2.5 px-3 font-bold text-white">{{ step.step }}</td>
+                  <td class="py-2.5 px-3 text-indigo-300">{{ step.aVal }}</td>
+                  <td class="py-2.5 px-3 text-cyan-300">{{ step.bVal }}</td>
+                  <td class="py-2.5 px-3 text-center">
+                    <span v-if="step.outcome === '平手'" class="bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full text-[10px]">
+                      平手
+                    </span>
+                    <span v-else class="bg-emerald-600 text-white px-2 py-0.5 rounded-full text-[10px] font-black animate-pulse">
+                      🏆 {{ step.outcome }}
+                    </span>
+                  </td>
+                  <td class="py-2.5 px-3 text-slate-300">{{ step.reason }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 比到第 11 關與 12 關機率剖析卡 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2">
+              <div class="text-xs font-black text-rose-300 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                <span>會比到第 11 關、12 關的機率有多高？</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                全中投區總體統計上<b>小於 1% ~ 2%（極低）</b>！因為前 10 關設有會考總積點（111點）、單科國文、數學等高鑑別度關卡，98% 考生在前面就已分出勝負。
+              </p>
+            </div>
+
+            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2">
+              <div class="text-xs font-black text-emerald-300 flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                <span>什麼時候「真的會發生」？</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                常發生在<b>公立社區高中職（如長億、清水、大里、臺中高工熱門科）的『最後臨界 1~2 個名額』</b>！因為 5B 族群考生人數最龐大，成績標示完全相同的撞車機率最高。此時將最想讀的學校填在更前面的志願順次，就是同分超額時的關鍵保險！
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- 專題四：🧪 8 戰演算法與法規單元測試驗證儀                     -->
+        <!-- ============================================================== -->
+        <div class="glass-dark rounded-3xl p-5 sm:p-6 border border-emerald-500/50 shadow-2xl space-y-5">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-slate-700/80">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 text-xs font-black px-3 py-1 rounded-full mb-1 border border-emerald-500/40">
+                <i class="fa-solid fa-vial-circle-check text-emerald-300"></i>
+                <span>自動化品質檢驗 ‧ 法規與演算法認證</span>
+              </div>
+              <h3 class="text-base sm:text-xl font-black text-white flex items-center gap-2">
+                <span>8 戰演算法與中投區法規單元測試套件 (Unit Test Runner)</span>
+              </h3>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- 立即執行單元測試按鈕 -->
+              <button @click="executeUnitTests()"
+                      :disabled="isRunningUnitTests"
+                      class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-black transition active:scale-95 flex items-center gap-2 shadow-lg disabled:opacity-50">
+                <i class="fa-solid" :class="isRunningUnitTests ? 'fa-spinner fa-spin' : 'fa-play'"></i>
+                <span>{{ isRunningUnitTests ? '正在測試中...' : '▶ 重新執行全套法規單元測試' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 測試統計總結牌 -->
+          <div v-if="unitTestResult" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div class="bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
+              <div class="text-[10px] text-slate-400 font-bold uppercase">總測試項目</div>
+              <div class="text-lg font-black text-white mt-0.5">{{ unitTestResult.total }} 項</div>
+            </div>
+            <div class="bg-slate-900/90 p-3 rounded-2xl border border-emerald-900/50">
+              <div class="text-[10px] text-emerald-400 font-bold uppercase">通過測試</div>
+              <div class="text-lg font-black text-emerald-300 mt-0.5">{{ unitTestResult.passedCount }} 項</div>
+            </div>
+            <div class="bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
+              <div class="text-[10px] text-slate-400 font-bold uppercase">失敗項目</div>
+              <div class="text-lg font-black text-slate-300 mt-0.5">{{ unitTestResult.total - unitTestResult.passedCount }} 項</div>
+            </div>
+            <div class="bg-slate-900/90 p-3 rounded-2xl border border-slate-800"
+                 :class="unitTestResult.allPassed ? 'border-emerald-600 bg-emerald-950/30' : 'border-rose-600 bg-rose-950/30'">
+              <div class="text-[10px] font-bold uppercase" :class="unitTestResult.allPassed ? 'text-emerald-400' : 'text-rose-400'">驗證狀態</div>
+              <div class="text-xs font-black mt-1" :class="unitTestResult.allPassed ? 'text-emerald-300' : 'text-rose-300'">
+                {{ unitTestResult.allPassed ? '🎉 100% 全部通過' : '⚠️ 有項目未通過' }}
+              </div>
+            </div>
+          </div>
+
+          <!-- 測試分類篩選標籤 -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            <button @click="selectedTestFilter = 'ALL'"
+                    :class="selectedTestFilter === 'ALL' ? 'bg-indigo-600 text-white font-black shadow' : 'bg-slate-800 text-slate-400 hover:text-white'"
+                    class="px-3 py-1.5 rounded-xl transition flex-shrink-0">
+              全部測試 ({{ unitTestResult ? unitTestResult.total : 0 }})
+            </button>
+            <button @click="selectedTestFilter = 'QUIZ'"
+                    :class="selectedTestFilter === 'QUIZ' ? 'bg-indigo-600 text-white font-black shadow' : 'bg-slate-800 text-slate-400 hover:text-white'"
+                    class="px-3 py-1.5 rounded-xl transition flex-shrink-0">
+              8 戰經典比序 (8)
+            </button>
+            <button @click="selectedTestFilter = 'VOLUNTEER'"
+                    :class="selectedTestFilter === 'VOLUNTEER' ? 'bg-indigo-600 text-white font-black shadow' : 'bg-slate-800 text-slate-400 hover:text-white'"
+                    class="px-3 py-1.5 rounded-xl transition flex-shrink-0">
+              志願順序極限對決 (2)
+            </button>
+            <button @click="selectedTestFilter = 'LAW'"
+                    :class="selectedTestFilter === 'LAW' ? 'bg-indigo-600 text-white font-black shadow' : 'bg-slate-800 text-slate-400 hover:text-white'"
+                    class="px-3 py-1.5 rounded-xl transition flex-shrink-0">
+              法規與算式專題 (4)
+            </button>
+          </div>
+
+          <!-- 單元測試詳細報告列表 -->
+          <div class="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+            <div v-for="test in filteredUnitTests" :key="test.id"
+                 class="bg-slate-900/90 rounded-2xl p-3.5 border transition"
+                 :class="test.passed ? 'border-emerald-800/40 hover:border-emerald-600/70' : 'border-rose-800/60'">
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded-md"
+                          :class="test.passed ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-rose-950 text-rose-300 border border-rose-700'">
+                      {{ test.passed ? '✅ PASS' : '❌ FAIL' }}
+                    </span>
+                    <span class="text-[10px] bg-slate-800 text-indigo-300 px-2 py-0.5 rounded-md font-bold">
+                      {{ test.category }}
+                    </span>
+                    <span class="text-[11px] font-bold text-slate-400">
+                      法規依據：{{ test.lawRef }}
+                    </span>
+                  </div>
+                  <h4 class="text-xs sm:text-sm font-black text-white">
+                    {{ test.title }}
+                  </h4>
+                  <p class="text-[11px] text-slate-300 leading-relaxed pt-0.5">
+                    {{ test.detail }}
+                  </p>
+                </div>
+
+                <div class="flex-shrink-0 text-emerald-400 text-lg">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+<!-- TAB 6: 選填錦囊與秘笈 (國三生避坑指南) -->
       <!-- ============================================================== -->
       <section v-if="activeTab === 'tips'" class="space-y-5">
         

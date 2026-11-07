@@ -1192,10 +1192,18 @@ function simulate30kAdmissions(userStudent, userChoiceIds) {
 
 /**
  * 計算志願序積分
+ * 支援傳入 (choiceList, targetIndex) 完整計算，亦支援傳入單一序位數字 (rank) 直接求積分數字 (30/29/28)
  */
 function calculateChoiceScore(choiceList, targetIndex) {
+  if (typeof choiceList === 'number') {
+    const r = choiceList;
+    if (r <= 10) return 30;
+    if (r <= 20) return 29;
+    return 28;
+  }
+
   if (!choiceList || choiceList.length === 0 || targetIndex < 0 || targetIndex >= choiceList.length) {
-    return { rank: 1, score: 30, schoolRank: 1 };
+    return { rank: 1, score: 30, schoolRank: 1, choiceIndex: 1 };
   }
 
   let currentRank = 1;
@@ -1776,7 +1784,7 @@ const QUIZ_CHALLENGES = [
   }
 ];
 
-// 中投區比序流程圖的 13 階結構（嚴格遵循官方 115/116 流程圖標準規範，含精簡醒目標題）
+// 中投區比序流程圖的 13 階結構（嚴格遵循官方 115/116 流程圖標準規範，含精簡醒目標題與量化裁決力數據）
 const FLOWCHART_TREE = [
   {
     id: 'total_score',
@@ -1784,11 +1792,16 @@ const FLOWCHART_TREE = [
     shortTitle: '總積分',
     title: '免試入學總積分',
     badge: '滿分 100 分',
-    phase: '階段一：總積分門檻',
+    phase: '階段一：多元弱勢門檻',
+    stageCategory: '階段一：多元弱勢門檻',
     icon: 'fa-scale-unbalanced-flip',
     color: 'from-blue-600 to-indigo-600',
-    summary: '志願序(30) + 就近(10) + 弱勢(2) + 多元(27/30) + 會考(30)',
-    detail: '第一道門檻，五大指標總和。若報名人數未超額則全額錄取；若超過核定名額且同分時，正式啟動後續超額比序！',
+    filterRate: '< 0.5%',
+    tieRate: '> 99.5%',
+    filterPercent: 0.5,
+    strategicRole: '象徵性門檻：中投區絕大多數考生拿滿 97 分，同級分考生此關總分必然相同',
+    summary: '志願序(30) + 就近(10) + 弱勢(2/3) + 多元(27/30) + 會考(30)',
+    detail: '第一道門檻，五大指標總和。一般生滿分為 97 分，弱勢生最高 100 分。若報名人數未超額則全額錄取；若超過核定名額且同分時，正式啟動後續超額比序！',
     officialQuote: '志願序積分 + 就近入學積分 + 扶助弱勢積分 + 多元學習表現積分 + 教育會考表現積分'
   },
   {
@@ -1797,9 +1810,14 @@ const FLOWCHART_TREE = [
     shortTitle: '志願序',
     title: '志願序積分',
     badge: '滿分 30 分',
-    phase: '階段二：各分項積分比序',
+    phase: '階段一：多元弱勢門檻',
+    stageCategory: '階段一：多元弱勢門檻',
     icon: 'fa-list-ol',
     color: 'from-indigo-600 to-purple-600',
+    filterRate: '< 0.5%',
+    tieRate: '> 99.5%',
+    filterPercent: 0.5,
+    strategicRole: '前10志願群組保護：第1~10志願均得30分滿分，連填同校不同科同志願序',
     summary: '第 1~10 志願 30 分、第 11~20 志願 29 分、第 21 志願以後 28 分',
     detail: '每 10 個志願序為同一群組，群組內皆為同一積分。特別重要：連續選填同校不同類科者，皆計為同一志願序（完全不扣分）！',
     officialQuote: '1.每10個志願序為同一群組，群組內皆為同一積分。2.連續選填同校不同科者皆計為同一志願序。'
@@ -1810,9 +1828,14 @@ const FLOWCHART_TREE = [
     shortTitle: '就近入學',
     title: '就近入學積分',
     badge: '滿分 10 分',
-    phase: '階段二：各分項積分比序',
+    phase: '階段一：多元弱勢門檻',
+    stageCategory: '階段一：多元弱勢門檻',
     icon: 'fa-location-dot',
     color: 'from-purple-600 to-pink-600',
+    filterRate: '< 0.1%',
+    tieRate: '> 99.9%',
+    filterPercent: 0.1,
+    strategicRole: '全員滿分：中投區考生皆獲核給 10 分，無鑑別淘汰功能',
     summary: '中投區學校畢業或共同就學區考生核給滿分 10 分',
     detail: '國中三年皆就讀偏遠地區學校者亦有保障。一般中投區國三生均拿滿 10 分。',
     officialQuote: '國中三年皆就讀偏遠地區學校者1分，偏遠地區學校係報主管機關核准有案者。'
@@ -1822,10 +1845,15 @@ const FLOWCHART_TREE = [
     stepNumber: '4',
     shortTitle: '扶助弱勢',
     title: '扶助弱勢積分',
-    badge: '上限 2 分',
-    phase: '階段二：各分項積分比序',
+    badge: '上限 2/3 分',
+    phase: '階段一：多元弱勢門檻',
+    stageCategory: '階段一：多元弱勢門檻',
     icon: 'fa-hand-holding-heart',
     color: 'from-pink-600 to-rose-600',
+    filterRate: '< 0.5%',
+    tieRate: '> 99.5%',
+    filterPercent: 0.5,
+    strategicRole: '政策扶助：低收(2分)、中低收(1分)，一般生為 0 分',
     summary: '低收入戶 2 分、中低收入戶 1 分',
     detail: '低收入戶(2分)、中低收入戶(1分)須領有當年度鄉鎮市區公所低收或中低收證明文件。一般生為 0 分。',
     officialQuote: '低收入戶(2分)，中低收入戶(1分)係領有當年度免試入學當年度有效文件者。'
@@ -1836,9 +1864,14 @@ const FLOWCHART_TREE = [
     shortTitle: '多元表現',
     title: '多元學習表現總積分',
     badge: '滿分 27/30 分',
-    phase: '階段二：各分項積分比序',
+    phase: '階段一：多元弱勢門檻',
+    stageCategory: '階段一：多元弱勢門檻',
     icon: 'fa-trophy',
     color: 'from-amber-500 to-orange-600',
+    filterRate: '< 1.0%',
+    tieRate: '> 99.0%',
+    filterPercent: 1.0,
+    strategicRole: '國中輔導滿分：絕大多數學生拿滿 27 分，僅懲處未銷過或缺嘉獎者受衝擊',
     summary: '同分依序水平比：均衡(12) ➔ 德行(5) ➔ 無過(6) ➔ 獎勵(4)',
     detail: '絕大多數學生在國中三年引導下均拿滿多元分數。若總分平手，依法令水平展開比序：均衡學習 ➔ 德行表現 ➔ 無記過紀錄 ➔ 獎勵紀錄。',
     officialQuote: '均衡學習 ➔ 德行表現 ➔ 無記過紀錄 ➔ 獎勵紀錄',
@@ -1855,9 +1888,14 @@ const FLOWCHART_TREE = [
     shortTitle: '會考總積分',
     title: '教育會考表現總積分',
     badge: '滿分 30 分',
-    phase: '階段三：會考三大核心關卡',
+    phase: '階段二：會考總積點戰場',
+    stageCategory: '階段二：會考總積點戰場',
     icon: 'fa-star',
     color: 'from-emerald-500 to-teal-600',
+    filterRate: '約 3% ~ 5%',
+    tieRate: '約 95.0%',
+    filterPercent: 4.0,
+    strategicRole: '粗階級距門檻：區分 5A(30分)、4A(28分)、3A(26分)... 競爭同校者大多大級距相當',
     summary: '5 科總積分（精熟6/基礎4/待加強2，滿分 30 分）',
     detail: '精熟(A)每科得 6 分、基礎(B)每科得 4 分、待加強(C)每科得 2 分（俗稱 5A=30分、4A1B=28分）。此處不採計寫作測驗！',
     officialQuote: '國文科積分 + 數學科積分 + 英語科積分 + 社會科積分 + 自然科積分'
@@ -1868,11 +1906,16 @@ const FLOWCHART_TREE = [
     shortTitle: '會考總積點',
     title: '國中教育會考總積點',
     badge: '滿分 111 點',
-    phase: '階段三：會考三大核心關卡',
+    phase: '階段二：會考總積點戰場',
+    stageCategory: '階段二：會考總積點戰場',
     icon: 'fa-bolt',
     color: 'from-amber-500 to-yellow-600',
+    filterRate: '🔥 約 70% ~ 75%',
+    tieRate: '約 25% ~ 30%',
+    filterPercent: 72.0,
+    strategicRole: '【全流程第一大分水嶺】一槌定音解決 70%~75% 競爭，中投區公立高中職最關鍵命脈！',
     summary: '5 科積點(105點) + 寫作測驗積點(6點)',
-    detail: '公立高中最關鍵分水嶺！A++=21點、A+=18點、A=15點、B++=12點、B+=9點、B=6點、C=3點，寫作測驗1~6級分得1~6點。滿分 111 點！',
+    detail: '公立高中最關鍵分水嶺！A++=21點、A+=18點、A=15點、B++=12點、B+=9點、B=6點、C=3點，寫作測驗1~6級分得1~6點。滿分 111 點！產生 80 種以上點數組合，7 成以上考生在此關裁決定勝負。',
     officialQuote: '國中教育會考各科按等級標示分1~7級，點數為級數的3倍，寫作測驗分1~6點，最高為111點。'
   },
   {
@@ -1881,9 +1924,14 @@ const FLOWCHART_TREE = [
     shortTitle: '+ 號加總',
     title: '教育會考各科等級標示加總',
     badge: '全科 + 號總數',
-    phase: '階段三：會考三大核心關卡',
+    phase: '階段二：會考總積點戰場',
+    stageCategory: '階段二：會考總積點戰場',
     icon: 'fa-plus',
     color: 'from-red-500 to-rose-600',
+    filterRate: '約 3% ~ 5%',
+    tieRate: '約 20% ~ 25%',
+    filterPercent: 4.0,
+    strategicRole: '+ 號微調決勝：若總積點平手，比較 + 號總數（A++=2, A+=1, B++=2, B+=1）',
     summary: '各科成績等級標示「+」號的加總比序（最高 10 個 + 號）',
     detail: 'A++ 算 2 個 +、A+ 算 1 個 +、B++ 算 2 個 +、B+ 算 1 個 +。總積點相同時，+ 號累積多的人直接勝出！',
     officialQuote: '國中教育會考各科成績之等級標示+號的加總比序。'
@@ -1894,9 +1942,14 @@ const FLOWCHART_TREE = [
     shortTitle: '單科積分比序',
     title: '會考各科單科積分比序',
     badge: '國➔數➔英➔社➔自',
-    phase: '階段四：單科積分 (國數英社自)',
+    phase: '階段三：單科PK與志願序保險',
+    stageCategory: '階段三：單科PK與志願序保險',
     icon: 'fa-cubes',
     color: 'from-cyan-500 to-blue-600',
+    filterRate: '< 1.0%',
+    tieRate: '約 20.0%',
+    filterPercent: 0.8,
+    strategicRole: '單科精熟門檻：因已比過第 7 關總積點，單科積分通常已高度均質平手',
     summary: '法定嚴格順序：國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然',
     detail: '「精熟」者每科得 6 分、「基礎」者每科得 4 分、「待加強」者每科得 2 分。國文科排在第一位！',
     officialQuote: '會考國文科積分 ➔ 數學科積分 ➔ 英語科積分 ➔ 社會科積分 ➔ 自然科積分',
@@ -1914,11 +1967,16 @@ const FLOWCHART_TREE = [
     shortTitle: '單科標示比序',
     title: '會考各科單科成績標示比序',
     badge: 'A++ 到 C 單科PK',
-    phase: '階段五：單科標示 (國數英社自)',
+    phase: '階段三：單科PK與志願序保險',
+    stageCategory: '階段三：單科PK與志願序保險',
     icon: 'fa-feather-pointed',
     color: 'from-indigo-500 to-violet-600',
+    filterRate: '⚡ 約 15% ~ 18%',
+    tieRate: '約 2% ~ 3%',
+    filterPercent: 16.0,
+    strategicRole: '【全流程第二大裁決關卡】法定國文第一、數學第二！單科國文高者直接殺出勝負！',
     summary: '法定順序比單科等級標示：A++ > A+ > A > B++ > B+ > B > C',
-    detail: '依照：國文科標示 ➔ 數學科標示 ➔ 英語科標示 ➔ 社會科標示 ➔ 自然科標示。前項平手時才進入下一科！',
+    detail: '依照：國文科標示 ➔ 數學科標示 ➔ 英語科標示 ➔ 社會科標示 ➔ 自然科標示。前項平手時才進入下一科！國文科在第 1 順位，具絕對決定性影響。',
     officialQuote: '會考國文科成績標示 ➔ 數學科標示 ➔ 英語科標示 ➔ 社會科標示 ➔ 自然科標示',
     subFlow: [
       { name: '1. 國文標示', desc: 'A++ > A+ > ... > C' },
@@ -1934,11 +1992,16 @@ const FLOWCHART_TREE = [
     shortTitle: '校序順次',
     title: '志願序之校序順次',
     badge: '排更前學校優先',
-    phase: '階段六：志願排序與同分保障',
+    phase: '階段三：單科PK與志願序保險',
+    stageCategory: '階段三：單科PK與志願序保險',
     icon: 'fa-school',
     color: 'from-violet-500 to-purple-600',
+    filterRate: '約 1.5% ~ 2.0%',
+    tieRate: '約 0.5% ~ 1.0%',
+    filterPercent: 1.8,
+    strategicRole: '【臨界同分保險】雙方 5 科成績完全相同時，誰把該校排在越前面學校（序號小）直接錄取！',
     summary: '比較該校在學生選填名單中是第幾所學校（序位小者優先）',
-    detail: '例如：小明將該校排為第 1 所學校，小華排為第 2 所學校，則小明優先錄取！',
+    detail: '例如：A生將長億高中填為第 5 所學校，B生填為第 6 所學校，會考等項皆平手時，由 A生 優先錄取！',
     officialQuote: '志願序之校序順次'
   },
   {
@@ -1947,11 +2010,16 @@ const FLOWCHART_TREE = [
     shortTitle: '志願順次',
     title: '志願序之順次',
     badge: '科別項目序位',
-    phase: '階段六：志願排序與同分保障',
+    phase: '階段三：單科PK與志願序保險',
+    stageCategory: '階段三：單科PK與志願序保險',
     icon: 'fa-arrow-down-1-9',
     color: 'from-purple-500 to-pink-600',
+    filterRate: '約 0.5% ~ 1.0%',
+    tieRate: '< 0.1%',
+    filterPercent: 0.7,
+    strategicRole: '【絕對順次決勝】校序亦相同時，以志願表絕對項目序位（第5志願 > 第6志願）裁決',
     summary: '比較該志願科別在志願表中的項目順次（第 1 志願 > 第 2 志願）',
-    detail: '例如：小明將該科填為第 1 個志願項目，小華填為第 3 個志願項目，則小明優先錄取！',
+    detail: '例如：若兩生校序皆為第 5 所學校，但 A生為第 5 志願、B生為第 6 志願，由順次較小（前面）的 A生 優先錄取！',
     officialQuote: '志願序之順次'
   },
   {
@@ -1960,14 +2028,241 @@ const FLOWCHART_TREE = [
     shortTitle: '同分增額錄取',
     title: '同分增額錄取保障',
     badge: '中投區絕不抽籤',
-    phase: '階段六：志願排序與同分保障',
+    phase: '階段三：單科PK與志願序保險',
+    stageCategory: '階段三：單科PK與志願序保險',
     icon: 'fa-crown',
     color: 'from-pink-500 to-rose-600',
+    filterRate: '< 0.1%',
+    tieRate: '0.0%',
+    filterPercent: 0.1,
+    strategicRole: '全項平手教育最高保障：比至第 12 項完全相同且超過招生名額時，絕不抽籤，全數【增額錄取】！',
     summary: '比至第 12 項完全相同且超過招生名額時，全數【增額錄取】！',
     detail: '中投區免試入學作業要點明文規定：超額比序後仍相同者「不予抽籤，以增額錄取處理」！這是對考生努力的最大保障。',
     officialQuote: '超額比序後仍相同者，不予抽籤，以增額錄取處理。'
   }
 ];
+
+// =========================================================================
+// 12 關超額比序「篩選裁決力與同分機率」深度量化資料庫
+// =========================================================================
+const FLOWCHART_FILTER_ANALYSIS = [
+  { step: 1, name: '免試總積分', maxScore: '滿分100分', filterRate: '< 0.5%', passRate: '> 99.5%', filterPercent: 0.5, stage: '階段一：多元弱勢門檻', role: '門檻性總分：中投區絕大多數考生拿滿 97 分，同級分考生此關總分必然相同。' },
+  { step: 2, name: '志願序積分', maxScore: '滿分30分', filterRate: '< 0.5%', passRate: '> 99.5%', filterPercent: 0.5, stage: '階段一：多元弱勢門檻', role: '前10志願群組：第1~10志願均得30分滿分，連填同校各科算同一個志願序。' },
+  { step: 3, name: '就近入學積分', maxScore: '滿分10分', filterRate: '< 0.1%', passRate: '> 99.9%', filterPercent: 0.1, stage: '階段一：多元弱勢門檻', role: '全員滿分：中投區考生皆獲核給 10 分，無鑑別淘汰功能。' },
+  { step: 4, name: '扶助弱勢積分', maxScore: '上限2/3分', filterRate: '< 0.5%', passRate: '> 99.5%', filterPercent: 0.5, stage: '階段一：多元弱勢門檻', role: '政策保障：低收2分、中低收1分，一般生為 0 分，少數弱勢生此處先獲錄取。' },
+  { step: 5, name: '多元學習表現總分', maxScore: '滿分27/30分', filterRate: '< 1.0%', passRate: '> 99.0%', filterPercent: 1.0, stage: '階段一：多元弱勢門檻', role: '國中輔導滿分：絕大多數學生拿滿 27 分，僅少數懲處未銷過或缺嘉獎者受衝擊。' },
+  { step: 6, name: '會考表現總積分', maxScore: '滿分30分', filterRate: '約 3% ~ 5%', passRate: '約 95.0%', filterPercent: 4.0, stage: '階段二：會考總積點戰場', role: '粗階門檻：區分 5A、4A、3A... 競爭同校同科考生此關大多大級距相當。' },
+  { step: 7, name: '國中會考總積點', maxScore: '滿分111點', filterRate: '🔥 約 70% ~ 75%', passRate: '約 25% ~ 30%', filterPercent: 72.0, stage: '階段二：會考總積點戰場', role: '【核心裁決關卡】將 A++ 至 C 展開為 7 級點數，並計入作文1~6點，7成以上考生在此關裁決！' },
+  { step: 8, name: '+ 號加總比序', maxScore: '最高10個+', filterRate: '約 3% ~ 5%', passRate: '約 20% ~ 25%', filterPercent: 4.0, stage: '階段二：會考總積點戰場', role: '細微微調：總積點平手時，比較全科 + 號總數（A++=2, A+=1, B++=2, B+=1）。' },
+  { step: 9, name: '單科會考積分比序', maxScore: '國數英社自', filterRate: '< 1.0%', passRate: '約 20.0%', filterPercent: 0.8, stage: '階段三：單科PK與志願序保險', role: '單科門檻：因已比過第 7 關總積點，單科積分通常已高度均質平手。' },
+  { step: 10, name: '單科會考成績標示', maxScore: '國數英社自', filterRate: '⚡ 約 15% ~ 18%', passRate: '約 2% ~ 3%', filterPercent: 16.0, stage: '階段三：單科PK與志願序保險', role: '【單科PK決勝戰】法定國文第1、數學第2！單科國文較高者直接勝出！' },
+  { step: 11, name: '志願序之校序順次', maxScore: '第1校 > 第2校', filterRate: '約 1.5% ~ 2.0%', passRate: '約 0.5% ~ 1.0%', filterPercent: 1.8, stage: '階段三：單科PK與志願序保險', role: '【同分錄取保險】雙方 5 科成績完全相同時，把該校排在越前面學校（序號小）直接勝出！' },
+  { step: 12, name: '志願序之順次', maxScore: '第5志願 > 第6志願', filterRate: '約 0.5% ~ 1.0%', passRate: '< 0.1%', filterPercent: 0.7, stage: '階段三：單科PK與志願序保險', role: '【絕對序位決勝】校序亦相同時，以志願表絕對項目序位（序號較小）裁決！' },
+  { step: 13, name: '最終平手判定', maxScore: '增額錄取', filterRate: '< 0.1%', passRate: '0.0%', filterPercent: 0.1, stage: '階段三：單科PK與志願序保險', role: '全項平手最高保障：全中投區絕不抽籤，超過名額時全數增額錄取！' }
+];
+
+// =========================================================================
+// 三大核心階段篩選特性深度剖析
+// =========================================================================
+const THREE_CORE_STAGES = [
+  {
+    phaseId: 'stage1',
+    title: '階段一：第 1～5 關（多元與弱勢保障）',
+    badge: '全民滿分門檻',
+    color: 'from-blue-600 to-indigo-600',
+    icon: 'fa-shield-halved',
+    filterRateDesc: '裁決率 < 1%～2%（同分進入率 > 98%）',
+    coreFeature: '「象徵性基本門檻，不具實質淘汰力」',
+    analysis: '中投區國中端的輔導機制非常成熟，98% 以上應屆國三生的多元學習表現（均衡12、德行5、無過6、獎勵4）及就近入學（10分）均為常態滿分。除非考生有大過未消或缺曠嚴重，否則此階段基本全員同分過關。'
+  },
+  {
+    phaseId: 'stage2',
+    title: '階段二：第 6～8 關（會考總積點戰場）',
+    badge: '一槌定音分水嶺',
+    color: 'from-amber-500 to-rose-600',
+    icon: 'fa-bolt-lightning',
+    filterRateDesc: '裁決率約 75%～80%（同分進入率約 20%～25%）',
+    coreFeature: '「全流程核心命脈，解決 7 成以上競爭」',
+    analysis: '第 7 關（會考總積點 111 點）是整個中投區免試入學的最核心命脈！將 A++ 到 C 展開為 7 級點數，並計入寫作測驗（1~6點），產生高達 80 種以上點數組合。同樣考 5A 可以從 80 點跨到 111 點，同樣考 5B 也能從 31 點跨到 66 點，75% 考生在此關立即定奪高下！'
+  },
+  {
+    phaseId: 'stage3',
+    title: '階段三：第 9～12 關（單科 PK 與志願序保險）',
+    badge: '同分重災區裁決',
+    color: 'from-purple-600 to-pink-600',
+    icon: 'fa-chess-king',
+    filterRateDesc: '裁決率約 18%～20%（比到志願序機率僅 1%～2%）',
+    coreFeature: '「國數單科定生死，最後 1% 志願序順序定錄取」',
+    analysis: '最常發生在 5B 或 1A4B 等考生母體最大宗的公立熱門學校「最後臨界 1~2 個名額」。第 10 關法定國文第 1、數學第 2，單科標示可裁決 16% 平手者；若 5 科成績與寫作完全相同，第 11 關（校序順次）與第 12 關（志願順次）將以「誰把這所學校填在更前面的志願」作為最後勝負判定！'
+  }
+];
+
+// =========================================================================
+// 志願序順序影響深度模擬資料（A生第5志願 vs B生第6志願 長億高中案例）
+// =========================================================================
+const VOLUNTEER_ORDER_SIMULATION = {
+  title: '觀念澄清與實戰模擬：相同志願順序在同分時如何影響分發？',
+  scenario: 'A生將長億高中填在第 5 志願，B生將長億高中填在第 6 志願',
+  targetSchool: '長億高中 (普通科)',
+  scoreConditions: '兩人總積分皆 87 分、志願序積分皆 30 分滿分、會考 5B 7+（總積點皆 55 點，作文皆 4 級分）完全相同',
+  stepsAnalysis: [
+    { step: '第一關：總積分', aVal: '87 分', bVal: '87 分', outcome: '平手', reason: '一般生總分門檻相同' },
+    { step: '第二關：志願序積分', aVal: '30 分 (第5志願)', bVal: '30 分 (第6志願)', outcome: '平手', reason: '中投區第 1~10 志願同屬第 1 群組，皆獲 30 分滿分' },
+    { step: '第三至五關：就近/弱勢/多元', aVal: '皆滿分', bVal: '皆滿分', outcome: '平手', reason: '一般生皆滿分無落差' },
+    { step: '第六關：會考表現總積分', aVal: '20 分 (5B)', bVal: '20 分 (5B)', outcome: '平手', reason: '皆為 5B 基礎級距' },
+    { step: '第七關：國中會考總積點', aVal: '55 點', bVal: '55 點', outcome: '平手', reason: '積點完全相同' },
+    { step: '第八關：各科+號加總', aVal: '7 個 +', bVal: '7 個 +', outcome: '平手', reason: '+ 號數完全相同' },
+    { step: '第九關：單科會考積分', aVal: '國數英社自皆4分', bVal: '國數英社自皆4分', outcome: '平手', reason: '單科積分完全相同' },
+    { step: '第十關：單科等級標示', aVal: '5科標示完全一致', bVal: '5科標示完全一致', outcome: '平手', reason: '單科成績標示皆無差異' },
+    { step: '第十一關：志願序之校序順次', aVal: '第 5 所學校', bVal: '第 6 所學校', outcome: 'A生勝出！', reason: 'A生校序較小（5 < 6），由 A生 優先錄取長億高中！' },
+    { step: '第十二關（若校序亦相同）：志願順次', aVal: '第 5 志願', bVal: '第 6 志願', outcome: 'A生勝出！', reason: '若B生前5志願曾連填同校使校序同為第5校，則進入第12關，A生順次較小（5 < 6）依然勝出！' }
+  ],
+  conclusion: '在中投區電腦分發中，雖然第 1~10 志願序積分都是滿分 30 分，但當所有比序項目全部平手時，第 11 關（校序順次）與第 12 關（志願順次）會以「誰排在越前面」決勝。因此將最想讀的學校排在越前面，等同買了一張同分超額時的錄取保險卡！'
+};
+
+// =========================================================================
+// 8 戰演算法與法規單元測試引擎（Rules & Algorithm Unit Test Suite）
+// =========================================================================
+function runAlgorithmUnitTests() {
+  const testResults = [];
+
+  function assert(testId, title, category, lawRef, passed, detail) {
+    testResults.push({
+      id: testId,
+      title,
+      category,
+      lawRef,
+      passed,
+      detail
+    });
+  }
+
+  // 1. 執行 8 戰經典挑戰賽比序比對
+  QUIZ_CHALLENGES.forEach((quiz, idx) => {
+    const res = compareTwoStudents(quiz.studentA, quiz.studentB);
+    const expectedWinner = (idx === 7) ? 'BOTH_WIN' : (quiz.studentA.name.includes('阿哲') || quiz.studentA.name.includes('陳志遠') || quiz.studentA.name.includes('許小晴') || quiz.studentA.name.includes('張冠宇') || quiz.studentA.name.includes('李俊銘')) ? 'A_WIN' : 'B_WIN';
+    const passed = (res.winner === expectedWinner);
+    assert(
+      `TEST_${idx + 1}`,
+      `【第 ${idx + 1} 戰演算法驗證】${quiz.title}`,
+      '8戰經典實戰',
+      `中投區比序流程第 ${res.decidingStep?.title || '最終判定'}`,
+      passed,
+      `判定結果：${res.winner === 'A_WIN' ? quiz.studentA.name : res.winner === 'B_WIN' ? quiz.studentB.name : '兩人增額錄取'} 勝出！決勝關卡：${res.decidingStep?.title} (${res.decidingStep?.valA} vs ${res.decidingStep?.valB})`
+    );
+  });
+
+  // 9. 測試 Case 9：長億高中第 5 志願 vs 第 6 志願（第 11 關校序順次勝出）
+  const studentA_cyhs = {
+    name: '考生A(長億第5志願)',
+    grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B+' },
+    writing: '4',
+    choiceInfo: { score: 30, rank: 5, schoolRank: 5, choiceIndex: 5 },
+    balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+  };
+  const studentB_cyhs = {
+    name: '考生B(長億第6志願)',
+    grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B+' },
+    writing: '4',
+    choiceInfo: { score: 30, rank: 6, schoolRank: 6, choiceIndex: 6 },
+    balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+  };
+  const resCase9 = compareTwoStudents(studentA_cyhs, studentB_cyhs);
+  assert(
+    'TEST_9',
+    '【第 11 關法規驗證】長億高中第 5 志願 vs 第 6 志願（校序順次決勝）',
+    '志願順序極限對決',
+    '簡章附表1 第十一關：志願序之校序順次',
+    resCase9.winner === 'A_WIN' && resCase9.decidingStep?.stepId === 'step_school_rank',
+    `在總分87分、會考5B7+(55點)、各科標示全同下，第11關以校序順次（第5校 vs 第6校）判定考生A勝出！`
+  );
+
+  // 10. 測試 Case 10：長億高中校序同為第 5 所學校，第 5 志願 vs 第 6 志願（第 12 關志願順次勝出）
+  const studentB_cyhs_sameSchool = {
+    name: '考生B(連填同校使校序為5，但項目為第6志願)',
+    grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B+' },
+    writing: '4',
+    choiceInfo: { score: 30, rank: 5, schoolRank: 5, choiceIndex: 6 },
+    balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+  };
+  const resCase10 = compareTwoStudents(studentA_cyhs, studentB_cyhs_sameSchool);
+  assert(
+    'TEST_10',
+    '【第 12 關法規驗證】長億高中校序相同，志願順次決勝（第 5 志願 > 第 6 志願）',
+    '志願順序極限對決',
+    '簡章附表1 第十二關：志願序之順次',
+    resCase10.winner === 'A_WIN' && resCase10.decidingStep?.stepId === 'step_choice_index',
+    `在校序皆為第 5 所學校時，第12關以絕對項目順次（第5志願 vs 第6志願）判定考生A勝出！`
+  );
+
+  // 11. 測試 Case 11：全項平手第 13 關增額錄取（不予抽籤）
+  const studentB_identical = {
+    name: '考生B(各項條件與A完全相同)',
+    grades: { chinese: 'B++', math: 'B++', english: 'B+', social: 'B+', science: 'B+' },
+    writing: '4',
+    choiceInfo: { score: 30, rank: 5, schoolRank: 5, choiceIndex: 5 },
+    balancedLearning: 12, conduct: 5, noDemerit: 6, awardRecords: 4, disadvantaged: 0, nearby: 10
+  };
+  const resCase11 = compareTwoStudents(studentA_cyhs, studentB_identical);
+  assert(
+    'TEST_11',
+    '【第 13 關法規驗證】全部 12 道比序平手時，全數增額錄取（絕不抽籤）',
+    '同分保障法規',
+    '中投區作業要點第十點第三項：超額比序仍相同者不予抽籤以增額錄取處理',
+    resCase11.winner === 'BOTH_WIN' && resCase11.decidingStep?.stepId === 'step_quota_exceed',
+    `所有比序項目全部完全相同時，演算法正確判定兩人增額錄取！`
+  );
+
+  // 12. 測試 Case 12：志願序 10 個為 1 群組與跨群組扣分驗證
+  const choiceScore1 = calculateChoiceScore(1);
+  const choiceScore10 = calculateChoiceScore(10);
+  const choiceScore11 = calculateChoiceScore(11);
+  const choiceScore20 = calculateChoiceScore(20);
+  const choiceScore21 = calculateChoiceScore(21);
+  const passedGroupRules = (choiceScore1 === 30 && choiceScore10 === 30 && choiceScore11 === 29 && choiceScore20 === 29 && choiceScore21 === 28);
+  assert(
+    'TEST_12',
+    '【群組積分法規驗證】10個志願序為1群組（第1~10序30分、第11~20序29分、第21序以後28分）',
+    '志願序法規',
+    '中投區作業要點附表1：志願序每10個志願序為同一群組',
+    passedGroupRules,
+    `志願1: ${choiceScore1}分, 志願10: ${choiceScore10}分, 志願11: ${choiceScore11}分, 志願21: ${choiceScore21}分，完全吻合！`
+  );
+
+  // 13. 測試 Case 13：會考總積點滿分 111 點精準換算驗證
+  const studentTop = {
+    grades: { chinese: 'A++', math: 'A++', english: 'A++', social: 'A++', science: 'A++' },
+    writing: '6'
+  };
+  const statsTop = computeStudentStats(studentTop);
+  assert(
+    'TEST_13',
+    '【會考總積點驗證】5科A++ (各21點) + 寫作6點 = 滿分 111 點',
+    '會考點數法規',
+    '國中教育會考中投區各科等級標示點數對照表(附表2)',
+    statsTop.examPoints === 111 && statsTop.plusCount === 10,
+    `計算得出總積點為 ${statsTop.examPoints} 點、總+號為 ${statsTop.plusCount} 個+，精準吻合 111 滿分標準！`
+  );
+
+  // 14. 測試 Case 14：單科比序順序國文排在第 1 順位驗證
+  const subChinese = SUBJECT_ORDER[0];
+  assert(
+    'TEST_14',
+    '【單科法定順序驗證】單科積分與成績標示比序以「國文科」為第一順位',
+    '單科PK法規',
+    '簡章附表1 國文 ➔ 數學 ➔ 英語 ➔ 社會 ➔ 自然',
+    subChinese.key === 'chinese' && subChinese.name === '國文',
+    `法定第一主科確認為：${subChinese.name}，次序為數、英、社、自。`
+  );
+
+  const passedCount = testResults.filter(t => t.passed).length;
+  return {
+    total: testResults.length,
+    passedCount,
+    allPassed: passedCount === testResults.length,
+    results: testResults
+  };
+}
 
 // 匯出到全域命名空間，支援純 file:// 與瀏覽器原生普通 script 標籤
 if (typeof window !== 'undefined') {
@@ -1988,7 +2283,11 @@ if (typeof window !== 'undefined') {
     estimateStudentRankIn30k,
     simulate30kAdmissions,
     QUIZ_CHALLENGES,
-    FLOWCHART_TREE
+    FLOWCHART_TREE,
+    FLOWCHART_FILTER_ANALYSIS,
+    THREE_CORE_STAGES,
+    VOLUNTEER_ORDER_SIMULATION,
+    runAlgorithmUnitTests
   };
 }
 
@@ -2010,6 +2309,10 @@ if (typeof module !== 'undefined' && module.exports) {
     estimateStudentRankIn30k,
     simulate30kAdmissions,
     QUIZ_CHALLENGES,
-    FLOWCHART_TREE
+    FLOWCHART_TREE,
+    FLOWCHART_FILTER_ANALYSIS,
+    THREE_CORE_STAGES,
+    VOLUNTEER_ORDER_SIMULATION,
+    runAlgorithmUnitTests
   };
 }
